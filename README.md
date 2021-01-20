@@ -7,11 +7,10 @@ additional customizations from there.
 
 1. Set your shell to zsh and install oh-my-zsh
 2. Clone this repository
-3. install Stow (available with any package manager)
-4. `cd dotfiles && ./install.sh && stow *`
+3. `cd dotfiles && ./install.sh && ./stow.sh -R`
 
 Or if you only want to use certain parts of the config, substitute those directory names
-instead of the `*` in the stow command.
+instead of using stow.sh.
 
 This will create symlinks from the repository to the proper locations, ensuring that the
 files are kept in sync with the repository.
