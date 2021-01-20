@@ -9,7 +9,7 @@ additional customizations from there.
 1. Set your shell to zsh and install oh-my-zsh
 2. Clone this repository
 3. install Stow (available with any package manager)
-4. `cd dotfiles && stow *`
+4. `cd dotfiles && ./install.sh && stow *`
 
 Or if you only want to use certain parts of the config, substitute those directory names
 instead of the `*` in the stow command.
@@ -17,6 +17,12 @@ instead of the `*` in the stow command.
 This will create symlinks from the repository to the proper locations, ensuring that the
 files are kept in sync with the repository.
 
+zsh is configured to use the [Starship](https://starship.rs) prompt.
+
+# Utility Replacements
+
+- `exa` instead of `ls`
+- `bat` instead of `cat`
 
 # General Navigation
 
@@ -31,6 +37,14 @@ The prefix key is bound to `ctrl-a`.
 - `Prefix ,` - Rename window
 - `Prefix s` - Split horizontal
 - `Prefix v` - Split vertical
+
+## Command line Helpers
+
+- `ftm <session name>` - Start or jump to this tmux session
+- `ftm` - List active sessions
+- `fo [words]` - Fuzzy search for files matching `words`. Open in editor.
+- `fr [words]` - Like `fo`, but for the current git repository
+- `fh [words]` - Search command history
 
 # Neovim
 
