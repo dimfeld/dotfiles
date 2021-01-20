@@ -1,0 +1,17 @@
+[user]
+	name = Daniel Imfeld
+	email = daniel@imfeld.dev
+[push]
+	default = simple
+[commit]
+	verbose = true
+
+# Include local file that shoudn't be replicated between servers
+[include]
+	path = ~/.gitconfig.local
+
+[core]
+	pager = delta --dark
+
+[url "ssh://git@github.com/"]
+    insteadOf = https://github.com/
