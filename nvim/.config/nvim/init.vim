@@ -322,7 +322,18 @@ function! s:custom_jarvis_colors()
   hi SignifySignAdd guifg=#99c794
   hi SignifySignDelete guifg=#ec5f67
   hi SignifySignChange guifg=#c594c5
+
+  hi DiffAdded guibg=#207020
+  hi DiffRemoved guibg=#902020
 endfunction
+
+command! ShowColors :call <SID>SynStack()<CR>
+function! <SID>SynStack()
+  if !exists("*synstack")
+    return
+  endif
+  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunc
 
 autocmd! ColorScheme * call TrailingSpaceHighlights()
 autocmd! ColorScheme OceanicNext call s:custom_jarvis_colors()
