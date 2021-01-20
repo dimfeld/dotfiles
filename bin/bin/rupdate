@@ -1,0 +1,2 @@
+#!/bin/bash
+rsync -z -l -u -v --exclude=node_modules --exclude=.git -r "$@"
