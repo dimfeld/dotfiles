@@ -34,6 +34,7 @@ function mcd() {
 }
 
 export NVM_DIR=~/.nvm
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 #source /usr/local/opt/nvm/nvm.sh
 #export PYTHONPATH=/Library/Python/2.7/site-packages:$PYTHONPATH
 alias py3env='source ~/py3env/bin/activate'
