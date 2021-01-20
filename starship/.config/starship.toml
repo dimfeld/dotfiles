@@ -16,9 +16,9 @@ format = "[$symbol$branch]($style) "
 symbol = " "
 
 [git_status]
-ahead = " ↑${count}"
-diverged = "⇕ ↑${ahead_count} ↓${behind_count}"
-behind = " ↓${count}"
+ahead = "↑${count}"
+diverged = "⇕↑${ahead_count} ↓${behind_count}"
+behind = "↓${count}"
 untracked = "U"
 modified = "M"
 style = "red"
