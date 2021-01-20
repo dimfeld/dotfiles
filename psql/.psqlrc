@@ -1,0 +1,7 @@
+\set QUIET 1
+\set ON_ERROR_ROLLBACK interactive
+\set HISTFILE ~/.psql/history- :DBNAME
+\set HISTCONTROL ignoredups
+\timing on
+\x auto
+\unset QUIET
