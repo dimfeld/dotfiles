@@ -15,16 +15,20 @@ if [[ `which cargo` ]]; then
   cargo install bat bottom cargo-update exa fd-find git-delta ripgrep sd starship
 
   if [[ `which apt` ]]; then
-    sudo apt install fzf stow
+    sudo apt install nvim stow
+    echo 'Installing fzf'
+    ./install_fzf.sh
   elif [[ `which brew` ]]; then
-    brew install fzf stow
+    brew install fzf nvim stow
   fi
 elif [[ `which brew ` ]]; then
   brew tap clementtsang/bottom
-  brew install bat bottom exa fd git-delta ripgrep sd starship fzf stow
+  brew install bat bottom exa fd git-delta ripgrep sd starship fzf stow nvim
 elif [[ `which apt ` ]]; then
   echo 'Installing starship'
   curl -fsSL https://starship.rs/install.sh | bash
-  sudo apt install bat exa fd-find git-delta ripgrep sd fzf stow
+  echo 'Installing fzf'
+  ./install_fzf.sh
+  sudo apt install bat exa fd-find git-delta ripgrep sd stow nvim
 fi
 

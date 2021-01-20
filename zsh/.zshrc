@@ -274,3 +274,5 @@ fi
 
 zplug "jeffreytse/zsh-vi-mode"
 
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

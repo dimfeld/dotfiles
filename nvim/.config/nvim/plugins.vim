@@ -92,6 +92,8 @@ Plug 'preservim/nerdtree', {'tag': '6.9.10'} |
   Plug 'ryanoasis/vim-devicons' |
   Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+
 " Colorscheme
 Plug 'mhartington/oceanic-next'
 
