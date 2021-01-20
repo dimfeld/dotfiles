@@ -5,7 +5,6 @@ export NVM_LAZY_LOAD=true
 export ZSH=$HOME/.oh-my-zsh
 source ~/.zplug/init.zsh
 
-
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
@@ -129,12 +128,6 @@ fgr() {
   fi
 }
 
-if [ -d ~/Documents/go ]; then
-   export GOPATH=~/Documents/go
-elif [ -d ~/go ]; then
-   export GOPATH=~/go
-fi
-
 export PATH="$HOME/google-cloud-sdk/bin:$HOME/bin/override:/usr/local/bin:/usr/local/sbin:/usr/local/share/python:$HOME/.cargo/bin:/usr/local/go/bin:$HOME/Library/Python/2.7/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/snap/bin:$HOME/bin:$GOPATH/bin:$(yarn global bin):$HOME/.local/bin"
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -188,24 +181,8 @@ fi
 
 export RUSTFLAGS="-C target-cpu=native"
 
-if [[ "$(uname)" == "Darwin" || "$(hostname)" =~ "^di" ]]; then 
-    export PG_URL=postgres://postgres@localhost:15432/carevoyance
-    export ES_URL=http://localhost:9200
-    export CHANGE_MANAGER_URL=http://localhost:19872
-    export NOMAD_URL=http://localhost:4646
-else
-    FQDN=$(hostname -A)
-    if [[ "$FQDN" =~ "compute\.internal" ]]; then
-        export PG_URL=postgres://postgres@postgres/carevoyance
-        export ES_URL=http://elasticsearch6.service.consul:9200
-    fi
-fi
-
 export EDITOR=nvim
 export VISUAL=nvim
-export NODE_EXTRA_CA_CERTS="$(mkcert -CAROOT)/rootCA.pem"
-export CV_SSL_KEY_PATH="/home/dimfeld/cv/app/dev-env/ssl/carevoyance.com+5-key.pem"
-export CV_SSL_CERT_PATH="/home/dimfeld/cv/app/dev-env/ssl/carevoyance.com+5.pem"
 
 export BIND_IP=0.0.0.0
 
