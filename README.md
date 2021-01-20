@@ -5,7 +5,6 @@ additional customizations from there.
 
 # Installation
 
-
 1. Set your shell to zsh and install oh-my-zsh
 2. Clone this repository
 3. install Stow (available with any package manager)
