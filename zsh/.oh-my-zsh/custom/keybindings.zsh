@@ -33,6 +33,6 @@ bindkey '^r' history-incremental-search-backward
 
 bindkey '^[b' backward-word
 bindkey '^[f' forward-word
-bindkey '^[[C' end-of-line
-bindkey '^[[D' beginning-of-line
+bindkey '^E' end-of-line
+bindkey '^A' beginning-of-line
 
