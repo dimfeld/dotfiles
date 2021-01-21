@@ -30,9 +30,7 @@ zsh is configured to use the [Starship](https://starship.rs) prompt.
 
 # Tmux
 
-The prefix key is bound to `option-a`. This is different from the 
-common `ctrl-a` or default `ctrl-b`, but prevents conflicts with
-`command-left` on a Mac, which sends `ctrl-a`.
+The prefix key is bound to `ctrl-a`.
 
 - `Prefix ,` - Rename window
 - `Prefix s` - Split horizontal
