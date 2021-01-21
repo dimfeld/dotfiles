@@ -576,12 +576,23 @@ let g:context_filetype#filetypes.svelte =
 \ ]
 
 " Prettier Settings
+" Disable quickfix by default since it runs on every save
 let g:prettier#quickfix_enabled = 0
 let g:prettier#quickfix_auto_focus = 0
 let g:prettier#autoformat_require_pragma = 0
 let g:prettier#autoformat_config_present = 1
 au BufWritePre *.css,*.svelte,*.pcss,*.html,*.ts,*.js,*.json Prettier
 "au BufWritePre *.css,*.svelte,*.pcss,*.html,*.ts,*.js,*.json noautocmd | call prettier#Autoformat()
+
+" If we do want to see the quickfix box, use this.
+command! PO call PrettierWithOutput()
+
+function! PrettierWithOutput()
+  let old_quickfix = g:prettier#quickfix_enabled 
+  let g:prettier#quickfix_enabled = 1
+  Prettier
+  let g:prettier#quickfix_enabled = old_quickfix
+endfunction 
 
 let g:ft = ''
 
@@ -602,7 +613,6 @@ fu! NERDCommenter_before()
   if (&ft == 'html') || (&ft == 'svelte')
     let g:ft = &ft
     let cfts = context_filetype#get_filetypes()
-    echo cfts
     if len(cfts) > 0
       if cfts[0] == 'svelte'
         let cft = 'html'
