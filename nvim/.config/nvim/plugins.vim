@@ -78,7 +78,7 @@ Plug 'othree/javascript-libraries-syntax.vim'
 Plug 'othree/yajs.vim'
 
 Plug 'evanleck/vim-svelte', {'branch': 'main'}
-
+Plug 'cakebaker/scss-syntax.vim'
 Plug 'rust-lang/rust.vim'
 Plug 'cespare/vim-toml'
 Plug 'mechatroner/rainbow_csv'

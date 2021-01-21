@@ -253,6 +253,13 @@ let g:used_javascript_libs = 'underscore,requirejs,chai,jquery'
 " === Signify === "
 let g:signify_sign_delete = '-'
 
+" === PostCss === "
+augroup pcss
+  au!
+  au BufNewFile,BufRead *.pcss set syntax=scss
+  au BufEnter *.pcss :syntax sync fromstart
+augroup END
+
 " ============================================================================ "
 " ===                                UI                                    === "
 " ============================================================================ "
