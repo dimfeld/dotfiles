@@ -20,6 +20,8 @@ elif [[ -d ~/go ]]; then
    export GOPATH=~/go
 fi
 
+export PATH=$PATH:$GOPATH/bin
+
 export GIT_CEILING_DIRECTORIES=~
 export VISUAL=nvim
 export EDITOR=nvim
