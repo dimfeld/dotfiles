@@ -20,6 +20,9 @@ endif
 
 call plug#begin('~/.config/nvim/plugged')
 
+" Close buffers without closing split
+Plug 'qpkorr/vim-bufkill'
+
 " === Editing Plugins === "
 " Trailing whitespace highlighting & automatic fixing
 Plug 'ntpeters/vim-better-whitespace'
@@ -86,11 +89,14 @@ Plug 'mechatroner/rainbow_csv'
 
 " === UI === "
 " File explorer
+" Disabled NERDTree in favor of vim-vinegar
 " Seeing bugs in later versions, so pinned this for now
-Plug 'preservim/nerdtree', {'tag': '6.9.10'} |
-  Plug 'Xuyuanp/nerdtree-git-plugin' |
-  Plug 'ryanoasis/vim-devicons' |
-  Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+"Plug 'preservim/nerdtree', {'tag': '6.9.10'} |
+"  Plug 'Xuyuanp/nerdtree-git-plugin' |
+Plug 'ryanoasis/vim-devicons' |
+" Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+
+Plug 'tpope/vim-vinegar'
 
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 

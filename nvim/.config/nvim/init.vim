@@ -283,10 +283,10 @@ set noshowmode
 " Set floating window to be slightly transparent
 set winbl=10
 
-nmap <M-h> :bp<CR>
-nmap <M-l> :bn<CR>
-nmap <M-p> :b#<CR>
-nmap <leader>p :b#<CR>
+nmap <silent> <M-h> :bp<CR>
+nmap <silent> <M-l> :bn<CR>
+nmap <silent> <M-p> :b#<CR>
+nmap <silent> <leader>p :b#<CR>
 
 " ============================================================================ "
 " ===                      CUSTOM COLORSCHEME CHANGES                      === "
@@ -443,8 +443,31 @@ endfunction
 " === Nerdtree shorcuts === "
 "  <leader>n - Toggle NERDTree on/off
 "  <leader>f - Opens current file location in NERDTree
-nmap <leader>n :NERDTreeToggle<CR>
-nmap <leader>f :NERDTreeFind<CR>
+" " NERDTree disabled
+"nmap <leader>n :NERDTreeToggle<CR>
+"nmap <leader>f :NERDTreeFind<CR>
+
+" netrw file browser commands
+" Open netrw on directory of current file
+nnoremap <silent> <leader>b :Explore<CR>
+" Open netrw on git repo
+nnoremap <silent> <leader>N :call <SID>netrw_on_git_repo()<CR>
+" Open netrw on vim CWD
+nnoremap <silent> <leader>n :call <SID>netrw_on_cwd()<CR>
+
+function! s:netrw_on_cwd()
+  execute "e ".getcwd()
+endfunction
+
+function! s:netrw_on_git_repo()
+  execute "e ".system("git rev-parse --show-toplevel")
+endfunction
+
+autocmd FileType netrw call s:netrw_keys()
+function! s:netrw_keys()
+  setlocal nohidden
+  nmap <silent><buffer> <leader>n :BD<CR>
+endfunction
 
 "   <Space> - PageDown
 "   -       - PageUp
@@ -512,7 +535,8 @@ command! CdRepo execute "cd ".system("git rev-parse --show-toplevel")
 " ============================================================================ "
 
 " Automaticaly close nvim if NERDTree is only thing left open
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+" NERDTree disabled
+"autRocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 " === Search === "
 set incsearch
@@ -633,3 +657,4 @@ fu! NERDCommenter_after()
     let g:ft = ''
   endif
 endfu
+
