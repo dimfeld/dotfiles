@@ -60,7 +60,8 @@ set updatetime=300
 let g:svelte_preprocessor_tags = [
   \ { 'name': 'postcss', 'tag': 'style', 'as': 'scss' }
   \ ]
-let g:svelte_preprocessors = ['typescript', 'postcss']
+let g:svelte_preprocessors = ['typescript', 'postcss', 'scss']
+autocmd FileType svelte setlocal formatoptions+=ro
 
 "" Rust
 let g:rustfmt_autosave = 1
