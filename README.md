@@ -30,11 +30,12 @@ zsh is configured to use the [Starship](https://starship.rs) prompt.
 
 # Tmux
 
-The prefix key is bound to `option-a`.
+The prefix key is bound to the default of `ctrl-b`.
 
 - `Prefix ,` - Rename window
 - `Prefix s` - Split horizontal
 - `Prefix v` - Split vertical
+- `Prefix z` - Maximize/restore tmux pane
 
 ## Command line Helpers
 
