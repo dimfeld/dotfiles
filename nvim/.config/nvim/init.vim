@@ -516,8 +516,6 @@ let g:EasyMotion_smartcase = 1
 " Replace built-in search with easymotion
 map / <Plug>(easymotion-sn)
 omap / <Plug>(easymotion-sn)
-map n <Plug>(easymotion-next)
-map N <Plug>(easymotion-prev)
 
 " Allows you to save files you opened without write permissions via sudo
 cmap w!! w !sudo tee %
