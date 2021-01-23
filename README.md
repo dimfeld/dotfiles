@@ -49,7 +49,7 @@ The prefix key is bound to the default of `ctrl-b`.
 
 Neovim is set up mostly for Rust and Svelte development right now.
 
-- `Spacebar` - Page Down
+- `=` - Page Down
 - `-` - Page Up
 - `Ctrl+h` - Switch window left
 - `Ctrl+j` - Switch window down
@@ -58,7 +58,7 @@ Neovim is set up mostly for Rust and Svelte development right now.
 - `:noa w` - Write file without formatting
 - `,l` - Jump to line with easymotion
 - `,w` - Jump to word with easymotion
-- `,s<two characters>` - Jump to word starting with two characters
+- `<Space><two characters>` - Jump to word starting with two characters
 - `:Cdme` - Change directory to that of current file
 - `:CdRepo` - Change directory to current git repository root
 
@@ -93,38 +93,18 @@ Neovim is set up mostly for Rust and Svelte development right now.
 - `Ctrl+v` - Open the file in a vertical split
 - `Ctrl+h` - Open the file in a horizontal split
 
-## NERDTree
+## File Browsing
 
-- `,n` - Toggle NERDTree
-- `,f` - Open current file location in NERDTree
+- `,n` - Open/close file browser in current directory
+- `,N` - Open file browser at repository root
+- `,b` - Open file browser in directory of current file
 
-### Inside Window
+### In the browser
 
-- On a file
-  - `o` - Open file an
-  - `go` - Preview file
-  - `i` - open in split
-  - `s` - Open in vsplit
-- On a directory
-  - `o` - open or close directory
-  - `O` - recursively open node
-  - `x` - Close parent of node
-  - `X` - Recursively close all node children
-  - `e` - Explore this directory
-- Tree Navigation
-  - `P` - go to root
-  - `p` - go to parent
-  - `K` - first child
-  - `J` - last child
-  - `C` - Change tree root to selected directory
-  - `u` - Move tree root up a directory
-  - `U` - Move tree root up, keep old root open
-  - `r` - refresh
-  - `R` - refresh all
-  - `cd` - Change CWD to selected directory
-  - `CD` change tree root to CWD
-  - `A` - Maximize or minimize NERDTree and window
-  - `I` - toggle hidden files
+- `-` Go up a directory
+- `p` - Open preview pane (this is kind of a hassle since it doesn't autoclose)
+- `%` - Open new file in the directory
+
 
 ## Intellisense (coc.nvim)
 

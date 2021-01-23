@@ -469,10 +469,10 @@ function! s:netrw_keys()
   nmap <silent><buffer> <leader>n :BD<CR>
 endfunction
 
-"   <Space> - PageDown
+"   = - PageDown
 "   -       - PageUp
-noremap <Space> <PageDown>
 noremap - <PageUp>
+noremap = <PageDown>
 
 " Quick window switching
 nmap <C-h> <C-w>h
@@ -509,9 +509,15 @@ map <leader>w <Plug>(easymotion-bd-w)
 " Jump up and down by lines
 map <leader>l <Plug>(easymotion-bd-jk)
 " Jump to a 2-character sequence.
-nmap <leader>s <Plug>(easymotion-overwin-f2)
+map <Space> <Plug>(easymotion-bd-f2)
 " Smart case search, like that in native vim search
 let g:EasyMotion_smartcase = 1
+
+" Replace built-in search with easymotion
+map / <Plug>(easymotion-sn)
+omap / <Plug>(easymotion-sn)
+map n <Plug>(easymotion-next)
+map N <Plug>(easymotion-prev)
 
 " Allows you to save files you opened without write permissions via sudo
 cmap w!! w !sudo tee %
