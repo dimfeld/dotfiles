@@ -12,7 +12,7 @@ fi
 
 if [[ `which cargo` ]]; then
   # Prefer cargo for rust utils, if it's installed
-  cargo install bat bottom cargo-update exa fd-find git-delta ripgrep sd starship
+  cargo install bat bottom cargo-update exa fd-find git-delta ripgrep sd starship zoxide
 
   if [[ `which apt` ]]; then
     sudo apt install nvim stow
@@ -23,12 +23,12 @@ if [[ `which cargo` ]]; then
   fi
 elif [[ `which brew ` ]]; then
   brew tap clementtsang/bottom
-  brew install bat bottom exa fd git-delta ripgrep sd starship fzf stow nvim
+  brew install bat bottom exa fd git-delta ripgrep sd starship fzf stow nvim zoxide
 elif [[ `which apt ` ]]; then
   echo 'Installing starship'
   curl -fsSL https://starship.rs/install.sh | bash
   echo 'Installing fzf'
   ./install_fzf.sh
-  sudo apt install bat exa fd-find git-delta ripgrep sd stow nvim
+  sudo apt install bat exa fd-find git-delta ripgrep sd stow nvim zoxide
 fi
 
