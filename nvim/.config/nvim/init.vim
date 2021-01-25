@@ -383,7 +383,7 @@ nnoremap <leader>g :<C-u>Denite grep:. -no-empty<CR>
 nnoremap <leader>j :<C-u>DeniteCursorWord grep:.<CR>
 
 " Define mappings while in 'filter' mode
-"   <C-o>         - Switch to normal mode inside of search results
+"   <C-o> or down arrow - Switch to normal mode inside of search results
 "   <Esc>         - Exit denite window in any mode
 "   <CR>          - Open currently selected file in any mode
 "   <C-t>         - Open currently selected file in a new tab
@@ -392,6 +392,8 @@ nnoremap <leader>j :<C-u>DeniteCursorWord grep:.<CR>
 autocmd FileType denite-filter call s:denite_filter_my_settings()
 function! s:denite_filter_my_settings() abort
   imap <silent><buffer> <C-o>
+  \ <Plug>(denite_filter_quit)
+  imap <silent><buffer> <Down>
   \ <Plug>(denite_filter_quit)
   inoremap <silent><buffer><expr> <Esc>
   \ denite#do_map('quit')
