@@ -1,4 +1,7 @@
 scriptencoding utf-8
+
+let g:BufKillCreateMappings = 0
+
 source ~/.config/nvim/plugins.vim
 
 " ============================================================================ "
