@@ -84,6 +84,7 @@ Plug 'evanleck/vim-svelte', {'branch': 'main'}
 Plug 'cakebaker/scss-syntax.vim'
 Plug 'rust-lang/rust.vim'
 Plug 'cespare/vim-toml'
+Plug 'dimfeld/coc-svelte', {'do': 'yarn install --frozen-lockfile && yarn build'}
 Plug 'mechatroner/rainbow_csv'
 
 
@@ -107,7 +108,8 @@ Plug 'mhartington/oceanic-next'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
-Plug 'dimfeld/coc-svelte', {'do': 'yarn install --frozen-lockfile && yarn build'}
+" Debugging
+Plug 'puremourning/vimspector'
 
 
 " Initialize plugin system
