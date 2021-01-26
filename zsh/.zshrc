@@ -75,7 +75,7 @@ fo() {
 #   - Exit if there's no match (--exit-0)
 fr() {
   local files
-  IFS=$'\n' files=($(fd --type f --base-directory $(git rev-parse --show-toplevel) | fzf-tmux --query="$1" --multi --select-1 --exit-0 --preview 'bat --style=numbers --color=always --line-range :500 {}'))
+  IFS=$'\n' files=($(fd --type f --search-path $(git rev-parse --show-toplevel) | fzf-tmux --query="$1" --multi --select-1 --exit-0 --preview 'bat --style=numbers --color=always --line-range :500 {}'))
   [[ -n "$files" ]] && ${EDITOR:-vim} "${files[@]}"
 }
 
@@ -120,11 +120,11 @@ fgr() {
   local file
   local line
 
-  read -r file line <<<"$(rg --no-heading --line-number $@ | fzf -0 -1 | awk -F: '{print $1, $2}')"
+  IFS=" " read -r file line <<<"$(rg --no-heading --line-number $@ | fzf -0 -1 | awk -F: '{print $1, $2}')"
 
   if [[ -n $file ]]
   then
-     $EDITOR $file +$line
+     $EDITOR "$file" +$line
   fi
 }
 
