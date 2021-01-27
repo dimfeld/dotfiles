@@ -9,6 +9,7 @@ style = "bold blue"
 
 [hostname]
 format = "on [$hostname]($style) "
+ssh_only = false
 style = "dimmed green"
 
 [git_branch]
