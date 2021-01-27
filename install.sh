@@ -14,12 +14,12 @@ if [[ `which cargo` ]]; then
   # Prefer cargo for rust utils, if it's installed
   cargo install bat bottom cargo-update exa fd-find git-delta ripgrep sd starship zoxide
 
-  if [[ `which apt` ]]; then
+  if [[ `which brew` ]]; then
+    brew install fzf nvim stow
+  elif [[ `which apt` ]]; then
     sudo apt install nvim stow
     echo 'Installing fzf'
     ./install_fzf.sh
-  elif [[ `which brew` ]]; then
-    brew install fzf nvim stow
   fi
 elif [[ `which brew ` ]]; then
   brew tap clementtsang/bottom
@@ -32,3 +32,7 @@ elif [[ `which apt ` ]]; then
   sudo apt install bat exa fd-find git-delta ripgrep sd stow nvim zoxide
 fi
 
+python3 -m pip install --user --upgrade pynvim
+nvim +PlugInstall +qall
+nvim +UpdateRemotePlugins +qall
+cp ~/.config/nvim/space.vim ~/.config/nvim/plugged/vim-airline-themes/autoload/airline/themes/space.vim
