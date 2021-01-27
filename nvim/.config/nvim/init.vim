@@ -196,6 +196,10 @@ endfunction
 " Use <c-space> to trigger completion.
 inoremap <silent><expr> <c-space> coc#refresh()
 
+" Use <leader>c to trigger code action in autocomplete popup, like autoimport.
+inoremap <silent><expr> <leader>c
+    \ pumvisible() ? "<c-g>u" : "<leader>c"
+
 " Add `:Format` command to format current buffer.
 command! -nargs=0 Format :call CocAction('format')
 
@@ -622,11 +626,11 @@ au BufWritePre *.css,*.svelte,*.pcss,*.html,*.ts,*.js,*.json Prettier
 command! PO call PrettierWithOutput()
 
 function! PrettierWithOutput()
-  let old_quickfix = g:prettier#quickfix_enabled 
+  let old_quickfix = g:prettier#quickfix_enabled
   let g:prettier#quickfix_enabled = 1
   Prettier
   let g:prettier#quickfix_enabled = old_quickfix
-endfunction 
+endfunction
 
 let g:ft = ''
 
@@ -637,7 +641,7 @@ let g:NERDSpaceDelims = 1
 let g:NERDCommentEmptyLines = 1
 let g:NERDTrimTrailingWhitespace = 1
 let g:NERDToggleCheckAllLines = 1
-let g:NERDCustomDelimiters = { 
+let g:NERDCustomDelimiters = {
   \ 'svelte': { 'left': '//', 'leftAlt': '/*', 'rightAlt': '*/' },
   \ 'html': { 'left': '<!--', 'right': '-->' },
   \}
