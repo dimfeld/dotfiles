@@ -59,12 +59,39 @@ set updatetime=300
 
 " Code Settings
 "
+
+" Always syntax highlight the whole file, even on large files.
+syntax sync fromstart
+set redrawtime=10000
+
 "" Svelte
 let g:svelte_preprocessor_tags = [
   \ { 'name': 'postcss', 'tag': 'style', 'as': 'scss' }
   \ ]
 let g:svelte_preprocessors = ['typescript', 'postcss', 'scss']
 autocmd FileType svelte setlocal formatoptions+=ro
+
+let g:vim_svelte_plugin_use_typescript = 1
+let g:vim_svelte_plugin_use_sass = 1
+
+" set local options based on subtype
+function! OnChangeSvelteSubtype(subtype)
+  " echom 'Subtype is '.a:subtype
+  if empty(a:subtype) || a:subtype == 'html'
+    setlocal commentstring=<!--%s-->
+    setlocal comments=s:<!--,m:\ \ \ \ ,e:-->
+    setlocal omnifunc=htmlcomplete#CompleteTags
+  elseif a:subtype =~ 'css'
+    setlocal comments=s1:/*,mb:*,ex:*/ commentstring&
+    setlocal omnifunc=csscomplete#CompleteCSS
+  else
+    setlocal commentstring=//%s
+    setlocal comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,://
+    setlocal omnifunc=javascriptcomplete#CompleteJS
+  endif
+endfunction
+
+iabbrev </ </<C-X><C-O>
 
 "" Rust
 let g:rustfmt_autosave = 1
@@ -155,6 +182,7 @@ let g:coc_global_extensions = [
       \'coc-git',
       \'coc-go',
       \'coc-highlight',
+      \'coc-html',
       \'coc-json',
       \'coc-python',
       \'coc-rls',
@@ -383,8 +411,9 @@ endtry
 "   <leader>g - Search current directory for occurences of given term and close window if no results
 "   <leader>j - Search current directory for occurences of word under cursor
 nmap ; :Denite buffer<CR>
-nmap <leader>t :Denite file/rec<CR>
-nmap <leader>T :DeniteProjectDir file/rec<CR>
+nmap <silent> <leader>t :Denite file/rec<CR>
+nmap <silent> <leader>T :DeniteProjectDir file/rec<CR>
+nmap <silent> <leader>b :DeniteBufferDir file/rec<CR>
 nnoremap <leader>g :<C-u>Denite grep:. -no-empty<CR>
 nnoremap <leader>j :<C-u>DeniteCursorWord grep:.<CR>
 
@@ -456,8 +485,6 @@ endfunction
 "nmap <leader>f :NERDTreeFind<CR>
 
 " netrw file browser commands
-" Open netrw on directory of current file
-nnoremap <silent> <leader>b :Explore<CR>
 " Open netrw on git repo
 nnoremap <silent> <leader>N :call <SID>netrw_on_git_repo()<CR>
 " Open netrw on vim CWD
@@ -476,6 +503,8 @@ function! s:netrw_keys()
   setlocal nohidden
   nmap <silent><buffer> <leader>n :BD<CR>
 endfunction
+
+map <leader>e :e %:h/
 
 "   = - PageDown
 "   -       - PageUp
@@ -521,9 +550,9 @@ map <Space> <Plug>(easymotion-bd-f2)
 " Smart case search, like that in native vim search
 let g:EasyMotion_smartcase = 1
 
-" Replace built-in search with easymotion
-map / <Plug>(easymotion-sn)
-omap / <Plug>(easymotion-sn)
+" Replace built-in search with easymotion -- DISABLED
+"map / <Plug>(easymotion-sn)
+" omap / <Plug>(easymotion-sn)
 
 " Allows you to save files you opened without write permissions via sudo
 cmap w!! w !sudo tee %
