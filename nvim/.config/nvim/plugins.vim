@@ -80,7 +80,8 @@ Plug 'othree/javascript-libraries-syntax.vim'
 " Improved syntax highlighting and indentation
 Plug 'othree/yajs.vim'
 
-Plug 'evanleck/vim-svelte', {'branch': 'main'}
+"Plug 'evanleck/vim-svelte', {'branch': 'main'}
+Plug 'leafOfTree/vim-svelte-plugin'
 Plug 'cakebaker/scss-syntax.vim'
 Plug 'rust-lang/rust.vim'
 Plug 'cespare/vim-toml'
