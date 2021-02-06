@@ -566,6 +566,9 @@ nmap <leader>z :JsDoc<CR>
 " Vim's default buffer
 vnoremap <leader>p "_dP
 
+" Delete current selection without yanking
+vnoremap <leader>d "_d
+
 " Change to the directory of the current file
 command! Cdme cd %:p:h
 " Change to the directory of the git repository
