@@ -1,4 +1,4 @@
-format="""$git_state$git_branch$hostname$git_status$cmd_duration
+format="""$git_state$git_branch$hostname$python$git_status$cmd_duration
 $status$directory$character"""
 
 [directory]
