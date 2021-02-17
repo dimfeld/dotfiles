@@ -184,9 +184,10 @@ let g:coc_global_extensions = [
       \'coc-highlight',
       \'coc-html',
       \'coc-json',
-      \'coc-python',
+      \'coc-pyright',
       \'coc-rls',
       \'coc-tsserver',
+      \'coc-xml',
       \]
 
 " use <tab> for trigger completion and navigate to next complete item
@@ -210,6 +211,7 @@ nnoremap <silent> K :call <SID>show_documentation()<CR>
 " Symbol renaming.
 nmap <leader>rn <Plug>(coc-rename)
 
+
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
     execute 'h '.expand('<cword>')
@@ -226,6 +228,8 @@ inoremap <silent><expr> <c-space> coc#refresh()
 " Use <leader>c to trigger code action in autocomplete popup, like autoimport.
 inoremap <silent><expr> <leader>c
     \ pumvisible() ? "<c-g>u" : "<leader>c"
+" When not in import mode, run code action on current line (usually auto-import)
+nmap <leader>ai <Plug>(coc-codeaction-line)
 
 " Add `:Format` command to format current buffer.
 command! -nargs=0 Format :call CocAction('format')
@@ -573,6 +577,7 @@ vnoremap <leader>d "_d
 command! Cdme cd %:p:h
 " Change to the directory of the git repository
 command! CdRepo execute "cd ".system("git rev-parse --show-toplevel")
+
 
 " ============================================================================ "
 " ===                                 MISC.                                === "
