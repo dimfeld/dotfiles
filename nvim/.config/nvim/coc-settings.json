@@ -29,5 +29,6 @@
   "diagnostic.virtualText": true,
   "html.autoClosingTags": true,
   "javascript.format.enabled": false,
-  "typescript.format.enabled": false
+  "typescript.format.enabled": false,
+  "svelte.plugin.svelte.format.enable": false
 }
