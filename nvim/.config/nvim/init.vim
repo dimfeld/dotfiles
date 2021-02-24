@@ -408,18 +408,22 @@ endtry
 " ===                             KEY MAPPINGS                             === "
 " ============================================================================ "
 
+" === ferret search and replace ===
+nmap <silent> <leader>g <Plug>(FerretAck)
+nmap <silent> <leader>j <Plug>(FerretAckWord)
+
 " === Denite shorcuts === "
 "   ;         - Browser currently open buffers
 "   <leader>t - Browse list of files in current directory
 "   <leader>T - Browse list of files in current git repository
-"   <leader>g - Search current directory for occurences of given term and close window if no results
+"   <leader>G - Search current directory for occurences of given term and close window if no results
 "   <leader>j - Search current directory for occurences of word under cursor
 nmap ; :Denite buffer<CR>
 nmap <silent> <leader>t :Denite file/rec<CR>
 nmap <silent> <leader>T :DeniteProjectDir file/rec<CR>
 nmap <silent> <leader>b :DeniteBufferDir file/rec<CR>
-nnoremap <leader>g :<C-u>Denite grep:. -no-empty<CR>
-nnoremap <leader>j :<C-u>DeniteCursorWord grep:.<CR>
+nnoremap <leader>G :<C-u>Denite grep:. -no-empty<CR>
+nnoremap <leader>J :<C-u>DeniteCursorWord grep:.<CR>
 
 " Define mappings while in 'filter' mode
 "   <C-o> or down arrow - Switch to normal mode inside of search results
@@ -670,7 +674,7 @@ endfunction
 
 let g:ft = ''
 
-" NERDCommenter
+" === NERDCommenter ===
 let g:NERDDefaultAlign = 'left'
 let g:NERDCompactSexyComs = 1
 let g:NERDSpaceDelims = 1
@@ -706,4 +710,13 @@ fu! NERDCommenter_after()
     let g:ft = ''
   endif
 endfu
+
+
+" === Customize quickfix buffer ===
+autocmd FileType qf call s:quickfix_settings()
+function! s:quickfix_settings()
+  " o key opens the line under the quickfix and returns focus to Quickfix
+  nnoremap <silent> <buffer> o <CR><C-w>p
+endfunction
+
 

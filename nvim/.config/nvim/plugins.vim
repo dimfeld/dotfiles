@@ -48,6 +48,8 @@ Plug 'Shougo/echodoc.vim'
 
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 
+Plug 'wincent/ferret'
+
 " === Git Plugins === "
 " Enable git changes to be shown in sign column
 Plug 'mhinz/vim-signify'
