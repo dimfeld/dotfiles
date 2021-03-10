@@ -718,6 +718,7 @@ autocmd FileType qf call s:quickfix_settings()
 function! s:quickfix_settings()
   " o key opens the line under the quickfix and returns focus to Quickfix
   nnoremap <silent> <buffer> o <CR><C-w>p
+  nnoremap <silent> <buffer> O <CR>:cclose<CR>
 endfunction
 
 
