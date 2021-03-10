@@ -2,13 +2,6 @@
   "suggest.echodocSupport": true,
   "suggest.maxCompleteItemCount": 20,
   "coc.preferences.formatOnSaveFiletypes": [
-    "javascript",
-    "typescript",
-    "typescriptreact",
-    "json",
-    "javascriptreact",
-    "typescript.tsx",
-    "svelte",
     "go",
     "rust"
   ],
@@ -29,6 +22,5 @@
   "diagnostic.virtualText": true,
   "html.autoClosingTags": true,
   "javascript.format.enabled": false,
-  "typescript.format.enabled": false,
-  "svelte.plugin.svelte.format.enable": false
+  "typescript.format.enabled": false
 }

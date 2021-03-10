@@ -659,8 +659,7 @@ let g:prettier#quickfix_enabled = 0
 let g:prettier#quickfix_auto_focus = 0
 let g:prettier#autoformat_require_pragma = 0
 let g:prettier#autoformat_config_present = 1
-au BufWritePre *.css,*.svelte,*.pcss,*.html,*.ts,*.js,*.json Prettier
-"au BufWritePre *.css,*.svelte,*.pcss,*.html,*.ts,*.js,*.json noautocmd | call prettier#Autoformat()
+au BufWritePre *.css,*.svelte,*.pcss,*.html,*.ts,*.js noautocmd | call prettier#Autoformat()
 
 " If we do want to see the quickfix box, use this.
 command! PO call PrettierWithOutput()
