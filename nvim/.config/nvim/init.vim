@@ -632,6 +632,8 @@ function! ExecuteMacroOverVisualRange()
   execute ":'<,'>normal @".nr2char(getchar())
 endfunction
 
+nnoremap <Tab> @q
+
 command! EditInit e ~/.config/nvim/init.vim
 command! ReloadInit source ~/.config/nvim/init.vim
 
