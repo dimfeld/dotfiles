@@ -12,7 +12,7 @@ fi
 
 if [[ `which cargo` ]]; then
   # Prefer cargo for rust utils, if it's installed
-  cargo install bat bottom cargo-update exa fd-find git-delta ripgrep sd starship zoxide
+  cargo install basic-http-server bat bottom cargo-update exa fd-find git-delta ripgrep sd starship zoxide
 
   if [[ `which brew` ]]; then
     brew install fzf nvim stow

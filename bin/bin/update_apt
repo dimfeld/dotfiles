@@ -1,0 +1,16 @@
+#!/bin/bash
+# Sudo command at the start so I don't have to type the password halfway through
+# later.
+sudo echo
+#yarn global upgrade
+pnpm --global update
+rustup update
+cargo install-update --all
+
+if `which apt`; then
+  sudo apt update && apt list --upgradable && sudo apt dist-upgrade
+else if `which brew` then
+  brew upgrade
+fi
+
+nvim +PlugUpdate +CocUpdate
