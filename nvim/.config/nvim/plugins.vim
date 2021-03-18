@@ -75,6 +75,16 @@ Plug 'Shougo/context_filetype.vim'
 
 " === Syntax Highlighting === "
 
+
+" Hashicorp Tools
+Plug 'hashivim/vim-hashicorp-tools'
+Plug 'jvirtanen/vim-hcl'
+
+" Markdown
+Plug 'godlygeek/tabular'
+Plug 'plasticboy/vim-markdown'
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }}
+
 " Syntax highlighting for nginx
 Plug 'chr4/nginx.vim'
 

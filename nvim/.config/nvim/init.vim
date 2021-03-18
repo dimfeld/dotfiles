@@ -4,6 +4,8 @@ let g:BufKillCreateMappings = 0
 
 source ~/.config/nvim/plugins.vim
 
+let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
+
 " ============================================================================ "
 " ===                           EDITING OPTIONS                            === "
 " ============================================================================ "
@@ -274,6 +276,17 @@ catch
   echo 'Airline not installed. It should work after running :PlugInstall'
 endtry
 
+" Markdown
+let g:vim_markdown_conceal = 0
+let g:tex_conceal = ""
+let g:vim_markdown_math = 1
+let g:vim_markdown_frontmatter = 1
+let g:vim_markdown_strikethrough = 1
+let g:vim_markdown_no_extensions_in_markdown = 1
+let g:vim_markdown_edit_url_in = 'vsplit'
+let g:vim_markdown_folding_style_pythonic = 1
+let g:vim_markdown_folding_level = 6
+
 " === echodoc === "
 " Enable echodoc on startup
 let g:echodoc#enable_at_startup = 1
@@ -537,6 +550,8 @@ nnoremap <silent> <leader>ds :<C-u>CocList -I -N --top symbols<CR>
 nmap <silent> <leader>dg <Plug>(coc-diagnostic-info)
 nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
+nmap <silent> [G <Plug>(coc-diagnostic-prev-error)
+nmap <silent> ]G <Plug>(coc-diagnostic-next-error)
 
 " === vim-better-whitespace === "
 "   <leader>y - Automatically remove trailing whitespace
@@ -624,6 +639,16 @@ set noswapfile
 if exists('g:loaded_webdevicons')
   call webdevicons#refresh()
 endif
+
+" Quick move cursor from insert mode
+imap <C-a> <C-o>^
+imap <C-e> <C-o>$
+map <C-a> ^
+map <C-e> $
+imap <M-b> <C-o>b
+imap <M-f> <C-o>w
+map <M-b> b
+map <M-f> w
 
 " When a visual range is selected, run a macro over each line in the range
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
