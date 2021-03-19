@@ -4,7 +4,7 @@
 sudo echo
 #yarn global upgrade
 pnpm --global update
-rustup update
+rustup update stable
 cargo install-update --all
 
 if [ "$(uname)" == "Darwin" ]; then
