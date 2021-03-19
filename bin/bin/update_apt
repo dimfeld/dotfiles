@@ -7,10 +7,10 @@ pnpm --global update
 rustup update
 cargo install-update --all
 
-if `which apt`; then
-  sudo apt update && apt list --upgradable && sudo apt dist-upgrade
-else if `which brew` then
+if [ "$(uname)" == "Darwin" ]; then
   brew upgrade
+elif `which apt`; then
+  sudo apt update && apt list --upgradable && sudo apt dist-upgrade
 fi
 
 nvim +PlugUpdate +CocUpdate
