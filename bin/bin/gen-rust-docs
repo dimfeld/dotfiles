@@ -1,2 +1,2 @@
 #!/bin/bash
-RUSTDOCFLAGS="--enable-index-page -Zunstable-options" cargo +nightly doc && basic-http-server -x -a 0.0.0.0:5555 target/doc
+RUSTFLAGS="-C target-cpu=native" RUSTDOCFLAGS="-C target-cpu=native --enable-index-page -Zunstable-options" cargo +nightly doc && basic-http-server -x -a 0.0.0.0:5555 target/doc
