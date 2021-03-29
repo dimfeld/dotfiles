@@ -231,7 +231,8 @@ inoremap <silent><expr> <c-space> coc#refresh()
 inoremap <silent><expr> <leader>c
     \ pumvisible() ? "<c-g>u" : "<leader>c"
 " When not in import mode, run code action on current line (usually auto-import)
-nmap <leader>ai <Plug>(coc-codeaction-line)
+nmap <leader>al <Plug>(coc-codeaction-line)
+nmap <leader>ac <Plug>(coc-codeaction-cursor)
 
 " Add `:Format` command to format current buffer.
 command! -nargs=0 Format :call CocAction('format')
@@ -563,15 +564,20 @@ nmap <leader>y :StripWhitespace<CR>
 map <leader>h :%s///<left><left>
 nmap <silent> <leader>/ :nohlsearch<CR>
 
-" === Easy-motion shortcuts ==="
+" === Hop Shortcuts === 
+map <silent> <leader>w :HopWord<CR>
+map <silent> <leader>l :HopLine<CR>
+map <silent> <Space> :HopChar2<CR>
+
+" === Easy-motion shortcuts ===" (disabled)
 "   <leader>w - Easy-motion highlights first word letters bi-directionally
-map <leader>w <Plug>(easymotion-bd-w)
+"map <leader>w <Plug>(easymotion-bd-w)
 " Jump up and down by lines
-map <leader>l <Plug>(easymotion-bd-jk)
+"map <leader>l <Plug>(easymotion-bd-jk)
 " Jump to a 2-character sequence.
-map <Space> <Plug>(easymotion-bd-f2)
+"map <Space> <Plug>(easymotion-bd-f2)
 " Smart case search, like that in native vim search
-let g:EasyMotion_smartcase = 1
+"let g:EasyMotion_smartcase = 1
 
 " Replace built-in search with easymotion -- DISABLED
 "map / <Plug>(easymotion-sn)
