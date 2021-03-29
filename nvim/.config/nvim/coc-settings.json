@@ -22,5 +22,6 @@
   "diagnostic.virtualText": true,
   "html.autoClosingTags": true,
   "javascript.format.enabled": false,
-  "typescript.format.enabled": false
+  "typescript.format.enabled": false,
+  "rust-analyzer.rustfmt.extraArgs": [ "+nightly" ]
 }
