@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ $# == 0 ]; then
+  FLAGS="-a 127.0.0.1:4444"
+  if [ $(hostname) == "didev" ]; then
+    FLAGS="-a 0.0.0.0:4444"
+  fi
+fi
+
+basic-http-server -x ${FLAGS} "${@}"

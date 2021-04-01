@@ -1,0 +1,2 @@
+#!/bin/bash
+http --follow https://registry.npmjs.org/$1 Accept:application/vnd.npm.install-v1+json | jq -c '[.name, ."dist-tags".latest, .modified]'

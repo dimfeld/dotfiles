@@ -1,0 +1,4 @@
+#!/bin/bash
+for P in  @microsoft/rush pnpm svelte svelte-preprocess svelte-language-server svelte-check svelte2tsx prettier-plugin-svelte typescript; do
+  check_package $P
+done

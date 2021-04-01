@@ -1,0 +1,6 @@
+FILE=$1
+if [ -z "${FILE}" ]; then
+  echo File argument required
+  exit 1
+fi
+echo '' | fzf --print-query --preview-window wrap --preview "cat '$FILE' |& jq -C {q} \"$@\""
