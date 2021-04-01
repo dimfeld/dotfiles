@@ -139,7 +139,6 @@ if ! zplug check; then
     zplug install
 fi
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 eval "$(zoxide init zsh)"
 eval "$(starship init zsh)"
 
@@ -147,4 +146,5 @@ source ~/.aliases.zsh
 source ~/.keybindings.zsh
 
 [ -f ~/.zshrc.local.zsh ] && source ~/.zshrc.local.zsh
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
