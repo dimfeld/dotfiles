@@ -1,8 +1,13 @@
-#!/bin/sh
-# From https://code.p1k3.com/gitea/brennen/bpb-kit/src/branch/main/home/bin/git-sel-changed
+#!/bin/bash
+# Modified from https://code.p1k3.com/gitea/brennen/bpb-kit/src/branch/main/home/bin/git-sel-changed
 
 # Help messages:
 LONG_USAGE="Select changed files using fzf and print to standard output."
+
+if [ "$1" == "-a" ]; then
+  ABSOLUTE=true
+  shift
+fi
 
 # Tell git-sh-setup we're ok with being in a subdir:
 SUBDIRECTORY_OK=1
@@ -17,12 +22,17 @@ require_work_tree_exists
 # porcelained git-status output):
 cd_to_toplevel
 
+BASE_DIR=""
+if [ -n "${ABSOLUTE}" ]; then
+  BASE_DIR="${PWD}/"
+fi
+
 # -z does NUL-terminated outputs, puts new filenames first for renamed files,
 # etc.  -u includes untracked files.
 git status -u -z --porcelain | \
   # Take from the 4th character up to end-of-line (first 3 are status chars):
   cut -z -c4- | \
   # IFF we're inside a tmux, fzf-tmux will pop up in a separate pane:
-  fzf-tmux --multi --read0 --print0 | \
+  fzf-tmux --multi --read0 --print0 "${@}" | \
   # This is ridiculous, but I never know how to combine stdin and args:
-  xargs -0 -I{} -n1 echo "$PWD/{}"
+  xargs -0 -I{} -n1 echo "${BASE_DIR}{}"
