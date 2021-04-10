@@ -8,6 +8,7 @@ source ~/.zplug/init.zsh
 # ## FZF FUNCTIONS ##
 
 export FZF_DEFAULT_COMMAND='fd --type f'
+export FZF_DEFAULT_OPTS="--bind 'ctrl-a:select-all'"
 
 # fo [FUZZY PATTERN] - Open the selected file with the default editor
 #   - Bypass fuzzy finder if there's only one match (--select-1)
