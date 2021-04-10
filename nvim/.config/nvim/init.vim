@@ -97,6 +97,7 @@ iabbrev </ </<C-X><C-O>
 
 "" Rust
 let g:rustfmt_autosave = 1
+autocmd FileType rust setlocal shiftwidth=4
 
 
 " === Completion Settings === "
@@ -209,6 +210,8 @@ autocmd! CompleteDone * if pumvisible() == 0 && getcmdwintype () == '' | pclose 
 
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
+inoremap <silent> <c-k> <c-o>:call coc#float#close_all()<CR>
+nnoremap <silent> <c-k> :call coc#float#close_all()<CR>
 
 " Symbol renaming.
 nmap <leader>rn <Plug>(coc-rename)
