@@ -2,8 +2,7 @@
 # Sudo command at the start so I don't have to type the password halfway through
 # later.
 sudo echo
-#yarn global upgrade
-pnpm --global update
+sudo pnpm --global update
 rustup update stable
 cargo install-update --all
 zplug update
