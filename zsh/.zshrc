@@ -139,7 +139,6 @@ alias cat="bat"
 #zprof
 
 zplug 'zplug/zplug', hook-build:'zplug --self-manage'
-zplug "jeffreytse/zsh-vi-mode"
 zplug "plugins/ssh-agent", from:oh-my-zsh
 zplug "plugins/git", from:oh-my-zsh
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
@@ -147,6 +146,7 @@ zplug "zsh-users/zsh-syntax-highlighting", defer:2
 if ! zplug check; then
     zplug install
 fi
+zplug load
 
 eval "$(zoxide init zsh)"
 eval "$(starship init zsh)"
