@@ -22,6 +22,7 @@ bindkey '^N' down-history
 # returning from command mode
 bindkey '^?' backward-delete-char
 bindkey '^h' backward-delete-char
+bindkey "^[[3~" vi-delete-char
 
 # ctrl-w removed word backwards
 bindkey '^w' backward-kill-word
