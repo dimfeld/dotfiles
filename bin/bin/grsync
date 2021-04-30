@@ -1,10 +1,5 @@
 #!/bin/bash
 
-if [ $# == 0 ]; then
-  echo "Argument server:path is required"
-  exit 1
-fi
-
 # Git commands to move to the top of the repository.
 LONG_USAGE="Select changed files using fzf and upload them to somewhere else"
 SUBDIRECTORY_OK=1
@@ -12,5 +7,11 @@ SUBDIRECTORY_OK=1
 require_work_tree_exists
 cd_to_toplevel
 
+if [ $# == 0 ]; then
+  echo "Argument server:path is required"
+  exit 1
+fi
+
+set -euo pipefail
 FILES=$(git-sel-changed)
 rupdate -R ${FILES} ${@}
