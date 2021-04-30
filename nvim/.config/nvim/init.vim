@@ -209,9 +209,9 @@ inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 autocmd! CompleteDone * if pumvisible() == 0 && getcmdwintype () == '' | pclose | endif
 
 " Use K to show documentation in preview window.
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-inoremap <silent> <c-k> <c-o>:call coc#float#close_all()<CR>
-nnoremap <silent> <c-k> :call coc#float#close_all()<CR>
+nnoremap <silent> K <cmd>call <SID>show_documentation()<CR>
+inoremap <silent> <c-k> <c-o><cmd>call coc#float#close_all()<CR>
+nnoremap <silent> <c-k> <cmd>call coc#float#close_all()<CR>
 
 " Symbol renaming.
 nmap <leader>rn <Plug>(coc-rename)
@@ -238,7 +238,7 @@ nmap <leader>al <Plug>(coc-codeaction-line)
 nmap <leader>ac <Plug>(coc-codeaction-cursor)
 
 " Add `:Format` command to format current buffer.
-command! -nargs=0 Format :call CocAction('format')
+command! -nargs=0 Format <cmd>call CocAction('format')
 
 " Add `:OR` command for organize imports of the current buffer.
 command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
@@ -514,6 +514,7 @@ endfunction
 nnoremap <silent> <leader>N :call <SID>netrw_on_git_repo()<CR>
 " Open netrw on vim CWD
 nnoremap <silent> <leader>n :call <SID>netrw_on_cwd()<CR>
+nnoremap <silent> <leader>E :e %:h<CR>
 
 function! s:netrw_on_cwd()
   execute "e ".getcwd()
@@ -565,12 +566,12 @@ nmap <leader>y :StripWhitespace<CR>
 "   <leader>h - Find and replace
 "   <leader>/ - Clear highlighted search terms while preserving history
 map <leader>h :%s///<left><left>
-nmap <silent> <leader>/ :nohlsearch<CR>
+nmap <silent> <leader>/ <cmd>nohlsearch<CR>
 
 " === Hop Shortcuts === 
-map <silent> <leader>w :HopWord<CR>
-map <silent> <leader>l :HopLine<CR>
-map <silent> <Space> :HopChar2<CR>
+map <silent> <leader>w <cmd>HopWord<CR>
+map <silent> <leader>l <cmd>HopLine<CR>
+map <silent> <Space> <cmd>HopChar2<CR>
 
 " === Easy-motion shortcuts ===" (disabled)
 "   <leader>w - Easy-motion highlights first word letters bi-directionally
