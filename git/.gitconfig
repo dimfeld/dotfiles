@@ -5,10 +5,17 @@
 
 # Include local file that shoudn't be replicated between servers
 [include]
-	path = ~/.gitconfig.local
+  path = ~/.gitconfig.local
+  path = ~/themes.gitconfig
 
 [core]
-	pager = delta --dark
+  pager = delta --dark
+
+[diff]
+  colorMoved = default
+
+[delta]
+  features = side-by-side line-numbers gruvbox-dark
 
 ; [url "ssh://git@github.com/"]
 ;     insteadOf = https://github.com/
