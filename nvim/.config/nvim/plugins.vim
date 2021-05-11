@@ -122,7 +122,7 @@ Plug 'tpope/vim-vinegar'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 
 " Colorscheme
-Plug 'mhartington/oceanic-next'
+Plug 'dimfeld/oceanic-next'
 
 " Customized vim status line
 Plug 'vim-airline/vim-airline'
