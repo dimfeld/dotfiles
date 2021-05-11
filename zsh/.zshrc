@@ -36,10 +36,16 @@ fh() {
 # fbr [FUZZY PATTERN] - Checkout specified branch
 # Include remote branches, sorted by most recent commit and limited to 30
 fgb() {
-  local branches branch
+  local branches branch query
+
+  query="--query="
+  if [[ -n "$1" ]]; then
+    query="--query=$1"
+  fi
+
   branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)") &&
   branch=$(echo "$branches" |
-           fzf-tmux -d $(( 2 + $(wc -l <<< "$branches") )) +m) &&
+    fzf-tmux -d $(( 2 + $(wc -l <<< "$branches") )) +m "$query" ) &&
   git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
 }
 
