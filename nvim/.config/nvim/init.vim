@@ -237,6 +237,8 @@ inoremap <silent><expr> <leader>c
 nmap <leader>al <Plug>(coc-codeaction-line)
 nmap <leader>ac <Plug>(coc-codeaction-cursor)
 
+vnoremap <silent> Y <cmd>'<,'>OSCYank<CR>
+
 " Add `:Format` command to format current buffer.
 command! -nargs=0 Format <cmd>call CocAction('format')
 
@@ -568,7 +570,7 @@ nmap <leader>y :StripWhitespace<CR>
 map <leader>h :%s///<left><left>
 nmap <silent> <leader>/ <cmd>nohlsearch<CR>
 
-" === Hop Shortcuts === 
+" === Hop Shortcuts ===
 map <silent> <leader>w <cmd>HopWord<CR>
 map <silent> <leader>l <cmd>HopLine<CR>
 map <silent> <Space> <cmd>HopChar2<CR>
@@ -755,5 +757,3 @@ function! s:quickfix_settings()
   nnoremap <silent> <buffer> o <CR><C-w>p
   nnoremap <silent> <buffer> O <CR>:cclose<CR>
 endfunction
-
-

@@ -20,6 +20,8 @@ endif
 
 call plug#begin('~/.config/nvim/plugged')
 
+Plug 'ojroques/vim-oscyank'
+
 " Close buffers without closing split
 Plug 'qpkorr/vim-bufkill'
 
