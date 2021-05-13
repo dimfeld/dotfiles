@@ -237,7 +237,7 @@ inoremap <silent><expr> <leader>c
 nmap <leader>al <Plug>(coc-codeaction-line)
 nmap <leader>ac <Plug>(coc-codeaction-cursor)
 
-vnoremap <silent> Y <cmd>'<,'>OSCYank<CR>
+vnoremap <silent> <leader>y <cmd>'<,'>OSCYank<CR>
 
 " Add `:Format` command to format current buffer.
 command! -nargs=0 Format <cmd>call CocAction('format')
