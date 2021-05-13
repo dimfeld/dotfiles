@@ -106,7 +106,10 @@ iterm2_print_user_vars() {
   it2git
 }
 
-setopt no_share_history
+SAVEHIST=10000
+HISTSIZE=10000
+HISTFILE=~/.zsh_history
+setopt share_history
 
 if (( $+commands[tag] )); then
   tag() { command tag "$@"; source ${TAG_ALIAS_FILE:-/tmp/tag_aliases} 2>/dev/null }
@@ -163,3 +166,4 @@ source ~/.keybindings.zsh
 [ -f ~/.zshrc.local.zsh ] && source ~/.zshrc.local.zsh
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+setopt auto_pushd
