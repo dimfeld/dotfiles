@@ -1,0 +1,1 @@
+uuid | xxd -r -p | base64
