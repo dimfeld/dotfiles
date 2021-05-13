@@ -158,7 +158,7 @@ let s:denite_options = {'default' : {
 \ 'prompt': 'λ ',
 \ 'highlight_matched_char': 'QuickFixLine',
 \ 'highlight_matched_range': 'Visual',
-\ 'highlight_window_background': 'Visual',
+\ 'highlight_window_background': 'Normal',
 \ 'highlight_filter_background': 'DiffAdd',
 \ 'winrow': 1,
 \ 'vertical_preview': 1
@@ -237,7 +237,7 @@ inoremap <silent><expr> <leader>c
 nmap <leader>al <Plug>(coc-codeaction-line)
 nmap <leader>ac <Plug>(coc-codeaction-cursor)
 
-vnoremap <silent> <leader>y <cmd>'<,'>OSCYank<CR>
+vnoremap <silent> <leader>y <cmd>OSCYank<CR>
 
 " Add `:Format` command to format current buffer.
 command! -nargs=0 Format <cmd>call CocAction('format')
@@ -443,6 +443,7 @@ nmap <silent> <leader>T :DeniteProjectDir file/rec<CR>
 nmap <silent> <leader>b :DeniteBufferDir file/rec<CR>
 nnoremap <leader>G :<C-u>Denite grep:. -no-empty<CR>
 nnoremap <leader>J :<C-u>DeniteCursorWord grep:.<CR>
+nnoremap <silent> <leader>L :Denite jump<CR>
 
 " Define mappings while in 'filter' mode
 "   <C-o> or down arrow - Switch to normal mode inside of search results
@@ -456,7 +457,7 @@ function! s:denite_filter_my_settings() abort
   imap <silent><buffer> <C-o>
   \ <Plug>(denite_filter_update)
   imap <silent><buffer> <Down>
-  \ <Plug>(denite_filter_update)
+  \ <Plug>(denite_filter_update)<Down>
   inoremap <silent><buffer><expr> <Esc>
   \ denite#do_map('quit')
   nnoremap <silent><buffer><expr> <Esc>
