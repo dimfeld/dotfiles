@@ -7,8 +7,17 @@ source ~/.zplug/init.zsh
 #
 # ## FZF FUNCTIONS ##
 
+export FZF_COMPLETION_TRIGGER='`'
 export FZF_DEFAULT_COMMAND='fd --type f'
 export FZF_DEFAULT_OPTS="--bind 'ctrl-a:select-all'"
+
+_fzf_compgen_path() {
+  fd --hidden --follow --exclude ".git" . "$1"
+}
+
+_fzf_compgen_dir() {
+  fd --type d --hidden --follow --exclude ".git" . "$1"
+}
 
 # fo [FUZZY PATTERN] - Open the selected file with the default editor
 #   - Bypass fuzzy finder if there's only one match (--select-1)
@@ -130,23 +139,6 @@ alias ig="sk -i --ansi -c 'rg --color=always --line-number "{}"'"
 alias el="exa -l --git"
 alias cat="bat"
 
-# >>> conda init >>>
-# !! Contents within this block are managed by 'conda init' !!
-#__conda_setup="$(CONDA_REPORT_ERRORS=false '/anaconda3/bin/conda' shell.bash hook 2> /dev/null)"
-#if [ $? -eq 0 ]; then
-#    \eval "$__conda_setup"
-#else
-#    if [ -f "/anaconda3/etc/profile.d/conda.sh" ]; then
-#        . "/anaconda3/etc/profile.d/conda.sh"
-#        CONDA_CHANGEPS1=false conda activate base
-#    else
-        \export PATH="$PATH:/anaconda3/bin"
-#    fi
-#fi
-#unset __conda_setup
-# <<< conda init <<<
-#zprof
-
 zplug 'zplug/zplug', hook-build:'zplug --self-manage'
 zplug "plugins/ssh-agent", from:oh-my-zsh
 zplug "plugins/git", from:oh-my-zsh
@@ -167,3 +159,6 @@ source ~/.keybindings.zsh
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 setopt auto_pushd
+
+# Better autocompletion
+autoload -Uz compinit && compinit
