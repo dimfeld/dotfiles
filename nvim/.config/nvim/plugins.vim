@@ -42,8 +42,13 @@ Plug 'phaazon/hop.nvim'
 " Intellisense Engine
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-" Denite - Fuzzy finding, buffer management
-Plug 'Shougo/denite.nvim'
+" Telescope fuzzy finder
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+
+" Treesitter for file sytax parsing used by other extensions
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 " Snippet support
 Plug 'Shougo/neosnippet'
@@ -116,8 +121,9 @@ Plug 'mechatroner/rainbow_csv'
 " Seeing bugs in later versions, so pinned this for now
 "Plug 'preservim/nerdtree', {'tag': '6.9.10'} |
 "  Plug 'Xuyuanp/nerdtree-git-plugin' |
-Plug 'ryanoasis/vim-devicons' |
+" Plug 'ryanoasis/vim-devicons' |
 " Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+Plug 'kyazdani42/nvim-web-devicons'
 
 Plug 'tpope/vim-vinegar'
 
