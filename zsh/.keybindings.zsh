@@ -12,6 +12,8 @@ zle -N zle-keymap-select
 
 bindkey "${key[Up]}" up-line-or-local-history
 bindkey "${key[Down]}" down-line-or-local-history
+bindkey "^[[A" up-line-or-local-history
+bindkey "^[[B" down-line-or-local-history
 
 up-line-or-local-history() {
     zle set-local-history 1
