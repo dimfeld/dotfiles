@@ -141,19 +141,31 @@ inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 autocmd! CompleteDone * if pumvisible() == 0 && getcmdwintype () == '' | pclose | endif
 
 " Use K to show documentation in preview window.
-nnoremap <silent> K <cmd>call <SID>show_documentation()<CR>
-inoremap <silent> <c-k> <c-o><cmd>call coc#float#close_all()<CR>
-nnoremap <silent> <c-k> <cmd>call coc#float#close_all()<CR>
+nnoremap <silent> K <cmd>call <SID>toggle_documentation()<CR>
+inoremap <silent> <c-k> <c-o><cmd>call <SID>toggle_documentation()<CR>
 
 " Symbol renaming.
 nmap <leader>rn <Plug>(coc-rename)
 
+function! s:toggle_documentation()
+  if (coc#float#has_float())
+    call coc#float#close_all()
+  else
+    call <SID>show_documentation()
+  endif
+endfunction
+
+function! s:hover_callback(e, r)
+  if (a:r == v:false)
+    call CocActionAsync('doHover')
+  endif
+endfunction
 
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
     execute 'h '.expand('<cword>')
   elseif (coc#rpc#ready())
-    call CocActionAsync('doHover')
+    call CocActionAsync('showSignatureHelp', function('<SID>hover_callback'))
   else
     execute '!' . &keywordprg . " " . expand('<cword>')
   endif
