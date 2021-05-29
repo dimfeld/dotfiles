@@ -49,6 +49,7 @@ Plug 'nvim-telescope/telescope.nvim'
 
 " Treesitter for file sytax parsing used by other extensions
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'romgrk/nvim-treesitter-context'
 
 " Snippet support
 Plug 'Shougo/neosnippet'
