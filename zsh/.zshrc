@@ -139,10 +139,16 @@ alias ig="sk -i --ansi -c 'rg --color=always --line-number "{}"'"
 alias el="exa -l --git"
 alias cat="bat"
 
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bg=cyan,bold,underline"
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=30
+ZSH_AUTOSUGGEST_USE_ASYNC=1
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+
 zplug 'zplug/zplug', hook-build:'zplug --self-manage'
 zplug "plugins/ssh-agent", from:oh-my-zsh
 zplug "plugins/git", from:oh-my-zsh
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
+zplug "zsh-users/zsh-autosuggestions", defer:2
 
 if ! zplug check; then
     zplug install
