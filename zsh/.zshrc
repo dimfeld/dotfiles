@@ -148,7 +148,7 @@ zplug 'zplug/zplug', hook-build:'zplug --self-manage'
 zplug "plugins/ssh-agent", from:oh-my-zsh
 zplug "plugins/git", from:oh-my-zsh
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
-zplug "zsh-users/zsh-autosuggestions", defer:2
+# zplug "zsh-users/zsh-autosuggestions", defer:2
 
 if ! zplug check; then
     zplug install
