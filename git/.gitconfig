@@ -15,7 +15,7 @@
   colorMoved = default
 
 [delta]
-  features = side-by-side line-numbers gruvbox-dark
+  features = line-numbers gruvbox-dark relative-paths
 
 ; [url "ssh://git@github.com/"]
 ;     insteadOf = https://github.com/
