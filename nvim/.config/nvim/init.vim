@@ -99,6 +99,8 @@ iabbrev </ </<C-X><C-O>
 let g:rustfmt_autosave = 1
 autocmd FileType rust setlocal shiftwidth=4
 
+"" Go
+autocmd FileType go setlocal tabstop=4
 
 " === Completion Settings === "
 
@@ -295,11 +297,11 @@ nmap <silent> <leader>p :b#<CR>
 "
 " Add custom highlights in method that is executed every time a colorscheme is sourced
 " See https://gist.github.com/romainl/379904f91fa40533175dfaec4c833f2f for details
-function! TrailingSpaceHighlights() abort
-  " Hightlight trailing whitespace
-  highlight Trail ctermbg=red guibg=red
-  call matchadd('Trail', '\s\+\%#\@<!$', 100)
-endfunction
+" function! TrailingSpaceHighlights() abort
+"   " Hightlight trailing whitespace
+"   highlight Trail ctermfg=red guifg=red cterm=underline gui=underline
+"   call matchadd('Trail', '\s\+\%#\@<!$', 100)
+" endfunction
 
 function! s:custom_jarvis_colors()
   " coc.nvim color changes
@@ -344,7 +346,7 @@ function! <SID>SynStack()
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
 
-autocmd! ColorScheme * call TrailingSpaceHighlights()
+" autocmd! ColorScheme * call TrailingSpaceHighlights()
 autocmd! ColorScheme OceanicNext call s:custom_jarvis_colors()
 
 " Call method on window enter
@@ -376,7 +378,7 @@ nmap <silent> <leader>G <Plug>(FerretAck)
 nmap <silent> <leader>J <Plug>(FerretAckWord)
 
 " === Telescope finder shortcuts ===
-nmap ; :lua require('telescope.builtin').buffers(require('telescope.themes').get_dropdown({}))<cr>
+nmap <silent> ; :lua require('telescope.builtin').buffers(require('telescope.themes').get_dropdown({}))<cr>
 nmap <silent> <leader>t :lua require('telescope.builtin').find_files(require('telescope.themes').get_dropdown({mirror=true}))<cr>
 nmap <silent> <leader>T :lua require('telescope.builtin').git_files(require('telescope.themes').get_dropdown({}))<cr>
 nnoremap <silent> <leader>L :lua require('telescope.builtin').marks(require('telescope.themes').get_dropdown({}))<cr>
