@@ -43,6 +43,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
+Plug 'fannheyward/telescope-coc.nvim'
 
 " Treesitter for file sytax parsing used by other extensions
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}

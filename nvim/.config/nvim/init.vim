@@ -378,13 +378,19 @@ nmap <silent> <leader>G <Plug>(FerretAck)
 nmap <silent> <leader>J <Plug>(FerretAckWord)
 
 " === Telescope finder shortcuts ===
-nmap <silent> ; :lua require('telescope.builtin').buffers(require('telescope.themes').get_dropdown({}))<cr>
-nmap <silent> <leader>t :lua require('telescope.builtin').find_files(require('telescope.themes').get_dropdown({mirror=true}))<cr>
-nmap <silent> <leader>T :lua require('telescope.builtin').git_files(require('telescope.themes').get_dropdown({}))<cr>
-nnoremap <silent> <leader>L :lua require('telescope.builtin').marks(require('telescope.themes').get_dropdown({}))<cr>
-nnoremap <silent> <leader>g :lua require('telescope.builtin').live_grep(require('telescope.themes').get_dropdown({}))<cr>
-nnoremap <silent> <leader>J :lua require('telescope.builtin').grep_string(require('telescope.themes').get_dropdown({}))<cr>
-nnoremap <silent> <leader>v :lua require('telescope.builtin').treesitter(require('telescope.themes').get_dropdown({}))<cr>
+lua require('telescope').load_extension('coc')
+nnoremap <silent> ; :lua require('telescope.builtin').buffers()<cr>
+nnoremap <silent> <leader>t :lua require('telescope.builtin').find_files()<cr>
+nnoremap <silent> <leader>T :lua require('telescope.builtin').git_files()<cr>
+nnoremap <silent> <leader>qf :lua require('telescope.builtin').quickfix()<cr>
+nnoremap <silent> <leader>L :lua require('telescope.builtin').loclist()<cr>
+nnoremap <silent> <leader>g :lua require('telescope.builtin').live_grep()<cr>
+nnoremap <silent> <leader>J :lua require('telescope.builtin').grep_string()<cr>
+nnoremap <silent> <leader>v :lua require('telescope.builtin').treesitter()<cr>
+nnoremap <silent> <leader>d :Telescope coc workspace_diagnostics<cr>
+nnoremap <silent> <leader>k :Telescope coc commands<cr>
+nnoremap <silent> <leader>dr :Telescope coc references<cr>
+nnoremap <silent> <leader>ds :Telescope coc workspace_symbols<cr>
 
 " === Nerdtree shorcuts === "
 "  <leader>n - Toggle NERDTree on/off
@@ -433,9 +439,9 @@ nmap <C-l> <C-w>l
 "   <leader>dj    - Jump to implementation of current symbol
 "   <leader>ds    - Fuzzy search current project symbols
 nmap <silent> <leader>dd <Plug>(coc-definition)
-nmap <silent> <leader>dr <Plug>(coc-references)
+" nmap <silent> <leader>dr <Plug>(coc-references)
 nmap <silent> <leader>dj <Plug>(coc-implementation)
-nnoremap <silent> <leader>ds :<C-u>CocList -I -N --top symbols<CR>
+" nnoremap <silent> <leader>ds :<C-u>CocList -I -N --top symbols<CR>
 nmap <silent> <leader>dg <Plug>(coc-diagnostic-info)
 nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
