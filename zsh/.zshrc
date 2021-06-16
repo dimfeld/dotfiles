@@ -139,6 +139,9 @@ alias ig="sk -i --ansi -c 'rg --color=always --line-number "{}"'"
 alias el="exa -l --git"
 alias cat="bat"
 
+# Must go before zsh-syntax-highlighting
+autoload -U select-word-style && select-word-style bash
+
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bg=cyan,bold,underline"
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=30
 ZSH_AUTOSUGGEST_USE_ASYNC=1
@@ -168,3 +171,4 @@ setopt auto_pushd
 
 # Better autocompletion
 autoload -Uz compinit && compinit
+
