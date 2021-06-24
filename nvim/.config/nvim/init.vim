@@ -62,9 +62,7 @@ set updatetime=300
 " Code Settings
 "
 
-" Always syntax highlight the whole file, even on large files.
-syntax sync fromstart
-set redrawtime=10000
+set redrawtime=2000
 
 "" Svelte
 let g:svelte_preprocessor_tags = [
