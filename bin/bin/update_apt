@@ -5,7 +5,6 @@ sudo echo
 sudo pnpm --global update
 rustup update stable
 cargo install-update --all
-zplug update
 
 if [ "$(uname)" == "Darwin" ]; then
   brew upgrade
