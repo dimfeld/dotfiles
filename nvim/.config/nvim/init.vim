@@ -100,7 +100,7 @@ let g:rustfmt_autosave = 1
 autocmd FileType rust setlocal shiftwidth=4
 
 "" Go
-autocmd FileType go setlocal tabstop=4
+autocmd FileType go setlocal tabstop=4 shiftwidth=4
 
 " === Completion Settings === "
 
