@@ -334,6 +334,10 @@ function! s:custom_jarvis_colors()
 
   hi DiffAdded guibg=#207020
   hi DiffRemoved guibg=#902020
+
+  hi HopNextKey guifg=#00ff00
+  hi HopNextKey1 guifg=#00ff00
+  hi HopNextKey2 guifg=#00ff00
 endfunction
 
 command! ShowColors :call <SID>SynStack()<CR>
@@ -460,6 +464,8 @@ nmap <silent> <leader>/ <cmd>nohlsearch<CR>
 map <silent> <leader>w <cmd>HopWord<CR>
 map <silent> <leader>l <cmd>HopLine<CR>
 map <silent> <Space> <cmd>HopChar2<CR>
+
+
 
 " === Easy-motion shortcuts ===" (disabled)
 "   <leader>w - Easy-motion highlights first word letters bi-directionally
