@@ -216,7 +216,9 @@ let g:airline_highlighting_cache = 1
 
 " Define custom airline symbols
 if !exists('g:airline_symbols')
-  let g:airline_symbols = {}
+  let g:airline_symbols = {
+    \ 'maxlinenr': ' ',
+    \ }
 endif
 
 " Don't show git changes to current file in airline
