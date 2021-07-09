@@ -508,6 +508,10 @@ command! Cdme cd %:p:h
 " Change to the directory of the git repository
 command! CdRepo execute "cd ".system("git rev-parse --show-toplevel")
 
+" == Git keybindings
+command! Gd :Gvdiffsplit!
+nnoremap <expr> dgl &diff ? ':diffget //2<CR>' : ''
+nnoremap <expr> dgr &diff ? ':diffget //3<CR>' : ''
 
 " ============================================================================ "
 " ===                                 MISC.                                === "
