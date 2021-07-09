@@ -389,6 +389,8 @@ nnoremap <silent> <leader>T :lua require('telescope.builtin').git_files()<cr>
 nnoremap <silent> <leader>qf :lua require('telescope.builtin').quickfix()<cr>
 nnoremap <silent> <leader>L :lua require('telescope.builtin').loclist()<cr>
 nnoremap <silent> <leader>g :lua require('telescope.builtin').live_grep()<cr>
+nnoremap <silent> <leader>G :call <SID>telescope_grep_on_git_repo()<cr>
+nnoremap <silent> <leader>n :lua require('telescope.builtin').file_browser()<cr>
 nnoremap <silent> <leader>J :lua require('telescope.builtin').grep_string()<cr>
 nnoremap <silent> <leader>v :lua require('telescope.builtin').treesitter()<cr>
 nnoremap <silent> <leader>d :Telescope coc workspace_diagnostics<cr>
@@ -396,6 +398,9 @@ nnoremap <silent> <leader>k :Telescope coc commands<cr>
 nnoremap <silent> <leader>dr :Telescope coc references<cr>
 nnoremap <silent> <leader>ds :Telescope coc workspace_symbols<cr>
 
+function! s:telescope_grep_on_git_repo()
+  execute "lua require('telescope.builtin').live_grep({search_dirs={'".trim(system("git rev-parse --show-toplevel"))."'}})"
+endfunction
 " === Nerdtree shorcuts === "
 "  <leader>n - Toggle NERDTree on/off
 "  <leader>f - Opens current file location in NERDTree
@@ -405,9 +410,9 @@ nnoremap <silent> <leader>ds :Telescope coc workspace_symbols<cr>
 
 " netrw file browser commands
 " Open netrw on git repo
-nnoremap <silent> <leader>N :call <SID>netrw_on_git_repo()<CR>
+" nnoremap <silent> <leader>N :call <SID>netrw_on_git_repo()<CR>
 " Open netrw on vim CWD
-nnoremap <silent> <leader>n :call <SID>netrw_on_cwd()<CR>
+" nnoremap <silent> <leader>n :call <SID>netrw_on_cwd()<CR>
 nnoremap <silent> <leader>E :e %:h<CR>
 
 function! s:netrw_on_cwd()
