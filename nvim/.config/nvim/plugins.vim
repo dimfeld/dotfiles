@@ -22,6 +22,8 @@ call plug#begin('~/.config/nvim/plugged')
 
 Plug 'ojroques/vim-oscyank'
 
+Plug 'romainl/vim-qf'
+
 " Close buffers without closing split
 Plug 'qpkorr/vim-bufkill'
 
@@ -33,7 +35,6 @@ Plug 'ntpeters/vim-better-whitespace'
 Plug 'rstacruz/vim-closer'
 
 " Improved motion in Vim
-" Plug 'easymotion/vim-easymotion'
 Plug 'phaazon/hop.nvim'
 
 " Intellisense Engine
@@ -45,9 +46,8 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'fannheyward/telescope-coc.nvim'
 
-" Treesitter for file sytax parsing used by other extensions
+" Treesitter for file syntax parsing used by other extensions
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'romgrk/nvim-treesitter-context'
 
 " Snippet support
 Plug 'Shougo/neosnippet'
@@ -78,7 +78,7 @@ Plug 'heavenshell/vim-jsdoc'
 " Comment toggling
 Plug 'preservim/nerdcommenter'
 
-" Set filetype within a file based on the context
+" Set filetype within a file based on the context. Useful for Svelte.
 Plug 'Shougo/context_filetype.vim'
 
 " === Syntax Highlighting === "
@@ -102,7 +102,6 @@ Plug 'othree/javascript-libraries-syntax.vim'
 " Improved syntax highlighting and indentation
 Plug 'othree/yajs.vim'
 
-"Plug 'evanleck/vim-svelte', {'branch': 'main'}
 Plug 'leafOfTree/vim-svelte-plugin'
 Plug 'cakebaker/scss-syntax.vim'
 Plug 'rust-lang/rust.vim'
@@ -135,7 +134,12 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
 " Debugging
-Plug 'puremourning/vimspector'
+Plug 'mfussenegger/nvim-dap'
+Plug 'theHamsta/nvim-dap-virtual-text'
+Plug 'rcarriga/nvim-dap-ui'
+Plug 'nvim-telescope/telescope-dap.nvim'
+
+
 
 
 " Initialize plugin system

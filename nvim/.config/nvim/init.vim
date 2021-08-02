@@ -337,9 +337,9 @@ function! s:custom_jarvis_colors()
   hi DiffAdded guibg=#207020
   hi DiffRemoved guibg=#902020
 
-  hi HopNextKey guifg=#00ff00
-  hi HopNextKey1 guifg=#00ff00
-  hi HopNextKey2 guifg=#00ff00
+  hi HopNextKey guifg=#ff8888
+  hi HopNextKey1 guifg=#ff8888
+  hi HopNextKey2 guifg=#ff8888
 endfunction
 
 command! ShowColors :call <SID>SynStack()<CR>
@@ -349,6 +349,8 @@ function! <SID>SynStack()
   endif
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
+
+set synmaxcol=6000
 
 " autocmd! ColorScheme * call TrailingSpaceHighlights()
 autocmd! ColorScheme OceanicNext call s:custom_jarvis_colors()
@@ -383,6 +385,7 @@ nmap <silent> <leader>J <Plug>(FerretAckWord)
 
 " === Telescope finder shortcuts ===
 lua require('telescope').load_extension('coc')
+lua require('telescope').load_extension('dap')
 nnoremap <silent> ; :lua require('telescope.builtin').buffers()<cr>
 nnoremap <silent> <leader>t :lua require('telescope.builtin').find_files()<cr>
 nnoremap <silent> <leader>T :lua require('telescope.builtin').git_files()<cr>
