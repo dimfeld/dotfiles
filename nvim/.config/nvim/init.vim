@@ -350,7 +350,7 @@ function! <SID>SynStack()
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
 
-set synmaxcol=6000
+set synmaxcol=10000
 
 " autocmd! ColorScheme * call TrailingSpaceHighlights()
 autocmd! ColorScheme OceanicNext call s:custom_jarvis_colors()
