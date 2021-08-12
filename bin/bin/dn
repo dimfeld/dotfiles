@@ -1,0 +1,1 @@
+http -q POST ${DN_DISCORD_WEBHOOK} "content=$*"

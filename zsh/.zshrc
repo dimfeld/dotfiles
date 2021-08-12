@@ -167,8 +167,13 @@ source ~/.keybindings.zsh
 [ -f ~/.zshrc.local.zsh ] && source ~/.zshrc.local.zsh
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+# Use this if it's defined in the local file
+export DN_DISCORD_WEBHOOK=${DISCORD_WEBHOOK}
+
 setopt auto_pushd
 
 # Better autocompletion
 autoload -Uz compinit && compinit
 
+# Until Rust reenables this by default
+export RUSTC_FORCE_INCREMENTAL=1

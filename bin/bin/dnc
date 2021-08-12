@@ -1,0 +1,13 @@
+#!/bin/bash
+
+"$@"
+RESULT=$?
+
+if [ ${RESULT} = 0 ]; then
+  dn Success: "$@"
+else
+  dn Failed: $@
+fi
+
+
+
