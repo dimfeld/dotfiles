@@ -1,13 +1,13 @@
 #!/bin/bash
 
+START_TIME=$(date +%s)
 "$@"
 RESULT=$?
+END_TIME=$(date +%s)
+NUM_MINS=$(((${END_TIME} - ${START_TIME})/60))
 
 if [ ${RESULT} = 0 ]; then
-  dn Success: "$@"
+  dn ${NUM_MINS} minutes: "$@"
 else
-  dn Failed: $@
+  dn ${NUM_MINS} minutes - failed: $@
 fi
-
-
-
