@@ -20,8 +20,10 @@ endif
 
 call plug#begin('~/.config/nvim/plugged')
 
+" Command to yank to system clipboard
 Plug 'ojroques/vim-oscyank'
 
+" Extra commands for working with quickfix buffer entries.
 Plug 'romainl/vim-qf'
 
 " Close buffers without closing split
@@ -31,30 +33,22 @@ Plug 'qpkorr/vim-bufkill'
 " Trailing whitespace highlighting & automatic fixing
 Plug 'ntpeters/vim-better-whitespace'
 
-" auto-close plugin
-Plug 'rstacruz/vim-closer'
+" Utilities for moving/renaming/deleting files
+Plug 'tpope/vim-eunuch'
 
 " Improved motion in Vim
-Plug 'phaazon/hop.nvim'
+Plug 'ggandor/lightspeed.nvim'
 
-" Intellisense Engine
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Autoadd closing parentheses, brackets, etc.
+Plug 'windwp/nvim-autopairs'
 
 " Telescope fuzzy finder
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
-Plug 'fannheyward/telescope-coc.nvim'
 
 " Treesitter for file syntax parsing used by other extensions
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-
-" Snippet support
-Plug 'Shougo/neosnippet'
-Plug 'Shougo/neosnippet-snippets'
-
-" Print function signatures in echo area
-Plug 'Shougo/echodoc.vim'
 
 Plug 'prettier/vim-prettier', {
   \ 'do': 'yarn install',
@@ -76,10 +70,8 @@ Plug 'mxw/vim-jsx'
 Plug 'heavenshell/vim-jsdoc'
 
 " Comment toggling
-Plug 'preservim/nerdcommenter'
-
-" Set filetype within a file based on the context. Useful for Svelte.
-Plug 'Shougo/context_filetype.vim'
+Plug 'JoosepAlviste/nvim-ts-context-commentstring'
+Plug 'tpope/vim-commentary'
 
 " === Syntax Highlighting === "
 
@@ -102,27 +94,31 @@ Plug 'othree/javascript-libraries-syntax.vim'
 " Improved syntax highlighting and indentation
 Plug 'othree/yajs.vim'
 
+" Intellisense Engine
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'fannheyward/telescope-coc.nvim'
+Plug 'dimfeld/coc-svelte', {'branch': 'master', 'do': 'yarn install --frozen-lockfile && yarn build'}
+Plug 'rodrigore/coc-tailwind-intellisense', {'do': 'npm install'}
+
+" nvim builtin lsp support, not using this yet
+" Plug 'neovim/nvim-lspconfig'
+" Plug 'hrsh7th/nvim-cmp'
+" Plug 'hrsh7th/cmp-buffer'
+" Plug 'simrat39/rust-tools.nvim'
+" Plug 'L3MON4D3/LuaSnip'
+
 Plug 'leafOfTree/vim-svelte-plugin'
 Plug 'cakebaker/scss-syntax.vim'
 Plug 'rust-lang/rust.vim'
 Plug 'cespare/vim-toml'
-Plug 'dimfeld/coc-svelte', {'branch': 'master', 'do': 'yarn install --frozen-lockfile && yarn build'}
-Plug 'rodrigore/coc-tailwind-intellisense', {'do': 'npm install'}
 Plug 'mechatroner/rainbow_csv'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 
 
 " === UI === "
 " File explorer
-" Disabled NERDTree in favor of vim-vinegar
-" Seeing bugs in later versions, so pinned this for now
-"Plug 'preservim/nerdtree', {'tag': '6.9.10'} |
-"  Plug 'Xuyuanp/nerdtree-git-plugin' |
-" Plug 'ryanoasis/vim-devicons' |
-" Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
-Plug 'kyazdani42/nvim-web-devicons'
-
 Plug 'tpope/vim-vinegar'
+Plug 'kyazdani42/nvim-web-devicons'
 
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 

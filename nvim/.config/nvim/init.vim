@@ -130,17 +130,17 @@ function! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~ '\s'
 endfunction
+"
+ inoremap <silent><expr> <TAB>
+       \ pumvisible() ? "\<C-n>" :
+       \ <SID>check_back_space() ? "\<TAB>" :
+       \ coc#refresh()
+ inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-"Close preview window when completion is done.
+" Close preview window when completion is done.
 autocmd! CompleteDone * if pumvisible() == 0 && getcmdwintype () == '' | pclose | endif
 
-" Use K to show documentation in preview window.
+ " Use K to show documentation in preview window.
 nnoremap <silent> K <cmd>call <SID>toggle_documentation()<CR>
 inoremap <silent> <c-k> <c-o><cmd>call <SID>toggle_documentation()<CR>
 
@@ -195,7 +195,7 @@ try
 let g:airline_skip_empty_sections = 1
 
 " Smartly uniquify buffers names with similar filename, suppressing common parts of paths.
-let g:airline#extensions#tabline#formatter = 'unique_tail'
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 
 " Custom setup that removes filetype/whitespace from default vim airline bar
 let g:airline#extensions#default#layout = [['a', 'b', 'c'], ['x', 'z', 'warning', 'error']]
@@ -239,10 +239,6 @@ let g:vim_markdown_edit_url_in = 'vsplit'
 let g:vim_markdown_folding_style_pythonic = 1
 let g:vim_markdown_folding_level = 6
 
-" === echodoc === "
-" Enable echodoc on startup
-let g:echodoc#enable_at_startup = 1
-
 " === vim-javascript === "
 " Enable syntax highlighting for JSDoc
 let g:javascript_plugin_jsdoc = 1
@@ -257,12 +253,168 @@ let g:used_javascript_libs = 'underscore,requirejs,chai,jquery'
 " === Signify === "
 let g:signify_sign_delete = '-'
 
-" === PostCss === "
+" === PostCss - SCSS syntax highlighting works here === "
 augroup pcss
   au!
   au BufNewFile,BufRead *.pcss set syntax=scss
   au BufEnter *.pcss :syntax sync fromstart
 augroup END
+
+lua <<EOF
+local npairs = require'nvim-autopairs'
+local remap = vim.api.nvim_set_keymap
+
+_G.MUtils= {}
+MUtils.completion_confirm=function()
+  if vim.fn.pumvisible() ~= 0  then
+      return npairs.esc("<cr>")
+  else
+    return npairs.autopairs_cr()
+  end
+end
+
+remap('i', '<CR>', 'v:lua.MUtils.completion_confirm()', {expr = true , noremap = true})
+
+npairs.setup({
+  check_ts = true,
+  ignored_next_char = "[%w%.]", -- will ignore alphanumeric and `.` symbol
+})
+
+-- local cmp = require'cmp'
+-- local luasnip = require 'luasnip'
+
+-- cmp.setup({
+--   snippet = {
+--     expand = function(args)
+--       luasnip.lsp_expand(args.body)
+--     end,
+--   },
+--   mapping = {
+--     ['<C-p>'] = cmp.mapping.select_prev_item(),
+--     ['<C-n>'] = cmp.mapping.select_next_item(),
+--     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+--     ['<C-f>'] = cmp.mapping.scroll_docs(4),
+--     ['<C-Space>'] = cmp.mapping.complete(),
+--     ['<C-e>'] = cmp.mapping.close(),
+--     ['<CR>'] = cmp.mapping.confirm {
+--       behavior = cmp.ConfirmBehavior.Replace,
+--       select = true,
+--     },
+--     ['<Tab>'] = function(fallback)
+--       if vim.fn.pumvisible() == 1 then
+--         vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<C-n>', true, true, true), 'n')
+--       elseif luasnip.expand_or_jumpable() then
+--         vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-expand-or-jump', true, true, true), '')
+--       else
+--         fallback()
+--       end
+--     end,
+--     ['<S-Tab>'] = function(fallback)
+--       if vim.fn.pumvisible() == 1 then
+--         vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<C-p>', true, true, true), 'n')
+--       elseif luasnip.jumpable(-1) then
+--         vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-jump-prev', true, true, true), '')
+--       else
+--         fallback()
+--       end
+--     end,
+--   },
+--   sources = {
+--     { name = 'nvim_lsp' },
+--     { name = 'luasnip' },
+--   },
+-- })
+
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = "maintained",
+  context_commentstring = {
+    enable = true
+  },
+  highlight = {
+    enable = false
+  },
+  autopairs = { enable = true }
+}
+
+-- local lspconfig = require'lspconfig'
+
+-- lspconfig.bashls.setup{}
+-- lspconfig.dockerls.setup{}
+-- lspconfig.gopls.setup{}
+-- lspconfig.html.setup{}
+-- lspconfig.pyright.setup{}
+-- lspconfig.rust_analyzer.setup{}
+-- lspconfig.svelte.setup{}
+-- lspconfig.tailwindcss.setup{}
+-- lspconfig.tsserver.setup{}
+-- lspconfig.vimls.setup{}
+-- lspconfig.yamlls.setup{}
+-- require('rust-tools').setup({})
+
+-- Use an on_attach function to only map the following keys
+-- after the language server attaches to the current buffer
+local on_attach = function(client, bufnr)
+  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+  local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+
+  -- Enable completion triggered by <c-x><c-o>
+  buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+  -- Mappings.
+  local opts = { noremap=true, silent=true }
+
+  -- See `:help vim.lsp.*` for documentation on any of the below functions
+  -- buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+  buf_set_keymap('n', '<leader>dd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
+  buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
+  buf_set_keymap('n', '<leader>dj', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  -- buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+  -- buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+  -- buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+  -- buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+  buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+  -- buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+  buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+  buf_set_keymap('n', '[G', '<cmd>lua vim.lsp.diagnostic.goto_prev({ severity_limit="Error" })<CR>', opts)
+  buf_set_keymap('n', ']G', '<cmd>lua vim.lsp.diagnostic.goto_next({ severity_limit="Error" })<CR>', opts)
+  buf_set_keymap('n', '[g', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
+  buf_set_keymap('n', ']g', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+  buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+  -- buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+
+end
+
+local simple_servers = { 'bashls', 'dockerls', 'gopls', 'html', 'pyright',
+  'rust_analyzer', 'svelte', 'tailwindcss', 'tsserver', 'vimls', 'yamlls' }
+-- for _, lsp in ipairs(simple_servers) do
+--   nvim_lsp[lsp].setup {
+--     on_attach = on_attach,
+--     flags = {
+--       debounce_text_changes = 150,
+--     }
+--   }
+-- end
+
+-- lspconfig.jsonls.setup{
+--   on_attach = on_attach,
+--   flags = {
+--     debounce_text_changes =150
+--   },
+--   commands = {
+--     Format = {
+--       function()
+--         vim.lsp.buf.range_formatting({},{0,0},{vim.fn.line("$"),0})
+--       end
+--     }
+--   }
+-- }
+EOF
+
+" Comments
+vmap <silent> <leader>c gc
+nmap <silent> <leader>c gcc
 
 " ============================================================================ "
 " ===                                UI                                    === "
@@ -272,7 +424,7 @@ augroup END
 set termguicolors
 
 " Vim airline theme
-let g:airline_theme='space'
+let g:airline_theme='dark_minimal'
 
 " Change vertical split character to be a space (essentially hide it)
 set fillchars+=vert:.
@@ -321,9 +473,6 @@ function! s:custom_jarvis_colors()
   hi VertSplit gui=NONE guifg=#17252c guibg=#17252c
   hi EndOfBuffer ctermbg=NONE ctermfg=NONE guibg=#17252c guifg=#17252c
 
-  " Customize NERDTree directory
-  hi NERDTreeCWD guifg=#99c794
-
   " Make background color transparent for git changes
   hi SignifySignAdd guibg=NONE
   hi SignifySignDelete guibg=NONE
@@ -336,10 +485,6 @@ function! s:custom_jarvis_colors()
 
   hi DiffAdded guibg=#207020
   hi DiffRemoved guibg=#902020
-
-  hi HopNextKey guifg=#ff8888
-  hi HopNextKey1 guifg=#ff8888
-  hi HopNextKey2 guifg=#ff8888
 endfunction
 
 command! ShowColors :call <SID>SynStack()<CR>
@@ -350,7 +495,11 @@ function! <SID>SynStack()
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
 
-set synmaxcol=10000
+set synmaxcol=3000
+augroup Highlighting
+  autocmd!
+  autocmd BufEnter * syntax sync minlines=500
+augroup END
 
 " autocmd! ColorScheme * call TrailingSpaceHighlights()
 autocmd! ColorScheme OceanicNext call s:custom_jarvis_colors()
@@ -379,12 +528,8 @@ endtry
 " ===                             KEY MAPPINGS                             === "
 " ============================================================================ "
 
-" === ferret search and replace ===
-nmap <silent> <leader>G <Plug>(FerretAck)
-nmap <silent> <leader>J <Plug>(FerretAckWord)
-
 " === Telescope finder shortcuts ===
-lua require('telescope').load_extension('coc')
+" lua require('telescope').load_extension('coc')
 lua require('telescope').load_extension('dap')
 nnoremap <silent> ; :lua require('telescope.builtin').buffers()<cr>
 nnoremap <silent> <leader>t :lua require('telescope.builtin').find_files()<cr>
@@ -393,10 +538,11 @@ nnoremap <silent> <leader>qf :lua require('telescope.builtin').quickfix()<cr>
 nnoremap <silent> <leader>L :lua require('telescope.builtin').loclist()<cr>
 nnoremap <silent> <leader>g :lua require('telescope.builtin').live_grep()<cr>
 nnoremap <silent> <leader>G :call <SID>telescope_grep_on_git_repo()<cr>
-nnoremap <silent> <leader>n :lua require('telescope.builtin').file_browser()<cr>
+nnoremap <silent> <leader>n :lua require('telescope.builtin').file_browser({ cwd=require('telescope.utils').buffer_dir() })<cr>
+nnoremap <silent> <leader>N :lua require('telescope.builtin').file_browser()<cr>
 nnoremap <silent> <leader>J :lua require('telescope.builtin').grep_string()<cr>
 nnoremap <silent> <leader>v :lua require('telescope.builtin').treesitter()<cr>
-nnoremap <silent> <leader>d :Telescope coc workspace_diagnostics<cr>
+nnoremap <silent> <leader>dl :Telescope coc workspace_diagnostics<cr>
 nnoremap <silent> <leader>k :Telescope coc commands<cr>
 nnoremap <silent> <leader>dr :Telescope coc references<cr>
 nnoremap <silent> <leader>ds :Telescope coc workspace_symbols<cr>
@@ -465,31 +611,19 @@ nmap <silent> ]G <Plug>(coc-diagnostic-next-error)
 nmap <leader>y :StripWhitespace<CR>
 
 " === Search shorcuts === "
-"   <leader>h - Find and replace
 "   <leader>/ - Clear highlighted search terms while preserving history
-map <leader>h :%s///<left><left>
 nmap <silent> <leader>/ <cmd>nohlsearch<CR>
+"
+" === Lightspeed Shortcuts
+" Unmap s and S to get default behavior back.
+try
+  unmap s
+  unmap S
+catch
+endtry
 
-" === Hop Shortcuts ===
-map <silent> <leader>w <cmd>HopWord<CR>
-map <silent> <leader>l <cmd>HopLine<CR>
-map <silent> <Space> <cmd>HopChar2<CR>
-
-
-
-" === Easy-motion shortcuts ===" (disabled)
-"   <leader>w - Easy-motion highlights first word letters bi-directionally
-"map <leader>w <Plug>(easymotion-bd-w)
-" Jump up and down by lines
-"map <leader>l <Plug>(easymotion-bd-jk)
-" Jump to a 2-character sequence.
-"map <Space> <Plug>(easymotion-bd-f2)
-" Smart case search, like that in native vim search
-"let g:EasyMotion_smartcase = 1
-
-" Replace built-in search with easymotion -- DISABLED
-"map / <Plug>(easymotion-sn)
-" omap / <Plug>(easymotion-sn)
+map <silent> f <Plug>Lightspeed_s<c-x>
+map <silent> F <Plug>Lightspeed_S<c-x>
 
 " Allows you to save files you opened without write permissions via sudo
 cmap w!! w !sudo tee %
@@ -580,31 +714,12 @@ nnoremap <Tab> @q
 command! EditInit e ~/.config/nvim/init.vim
 command! ReloadInit source ~/.config/nvim/init.vim
 
-" Svelte filetype detection
-if !exists('g:context_filetype#same_filetypes')
-  let g:context_filetype#filetypes = {}
-endif
-
-" Defaults to 200 lines which is often not enough
-let g:context_filetype#search_offset = 10000
-let g:context_filetype#filetypes.svelte =
-\ [
-\   {'filetype' : 'javascript', 'start' : '<script>', 'end' : '</script>'},
-\   {
-\     'filetype': 'typescript',
-\     'start': '<script\%( [^>]*\)\? \%(ts\|lang="\%(ts\|typescript\)"\)\%( [^>]*\)\?>',
-\     'end': '</script>',
-\   },
-\   {'filetype' : 'css', 'start' : '<style \?.*>', 'end' : '</style>'},
-\ ]
-
 " Prettier Settings
 " Disable quickfix by default since it runs on every save
 let g:prettier#quickfix_enabled = 0
 let g:prettier#quickfix_auto_focus = 0
 let g:prettier#autoformat_require_pragma = 0
 let g:prettier#autoformat_config_present = 1
-au BufWritePre *.css,*.svelte,*.pcss,*.html,*.ts,*.js noautocmd | call prettier#Autoformat()
 
 " If we do want to see the quickfix box, use this.
 command! PO call PrettierWithOutput()
@@ -617,43 +732,6 @@ function! PrettierWithOutput()
 endfunction
 
 let g:ft = ''
-
-" === NERDCommenter ===
-let g:NERDDefaultAlign = 'left'
-let g:NERDCompactSexyComs = 1
-let g:NERDSpaceDelims = 1
-let g:NERDCommentEmptyLines = 1
-let g:NERDTrimTrailingWhitespace = 1
-let g:NERDToggleCheckAllLines = 1
-let g:NERDCustomDelimiters = {
-  \ 'svelte': { 'left': '//', 'leftAlt': '/*', 'rightAlt': '*/' },
-  \ 'html': { 'left': '<!--', 'right': '-->' },
-  \}
-
-" work with Svelte single-file components
-fu! NERDCommenter_before()
-  if (&ft == 'html') || (&ft == 'svelte')
-    let g:ft = &ft
-    let cfts = context_filetype#get_filetypes()
-    if len(cfts) > 0
-      if cfts[0] == 'svelte'
-        let cft = 'html'
-      elseif cfts[0] == 'scss'
-        let cft = 'css'
-      else
-        let cft = cfts[0]
-      endif
-      exe 'setf ' . cft
-    endif
-  endif
-endfu
-
-fu! NERDCommenter_after()
-  if (g:ft == 'html') || (g:ft == 'svelte')
-    exec 'setf ' . g:ft
-    let g:ft = ''
-  endif
-endfu
 
 
 " === Customize quickfix buffer ===
