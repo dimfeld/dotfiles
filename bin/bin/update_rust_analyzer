@@ -1,0 +1,7 @@
+#!/bin/bash
+FILENAME=rust-analyzer-x86_64-unknown-linux-gnu.gz
+if [ "$(uname)" = "Darwin" ]; then
+  FILENAME=rust-analyzer-x86_64-apple-darwin.gz
+fi
+curl -L https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/${FILENAME} | gunzip -c - > ~/bin/rust-analyzer
+chmod +x ~/bin/rust-analyzer

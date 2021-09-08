@@ -4,7 +4,9 @@
 sudo echo
 sudo pnpm --global update
 rustup update stable
+./update_rust_analyzer
 cargo install-update --all
+go get golang.org/x/tools/gopls@latest
 
 if [ "$(uname)" == "Darwin" ]; then
   brew upgrade
