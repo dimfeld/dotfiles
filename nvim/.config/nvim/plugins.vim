@@ -94,18 +94,16 @@ Plug 'othree/javascript-libraries-syntax.vim'
 " Improved syntax highlighting and indentation
 Plug 'othree/yajs.vim'
 
-" Intellisense Engine
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'fannheyward/telescope-coc.nvim'
-Plug 'dimfeld/coc-svelte', {'branch': 'master', 'do': 'yarn install --frozen-lockfile && yarn build'}
-Plug 'rodrigore/coc-tailwind-intellisense', {'do': 'npm install'}
-
-" nvim builtin lsp support, not using this yet
-" Plug 'neovim/nvim-lspconfig'
-" Plug 'hrsh7th/nvim-cmp'
-" Plug 'hrsh7th/cmp-buffer'
-" Plug 'simrat39/rust-tools.nvim'
-" Plug 'L3MON4D3/LuaSnip'
+" nvim LSP support
+Plug 'neovim/nvim-lspconfig'
+Plug 'nvim-lua/lsp_extensions.nvim'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'simrat39/rust-tools.nvim'
+Plug 'saadparwaiz1/cmp_luasnip'
+Plug 'L3MON4D3/LuaSnip'
+Plug 'onsails/lspkind-nvim'
 
 Plug 'leafOfTree/vim-svelte-plugin'
 Plug 'cakebaker/scss-syntax.vim'

@@ -110,84 +110,13 @@ set shortmess+=c
 " ===                           PLUGIN SETUP                               === "
 " ============================================================================ "
 
-" === Coc.nvim === "
-let g:coc_global_extensions = [
-      \'coc-css',
-      \'coc-eslint',
-      \'coc-git',
-      \'coc-go',
-      \'coc-highlight',
-      \'coc-html',
-      \'coc-json',
-      \'coc-pyright',
-      \'coc-rust-analyzer',
-      \'coc-tsserver',
-      \'coc-xml',
-      \]
-
-" use <tab> for trigger completion and navigate to next complete item
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~ '\s'
-endfunction
-"
- inoremap <silent><expr> <TAB>
-       \ pumvisible() ? "\<C-n>" :
-       \ <SID>check_back_space() ? "\<TAB>" :
-       \ coc#refresh()
- inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-" Close preview window when completion is done.
-autocmd! CompleteDone * if pumvisible() == 0 && getcmdwintype () == '' | pclose | endif
-
- " Use K to show documentation in preview window.
-nnoremap <silent> K <cmd>call <SID>toggle_documentation()<CR>
-inoremap <silent> <c-k> <c-o><cmd>call <SID>toggle_documentation()<CR>
-
-" Symbol renaming.
-nmap <leader>rn <Plug>(coc-rename)
-
-function! s:toggle_documentation()
-  if (coc#float#has_float())
-    call coc#float#close_all()
-  else
-    call <SID>show_documentation()
-  endif
-endfunction
-
-function! s:hover_callback(e, r)
-  if (a:r == v:false)
-    call CocActionAsync('doHover')
-  endif
-endfunction
-
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  elseif (coc#rpc#ready())
-    call CocActionAsync('showSignatureHelp', function('<SID>hover_callback'))
-  else
-    execute '!' . &keywordprg . " " . expand('<cword>')
-  endif
-endfunction
-
-" Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
-
-" Use <leader>c to trigger code action in autocomplete popup, like autoimport.
-inoremap <silent><expr> <leader>c
-    \ pumvisible() ? "<c-g>u" : "<leader>c"
-" When not in import mode, run code action on current line (usually auto-import)
-nmap <leader>al <Plug>(coc-codeaction-line)
-nmap <leader>ac <Plug>(coc-codeaction-cursor)
-
 vnoremap <silent> <leader>y <cmd>OSCYank<CR>
 
 " Add `:Format` command to format current buffer.
-command! -nargs=0 Format <cmd>call CocAction('format')
+" command! -nargs=0 Format <cmd>lua vim.lsp.buf.formatting()
 
 " Add `:OR` command for organize imports of the current buffer.
-command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
+command! -nargs=0 OR <cmd>lua vim.lsp.buf.execute_command({ command='editor.action.organizeImport' })
 
 try
 
@@ -260,6 +189,66 @@ augroup pcss
   au BufEnter *.pcss :syntax sync fromstart
 augroup END
 
+
+" Editor theme
+set background=dark
+
+
+" ============================================================================ "
+" ===                      CUSTOM COLORSCHEME CHANGES                      === "
+" ============================================================================ "
+"
+" Add custom highlights in method that is executed every time a colorscheme is sourced
+" See https://gist.github.com/romainl/379904f91fa40533175dfaec4c833f2f for details
+" function! TrailingSpaceHighlights() abort
+"   " Hightlight trailing whitespace
+"   highlight Trail ctermfg=red guifg=red cterm=underline gui=underline
+"   call matchadd('Trail', '\s\+\%#\@<!$', 100)
+" endfunction
+
+function! s:custom_jarvis_colors()
+  " LSP colors
+  hi LspDiagnosticsVirtualTextError guifg=#f04040
+  hi LspDiagnosticsVirtualTextHint guifg=#aaaaaa
+  hi LspDiagnosticsVirtualTextInformation guifg=#aaaaaa
+
+  " Make background transparent for many things
+  hi Normal ctermbg=NONE guibg=NONE
+  hi NonText ctermbg=NONE guibg=NONE
+  hi LineNr ctermfg=NONE guibg=NONE
+  hi SignColumn ctermfg=NONE guibg=NONE
+  hi StatusLine guifg=#16252b guibg=#6699CC
+  hi StatusLineNC guifg=#16252b guibg=#16252b
+
+  " Try to hide vertical spit and end of buffer symbol
+  hi VertSplit gui=NONE guifg=#17252c guibg=#17252c
+  hi EndOfBuffer ctermbg=NONE ctermfg=NONE guibg=#17252c guifg=#17252c
+
+  " Make background color transparent for git changes
+  hi SignifySignAdd guibg=NONE
+  hi SignifySignDelete guibg=NONE
+  hi SignifySignChange guibg=NONE
+
+  " Highlight git change signs
+  hi SignifySignAdd guifg=#99c794
+  hi SignifySignDelete guifg=#ec5f67
+  hi SignifySignChange guifg=#c594c5
+
+  hi DiffAdded guibg=#207020
+  hi DiffRemoved guibg=#902020
+endfunction
+
+" autocmd! ColorScheme * call TrailingSpaceHighlights()
+autocmd ColorScheme OceanicNext call s:custom_jarvis_colors()
+
+colorscheme OceanicNext
+
+sign define LspDiagnosticsSignError text=• texthl=LspDiagnosticsSignError linehl= numhl=
+sign define LspDiagnosticsSignWarning text=• texthl=LspDiagnosticsSignWarning linehl= numhl=
+sign define LspDiagnosticsSignInformation text=• texthl=LspDiagnosticsSignInformation linehl= numhl=
+sign define LspDiagnosticsSignHint text=• texthl=LspDiagnosticsSignHint linehl= numhl=
+
+
 lua <<EOF
 local npairs = require'nvim-autopairs'
 local remap = vim.api.nvim_set_keymap
@@ -280,50 +269,11 @@ npairs.setup({
   ignored_next_char = "[%w%.]", -- will ignore alphanumeric and `.` symbol
 })
 
--- local cmp = require'cmp'
--- local luasnip = require 'luasnip'
+local cmp = require'cmp'
+local luasnip = require 'luasnip'
 
--- cmp.setup({
---   snippet = {
---     expand = function(args)
---       luasnip.lsp_expand(args.body)
---     end,
---   },
---   mapping = {
---     ['<C-p>'] = cmp.mapping.select_prev_item(),
---     ['<C-n>'] = cmp.mapping.select_next_item(),
---     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
---     ['<C-f>'] = cmp.mapping.scroll_docs(4),
---     ['<C-Space>'] = cmp.mapping.complete(),
---     ['<C-e>'] = cmp.mapping.close(),
---     ['<CR>'] = cmp.mapping.confirm {
---       behavior = cmp.ConfirmBehavior.Replace,
---       select = true,
---     },
---     ['<Tab>'] = function(fallback)
---       if vim.fn.pumvisible() == 1 then
---         vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<C-n>', true, true, true), 'n')
---       elseif luasnip.expand_or_jumpable() then
---         vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-expand-or-jump', true, true, true), '')
---       else
---         fallback()
---       end
---     end,
---     ['<S-Tab>'] = function(fallback)
---       if vim.fn.pumvisible() == 1 then
---         vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<C-p>', true, true, true), 'n')
---       elseif luasnip.jumpable(-1) then
---         vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-jump-prev', true, true, true), '')
---       else
---         fallback()
---       end
---     end,
---   },
---   sources = {
---     { name = 'nvim_lsp' },
---     { name = 'luasnip' },
---   },
--- })
+-- Set completeopt to have a better completion experience
+vim.o.completeopt = 'menuone,noselect'
 
 require'nvim-treesitter.configs'.setup {
   ensure_installed = "maintained",
@@ -336,20 +286,7 @@ require'nvim-treesitter.configs'.setup {
   autopairs = { enable = true }
 }
 
--- local lspconfig = require'lspconfig'
-
--- lspconfig.bashls.setup{}
--- lspconfig.dockerls.setup{}
--- lspconfig.gopls.setup{}
--- lspconfig.html.setup{}
--- lspconfig.pyright.setup{}
--- lspconfig.rust_analyzer.setup{}
--- lspconfig.svelte.setup{}
--- lspconfig.tailwindcss.setup{}
--- lspconfig.tsserver.setup{}
--- lspconfig.vimls.setup{}
--- lspconfig.yamlls.setup{}
--- require('rust-tools').setup({})
+local nvim_lsp = require'lspconfig'
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
@@ -366,50 +303,135 @@ local on_attach = function(client, bufnr)
   -- See `:help vim.lsp.*` for documentation on any of the below functions
   -- buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
   buf_set_keymap('n', '<leader>dd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
   buf_set_keymap('n', '<leader>dj', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+  buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
   buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
   -- buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
   -- buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
   -- buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
   -- buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-  buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+  buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  buf_set_keymap('n', '<leader>ac', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   -- buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+  buf_set_keymap('n', '<leader>dg', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
   buf_set_keymap('n', '[G', '<cmd>lua vim.lsp.diagnostic.goto_prev({ severity_limit="Error" })<CR>', opts)
   buf_set_keymap('n', ']G', '<cmd>lua vim.lsp.diagnostic.goto_next({ severity_limit="Error" })<CR>', opts)
   buf_set_keymap('n', '[g', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
   buf_set_keymap('n', ']g', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
   buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
   -- buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
-
+  
 end
 
-local simple_servers = { 'bashls', 'dockerls', 'gopls', 'html', 'pyright',
-  'rust_analyzer', 'svelte', 'tailwindcss', 'tsserver', 'vimls', 'yamlls' }
--- for _, lsp in ipairs(simple_servers) do
---   nvim_lsp[lsp].setup {
---     on_attach = on_attach,
---     flags = {
---       debounce_text_changes = 150,
---     }
---   }
--- end
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
--- lspconfig.jsonls.setup{
---   on_attach = on_attach,
---   flags = {
---     debounce_text_changes =150
---   },
---   commands = {
---     Format = {
---       function()
---         vim.lsp.buf.range_formatting({},{0,0},{vim.fn.line("$"),0})
---       end
---     }
---   }
--- }
+local simple_setups = { 'bashls', 'dockerls', 'gopls', 'html', 'pyright',
+  'svelte', 'tailwindcss', 'tsserver', 'vimls', 'yamlls' }
+for _, lsp in ipairs(simple_setups) do
+  nvim_lsp[lsp].setup {
+    on_attach = on_attach,
+    capabilities = capabilities,
+    flags = {
+      debounce_text_changes = 150,
+    }
+  }
+end
+
+nvim_lsp.jsonls.setup{
+  on_attach = on_attach,
+  capabilities = capabilities,
+  flags = {
+    debounce_text_changes =150
+  },
+  commands = {
+    Format = {
+      function()
+        vim.lsp.buf.range_formatting({},{0,0},{vim.fn.line("$"),0})
+      end
+    }
+  }
+}
+
+require('rust-tools').setup({
+  server={
+    on_attach=on_attach,
+    capabilities = capabilities,
+    flags = {
+      debounce_text_changes =150
+    },
+  }
+})
+require('rust-tools.inlay_hints').set_inlay_hints()
+
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+ vim.lsp.diagnostic.on_publish_diagnostics, {
+   -- Enable underline, use default values
+   underline = true,
+   -- Enable virtual text only on Warning or above, override spacing to 2
+   virtual_text = {
+     prefix = "",
+     spacing = 0,
+   },
+ }
+)
+
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      luasnip.lsp_expand(args.body)
+    end,
+  },
+  mapping = {
+    ['<C-p>'] = cmp.mapping.select_prev_item(),
+    ['<C-n>'] = cmp.mapping.select_next_item(),
+    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.close(),
+    ['<CR>'] = cmp.mapping.confirm {
+      behavior = cmp.ConfirmBehavior.Replace,
+      select = true,
+    },
+    ['<Tab>'] = function(fallback)
+      if vim.fn.pumvisible() == 1 then
+        vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<C-n>', true, true, true), 'n')
+      elseif luasnip.expand_or_jumpable() then
+        vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-expand-or-jump', true, true, true), '')
+      else
+        fallback()
+      end
+    end,
+    ['<S-Tab>'] = function(fallback)
+      if vim.fn.pumvisible() == 1 then
+        vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<C-p>', true, true, true), 'n')
+      elseif luasnip.jumpable(-1) then
+        vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-jump-prev', true, true, true), '')
+      else
+        fallback()
+      end
+    end,
+  },
+  formatting = {
+    format = function(entry, vim_item)
+      -- fancy icons and a name of kind
+      vim_item.kind = require("lspkind").presets.default[vim_item.kind]
+
+      -- set a name for each source
+      vim_item.menu = ({
+        buffer = "[B]",
+        nvim_lsp = "[L]",
+        luasnip = "[S]",
+      })[entry.source.name]
+      return vim_item
+    end,
+  },
+  sources = {
+    { name = 'nvim_lsp' },
+    { name = 'luasnip' },
+    { name = 'buffer' },
+  },
+})
 EOF
 
 " Comments
@@ -443,50 +465,6 @@ nmap <silent> <M-l> :bn<CR>
 nmap <silent> <M-p> :b#<CR>
 nmap <silent> <leader>p :b#<CR>
 
-" ============================================================================ "
-" ===                      CUSTOM COLORSCHEME CHANGES                      === "
-" ============================================================================ "
-"
-" Add custom highlights in method that is executed every time a colorscheme is sourced
-" See https://gist.github.com/romainl/379904f91fa40533175dfaec4c833f2f for details
-" function! TrailingSpaceHighlights() abort
-"   " Hightlight trailing whitespace
-"   highlight Trail ctermfg=red guifg=red cterm=underline gui=underline
-"   call matchadd('Trail', '\s\+\%#\@<!$', 100)
-" endfunction
-
-function! s:custom_jarvis_colors()
-  " coc.nvim color changes
-  hi link CocErrorSign WarningMsg
-  hi link CocWarningSign Number
-  hi link CocInfoSign Type
-
-  " Make background transparent for many things
-  hi Normal ctermbg=NONE guibg=NONE
-  hi NonText ctermbg=NONE guibg=NONE
-  hi LineNr ctermfg=NONE guibg=NONE
-  hi SignColumn ctermfg=NONE guibg=NONE
-  hi StatusLine guifg=#16252b guibg=#6699CC
-  hi StatusLineNC guifg=#16252b guibg=#16252b
-
-  " Try to hide vertical spit and end of buffer symbol
-  hi VertSplit gui=NONE guifg=#17252c guibg=#17252c
-  hi EndOfBuffer ctermbg=NONE ctermfg=NONE guibg=#17252c guifg=#17252c
-
-  " Make background color transparent for git changes
-  hi SignifySignAdd guibg=NONE
-  hi SignifySignDelete guibg=NONE
-  hi SignifySignChange guibg=NONE
-
-  " Highlight git change signs
-  hi SignifySignAdd guifg=#99c794
-  hi SignifySignDelete guifg=#ec5f67
-  hi SignifySignChange guifg=#c594c5
-
-  hi DiffAdded guibg=#207020
-  hi DiffRemoved guibg=#902020
-endfunction
-
 command! ShowColors :call <SID>SynStack()<CR>
 function! <SID>SynStack()
   if !exists("*synstack")
@@ -501,9 +479,6 @@ augroup Highlighting
   autocmd BufEnter * syntax sync minlines=500
 augroup END
 
-" autocmd! ColorScheme * call TrailingSpaceHighlights()
-autocmd! ColorScheme OceanicNext call s:custom_jarvis_colors()
-
 " Call method on window enter
 augroup WindowManagement
   autocmd!
@@ -516,14 +491,6 @@ function! Handle_Win_Enter()
     setlocal winhighlight=Normal:MarkdownError
   endif
 endfunction
-
-" Editor theme
-set background=dark
-try
-  colorscheme OceanicNext
-catch
-  colorscheme slate
-endtry
 " ============================================================================ "
 " ===                             KEY MAPPINGS                             === "
 " ============================================================================ "
@@ -542,10 +509,13 @@ nnoremap <silent> <leader>n :lua require('telescope.builtin').file_browser({ cwd
 nnoremap <silent> <leader>N :lua require('telescope.builtin').file_browser()<cr>
 nnoremap <silent> <leader>J :lua require('telescope.builtin').grep_string()<cr>
 nnoremap <silent> <leader>v :lua require('telescope.builtin').treesitter()<cr>
-nnoremap <silent> <leader>dl :Telescope coc workspace_diagnostics<cr>
-nnoremap <silent> <leader>k :Telescope coc commands<cr>
-nnoremap <silent> <leader>dr :Telescope coc references<cr>
-nnoremap <silent> <leader>ds :Telescope coc workspace_symbols<cr>
+nnoremap <silent> <leader>dr :lua require('telescope.builtin').lsp_references()<cr>
+nnoremap <silent> <leader>dl :lua require('telescope.builtin').lsp_document_diagnostics()<cr>
+nnoremap <silent> <leader>wl :lua require('telescope.builtin').lsp_workspace_diagnostics()<cr>
+nnoremap <silent> <leader>ds :lua require('telescope.builtin').lsp_document_symbols()<cr>
+nnoremap <silent> <leader>ws :lua require('telescope.builtin').lsp_workspace_symbols()<cr>
+nnoremap <silent> <leader>k :lua require('telescope.builtin').commands()<cr>
+" nnoremap <silent> <leader>k :Telescope coc commands<cr>
 
 function! s:telescope_grep_on_git_repo()
   execute "lua require('telescope.builtin').live_grep({search_dirs={'".trim(system("git rev-parse --show-toplevel"))."'}})"
@@ -590,21 +560,6 @@ nmap <C-h> <C-w>h
 nmap <C-j> <C-w>j
 nmap <C-k> <C-w>k
 nmap <C-l> <C-w>l
-
-" === coc.nvim === "
-"   <leader>dd    - Jump to definition of current symbol
-"   <leader>dr    - Jump to references of current symbol
-"   <leader>dj    - Jump to implementation of current symbol
-"   <leader>ds    - Fuzzy search current project symbols
-nmap <silent> <leader>dd <Plug>(coc-definition)
-" nmap <silent> <leader>dr <Plug>(coc-references)
-nmap <silent> <leader>dj <Plug>(coc-implementation)
-" nnoremap <silent> <leader>ds :<C-u>CocList -I -N --top symbols<CR>
-nmap <silent> <leader>dg <Plug>(coc-diagnostic-info)
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
-nmap <silent> [G <Plug>(coc-diagnostic-prev-error)
-nmap <silent> ]G <Plug>(coc-diagnostic-next-error)
 
 " === vim-better-whitespace === "
 "   <leader>y - Automatically remove trailing whitespace
