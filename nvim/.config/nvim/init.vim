@@ -238,7 +238,7 @@ remap('i', '<CR>', 'v:lua.MUtils.completion_confirm()', {expr = true , noremap =
 
 npairs.setup({
   check_ts = true,
-  ignored_next_char = "[%w%.]", -- will ignore alphanumeric and `.` symbol
+  ignored_next_char = "[%w%.\"']", -- will ignore alphanumeric and `.` symbol
 })
 
 local Rule = require('nvim-autopairs.rule')
