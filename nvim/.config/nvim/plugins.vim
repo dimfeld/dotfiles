@@ -100,13 +100,6 @@ Plug 'fannheyward/telescope-coc.nvim'
 Plug 'dimfeld/coc-svelte', {'branch': 'master', 'do': 'yarn install --frozen-lockfile && yarn build'}
 Plug 'rodrigore/coc-tailwind-intellisense', {'do': 'npm install'}
 
-" nvim builtin lsp support, not using this yet
-" Plug 'neovim/nvim-lspconfig'
-" Plug 'hrsh7th/nvim-cmp'
-" Plug 'hrsh7th/cmp-buffer'
-" Plug 'simrat39/rust-tools.nvim'
-" Plug 'L3MON4D3/LuaSnip'
-
 Plug 'leafOfTree/vim-svelte-plugin'
 Plug 'cakebaker/scss-syntax.vim'
 Plug 'rust-lang/rust.vim'
@@ -126,8 +119,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'dimfeld/oceanic-next'
 
 " Customized vim status line
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'hoob3rt/lualine.nvim'
 
 " Debugging
 Plug 'mfussenegger/nvim-dap'

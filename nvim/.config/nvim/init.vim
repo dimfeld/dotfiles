@@ -189,45 +189,6 @@ command! -nargs=0 Format <cmd>call CocAction('format')
 " Add `:OR` command for organize imports of the current buffer.
 command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
 
-try
-
-" Do not draw separators for empty sections (only for the active window) >
-let g:airline_skip_empty_sections = 1
-
-" Smartly uniquify buffers names with similar filename, suppressing common parts of paths.
-let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
-
-" Custom setup that removes filetype/whitespace from default vim airline bar
-let g:airline#extensions#default#layout = [['a', 'b', 'c'], ['x', 'z', 'warning', 'error']]
-
-" Customize vim airline per filetype
-" 'nerdtree'  - Hide nerdtree status line
-" 'list'      - Only show file type plus current line number out of total
-let g:airline_filetype_overrides = {
-  \ 'nerdtree': [ get(g:, 'NERDTreeStatusline', ''), '' ],
-  \ 'list': [ '%y', '%l/%L'],
-  \ }
-
-" Enable powerline fonts
-let g:airline_powerline_fonts = 1
-
-" Enable caching of syntax highlighting groups
-let g:airline_highlighting_cache = 1
-
-" Define custom airline symbols
-if !exists('g:airline_symbols')
-  let g:airline_symbols = {
-    \ 'maxlinenr': ' ',
-    \ }
-endif
-
-" Don't show git changes to current file in airline
-let g:airline#extensions#hunks#enabled=0
-
-catch
-  echo 'Airline not installed. It should work after running :PlugInstall'
-endtry
-
 " Markdown
 let g:vim_markdown_conceal = 0
 let g:tex_conceal = ""
@@ -280,51 +241,6 @@ npairs.setup({
   ignored_next_char = "[%w%.]", -- will ignore alphanumeric and `.` symbol
 })
 
--- local cmp = require'cmp'
--- local luasnip = require 'luasnip'
-
--- cmp.setup({
---   snippet = {
---     expand = function(args)
---       luasnip.lsp_expand(args.body)
---     end,
---   },
---   mapping = {
---     ['<C-p>'] = cmp.mapping.select_prev_item(),
---     ['<C-n>'] = cmp.mapping.select_next_item(),
---     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
---     ['<C-f>'] = cmp.mapping.scroll_docs(4),
---     ['<C-Space>'] = cmp.mapping.complete(),
---     ['<C-e>'] = cmp.mapping.close(),
---     ['<CR>'] = cmp.mapping.confirm {
---       behavior = cmp.ConfirmBehavior.Replace,
---       select = true,
---     },
---     ['<Tab>'] = function(fallback)
---       if vim.fn.pumvisible() == 1 then
---         vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<C-n>', true, true, true), 'n')
---       elseif luasnip.expand_or_jumpable() then
---         vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-expand-or-jump', true, true, true), '')
---       else
---         fallback()
---       end
---     end,
---     ['<S-Tab>'] = function(fallback)
---       if vim.fn.pumvisible() == 1 then
---         vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<C-p>', true, true, true), 'n')
---       elseif luasnip.jumpable(-1) then
---         vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-jump-prev', true, true, true), '')
---       else
---         fallback()
---       end
---     end,
---   },
---   sources = {
---     { name = 'nvim_lsp' },
---     { name = 'luasnip' },
---   },
--- })
-
 require'nvim-treesitter.configs'.setup {
   ensure_installed = "maintained",
   context_commentstring = {
@@ -336,80 +252,47 @@ require'nvim-treesitter.configs'.setup {
   autopairs = { enable = true }
 }
 
--- local lspconfig = require'lspconfig'
+-- Status line configuration
 
--- lspconfig.bashls.setup{}
--- lspconfig.dockerls.setup{}
--- lspconfig.gopls.setup{}
--- lspconfig.html.setup{}
--- lspconfig.pyright.setup{}
--- lspconfig.rust_analyzer.setup{}
--- lspconfig.svelte.setup{}
--- lspconfig.tailwindcss.setup{}
--- lspconfig.tsserver.setup{}
--- lspconfig.vimls.setup{}
--- lspconfig.yamlls.setup{}
--- require('rust-tools').setup({})
+local status_filename = {
+  'filename',
+  file_status=true,
+  path=1 -- relative path
+}
 
--- Use an on_attach function to only map the following keys
--- after the language server attaches to the current buffer
-local on_attach = function(client, bufnr)
-  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
-  local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+local status_diagnostics = {
+  'diagnostics',
+  sources={'coc'},
+  sections={'error', 'warn'},
+  color_error = "#ff0000",
+  color_warn = "#ffff00"
+}
 
-  -- Enable completion triggered by <c-x><c-o>
-  buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-  -- Mappings.
-  local opts = { noremap=true, silent=true }
-
-  -- See `:help vim.lsp.*` for documentation on any of the below functions
-  -- buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-  buf_set_keymap('n', '<leader>dd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-  buf_set_keymap('n', '<leader>dj', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-  -- buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-  -- buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-  -- buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-  -- buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-  buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-  -- buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-  buf_set_keymap('n', '[G', '<cmd>lua vim.lsp.diagnostic.goto_prev({ severity_limit="Error" })<CR>', opts)
-  buf_set_keymap('n', ']G', '<cmd>lua vim.lsp.diagnostic.goto_next({ severity_limit="Error" })<CR>', opts)
-  buf_set_keymap('n', '[g', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-  buf_set_keymap('n', ']g', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-  buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-  -- buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
-
-end
-
-local simple_servers = { 'bashls', 'dockerls', 'gopls', 'html', 'pyright',
-  'rust_analyzer', 'svelte', 'tailwindcss', 'tsserver', 'vimls', 'yamlls' }
--- for _, lsp in ipairs(simple_servers) do
---   nvim_lsp[lsp].setup {
---     on_attach = on_attach,
---     flags = {
---       debounce_text_changes = 150,
---     }
---   }
--- end
-
--- lspconfig.jsonls.setup{
---   on_attach = on_attach,
---   flags = {
---     debounce_text_changes =150
---   },
---   commands = {
---     Format = {
---       function()
---         vim.lsp.buf.range_formatting({},{0,0},{vim.fn.line("$"),0})
---       end
---     }
---   }
--- }
+require('lualine').setup({
+  options = {
+    icons_enabled = true,
+    theme = 'codedark',
+    component_separators = {'', ''},
+    section_separators = {'', ''},
+    disabled_filetypes = {}
+  },
+  sections = {
+    lualine_a = {'mode'},
+    lualine_b = {'branch'},
+    lualine_c = {status_filename},
+    lualine_x = {'filetype'},
+    lualine_y = {status_diagnostics},
+    lualine_z = {'progress', 'location'}
+  },
+  inactive_sections = {
+    lualine_a = {},
+    lualine_b = {},
+    lualine_c = {status_filename},
+    lualine_x = {'filetype'},
+    lualine_y = {},
+    lualine_z = {'location'}
+  },
+})
 EOF
 
 " Comments
@@ -519,11 +402,8 @@ endfunction
 
 " Editor theme
 set background=dark
-try
-  colorscheme OceanicNext
-catch
-  colorscheme slate
-endtry
+colorscheme OceanicNext
+
 " ============================================================================ "
 " ===                             KEY MAPPINGS                             === "
 " ============================================================================ "
