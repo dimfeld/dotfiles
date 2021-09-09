@@ -1,6 +1,11 @@
 FILE=$1
 if [ -z "${FILE}" ]; then
-  echo File argument required
-  exit 1
+  TMPFILE=$(mktemp)
+  FILE=$TMPFILE
+  cat > $FILE
 fi
-echo '' | fzf --print-query --preview-window wrap --preview "cat '$FILE' |& jq -C {q} \"$@\""
+INITIAL_QUERY=. echo '' | fzf --print-query --preview-window wrap --preview "jq -C {q} $FILE"
+
+if [ -n "$TMPFILE" ]; then
+  rm -f $TMPFILE
+fi
