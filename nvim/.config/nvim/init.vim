@@ -241,6 +241,16 @@ npairs.setup({
   ignored_next_char = "[%w%.]", -- will ignore alphanumeric and `.` symbol
 })
 
+local Rule = require('nvim-autopairs.rule')
+local cond = require('nvim-autopairs.conds')
+-- Don't autopair the ' character in Rust if it's a lifetime specifier
+
+if not _G.initialized_npairs then
+  _G.initialized_npairs = true
+  local quote_rule = npairs.get_rule("'")
+  quote_rule:with_pair(cond.not_before_regex_check("[<&]"))
+end
+
 require'nvim-treesitter.configs'.setup {
   ensure_installed = "maintained",
   context_commentstring = {
@@ -422,10 +432,12 @@ nnoremap <silent> <leader>n :lua require('telescope.builtin').file_browser({ cwd
 nnoremap <silent> <leader>N :lua require('telescope.builtin').file_browser()<cr>
 nnoremap <silent> <leader>J :lua require('telescope.builtin').grep_string()<cr>
 nnoremap <silent> <leader>v :lua require('telescope.builtin').treesitter()<cr>
-nnoremap <silent> <leader>dl :Telescope coc workspace_diagnostics<cr>
+nnoremap <silent> <leader>dl :Telescope coc document_diagnostics<cr>
+nnoremap <silent> <leader>wl :Telescope coc workspace_diagnostics<cr>
 nnoremap <silent> <leader>k :Telescope coc commands<cr>
 nnoremap <silent> <leader>dr :Telescope coc references<cr>
-nnoremap <silent> <leader>ds :Telescope coc workspace_symbols<cr>
+nnoremap <silent> <leader>ds :Telescope coc document_symbols<cr>
+nnoremap <silent> <leader>ws :Telescope coc workspace_symbols<cr>
 
 function! s:telescope_grep_on_git_repo()
   execute "lua require('telescope.builtin').live_grep({search_dirs={'".trim(system("git rev-parse --show-toplevel"))."'}})"
