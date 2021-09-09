@@ -323,6 +323,15 @@ local on_attach = function(client, bufnr)
   
 end
 
+vim.g.lsp_utils_codeaction_opts = {
+  list = {
+    border = true,
+    title = 'Code Actions',
+  }
+}
+
+vim.lsp.handlers['textDocument/codeAction'] = require'lsputil.codeAction'.code_action_handler
+
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
@@ -354,6 +363,14 @@ nvim_lsp.jsonls.setup{
 }
 
 require('rust-tools').setup({
+  tools = { -- rust-tools options
+      autoSetHints = true,
+      hover_with_actions = true,
+      inlay_hints = {
+          parameter_hints_prefix = "",
+          other_hints_prefix = "",
+      },
+  },
   server={
     on_attach=on_attach,
     capabilities = capabilities,
@@ -362,7 +379,6 @@ require('rust-tools').setup({
     },
   }
 })
-require('rust-tools.inlay_hints').set_inlay_hints()
 
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
  vim.lsp.diagnostic.on_publish_diagnostics, {
@@ -430,6 +446,7 @@ cmp.setup({
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
     { name = 'buffer' },
+    { name = 'path' }
   },
 })
 EOF
