@@ -106,6 +106,7 @@ Plug 'L3MON4D3/LuaSnip'
 Plug 'onsails/lspkind-nvim'
 Plug 'RishabhRD/popfix'
 Plug 'RishabhRD/nvim-lsputils'
+Plug 'nvim-lua/lsp-status.nvim'
 
 Plug 'leafOfTree/vim-svelte-plugin'
 Plug 'cakebaker/scss-syntax.vim'
@@ -126,8 +127,9 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'dimfeld/oceanic-next'
 
 " Customized vim status line
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+" Plug 'vim-airline/vim-airline'
+" Plug 'vim-airline/vim-airline-themes'
+Plug 'hoob3rt/lualine.nvim'
 
 " Debugging
 Plug 'mfussenegger/nvim-dap'

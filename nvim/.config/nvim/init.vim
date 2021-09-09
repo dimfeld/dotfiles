@@ -42,7 +42,7 @@ set nowrap
 set nocursorline
 
 " Disable line/column number in status line
-" Shows up in preview window when airline is disabled if not
+" Shows up in preview window when status line is disabled if not
 set noruler
 
 " Only one line for command line
@@ -117,45 +117,6 @@ vnoremap <silent> <leader>y <cmd>OSCYank<CR>
 
 " Add `:OR` command for organize imports of the current buffer.
 command! -nargs=0 OR <cmd>lua vim.lsp.buf.execute_command({ command='editor.action.organizeImport' })
-
-try
-
-" Do not draw separators for empty sections (only for the active window) >
-let g:airline_skip_empty_sections = 1
-
-" Smartly uniquify buffers names with similar filename, suppressing common parts of paths.
-let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
-
-" Custom setup that removes filetype/whitespace from default vim airline bar
-let g:airline#extensions#default#layout = [['a', 'b', 'c'], ['x', 'z', 'warning', 'error']]
-
-" Customize vim airline per filetype
-" 'nerdtree'  - Hide nerdtree status line
-" 'list'      - Only show file type plus current line number out of total
-let g:airline_filetype_overrides = {
-  \ 'nerdtree': [ get(g:, 'NERDTreeStatusline', ''), '' ],
-  \ 'list': [ '%y', '%l/%L'],
-  \ }
-
-" Enable powerline fonts
-let g:airline_powerline_fonts = 1
-
-" Enable caching of syntax highlighting groups
-let g:airline_highlighting_cache = 1
-
-" Define custom airline symbols
-if !exists('g:airline_symbols')
-  let g:airline_symbols = {
-    \ 'maxlinenr': ' ',
-    \ }
-endif
-
-" Don't show git changes to current file in airline
-let g:airline#extensions#hunks#enabled=0
-
-catch
-  echo 'Airline not installed. It should work after running :PlugInstall'
-endtry
 
 " Markdown
 let g:vim_markdown_conceal = 0
@@ -251,6 +212,10 @@ sign define LspDiagnosticsSignHint text=• texthl=LspDiagnosticsSignHint linehl
 
 lua <<EOF
 local npairs = require'nvim-autopairs'
+local cmp = require'cmp'
+local luasnip = require 'luasnip'
+local nvim_lsp = require'lspconfig'
+local lsp_status = require'lsp-status'
 local remap = vim.api.nvim_set_keymap
 
 _G.MUtils= {}
@@ -269,8 +234,6 @@ npairs.setup({
   ignored_next_char = "[%w%.]", -- will ignore alphanumeric and `.` symbol
 })
 
-local cmp = require'cmp'
-local luasnip = require 'luasnip'
 
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
@@ -286,7 +249,6 @@ require'nvim-treesitter.configs'.setup {
   autopairs = { enable = true }
 }
 
-local nvim_lsp = require'lspconfig'
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
@@ -320,7 +282,7 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', ']g', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
   buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
   -- buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
-  
+
 end
 
 vim.g.lsp_utils_codeaction_opts = {
@@ -334,6 +296,7 @@ vim.lsp.handlers['textDocument/codeAction'] = require'lsputil.codeAction'.code_a
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+capabilities = vim.tbl_extend('keep', capabilities, lsp_status.capabilities)
 
 local simple_setups = { 'bashls', 'dockerls', 'gopls', 'html', 'pyright',
   'svelte', 'tailwindcss', 'tsserver', 'vimls', 'yamlls' }
@@ -392,6 +355,18 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
  }
 )
 
+-- Use the lsp_statusline progress hnadler, but send the output to the echo line instead.
+local progress_handler = require('lsp-status/messaging').progress_callback
+local lsp_statusline_utils = require('lsp-status/util')
+vim.lsp.handlers['$/progress'] = lsp_statusline_utils.mk_handler(function(_, msg, ctx)
+  progress_handler(_, msg, ctx)
+  local output = lsp_status.status_progress()
+  -- Escape quotes and undouble percents (needed for statusline but not echo)
+  output = string.gsub(string.gsub(string.gsub(output, "\\", "\\\\"), '"', '\\"'), '%%%%', '%%')
+
+  vim.api.nvim_command('echohl ModeMsg | echo "'..output..'" | echohl None')
+end)
+
 cmp.setup({
   snippet = {
     expand = function(args)
@@ -407,7 +382,6 @@ cmp.setup({
     ['<C-e>'] = cmp.mapping.close(),
     ['<CR>'] = cmp.mapping.confirm {
       behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
     },
     ['<Tab>'] = function(fallback)
       if vim.fn.pumvisible() == 1 then
@@ -449,6 +423,49 @@ cmp.setup({
     { name = 'path' }
   },
 })
+
+-- Status line configuration
+
+local status_filename = {
+  'filename',
+  file_status=true,
+  path=1 -- relative path
+}
+
+local status_diagnostics = {
+  'diagnostics',
+  sources={'nvim_lsp'},
+  sections={'error', 'warn'},
+  color_error = "#ff0000",
+  color_warn = "#ffff00"
+}
+
+require('lualine').setup({
+  options = {
+    icons_enabled = true,
+    theme = 'codedark',
+    component_separators = {'', ''},
+    section_separators = {'', ''},
+    disabled_filetypes = {}
+  },
+  sections = {
+    lualine_a = {'mode'},
+    lualine_b = {'branch'},
+    lualine_c = {status_filename},
+    lualine_x = {'filetype'},
+    lualine_y = {status_diagnostics},
+    lualine_z = {'progress', 'location'}
+  },
+  inactive_sections = {
+    lualine_a = {},
+    lualine_b = {},
+    lualine_c = {status_filename},
+    lualine_x = {'filetype'},
+    lualine_y = {},
+    lualine_z = {'location'}
+  },
+})
+
 EOF
 
 " Comments
@@ -461,9 +478,6 @@ nmap <silent> <leader>c gcc
 
 " Enable true color support
 set termguicolors
-
-" Vim airline theme
-let g:airline_theme='dark_minimal'
 
 " Change vertical split character to be a space (essentially hide it)
 set fillchars+=vert:.
