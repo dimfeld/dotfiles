@@ -59,6 +59,10 @@ set signcolumn=yes
 " delays and poor user experience.
 set updatetime=300
 
+" Setting for cursorhold workaround plugin
+let g:cursorhold_updatetime = 100
+
+
 " Code Settings
 "
 
@@ -267,6 +271,7 @@ require'nvim-treesitter.configs'.setup {
 local status_filename = {
   'filename',
   file_status=true,
+  shorten=false,
   path=1 -- relative path
 }
 
@@ -303,6 +308,49 @@ require('lualine').setup({
     lualine_z = {'location'}
   },
 })
+
+
+local toggleterm = require('toggleterm')
+local toggleterm_open_mapping = [[<C-\>]]
+toggleterm.setup{
+  size = 80,
+  open_mapping = toggleterm_open_mapping,
+  hide_numbers = true,
+  start_in_insert = true,
+  insert_mappings = false,
+  direction = 'vertical',
+}
+
+-- Tell neovim to catch these keystrokes instead of passing them through to the terminal.
+function _G.set_terminal_keymaps()
+  -- This key sequence exits from "terminal" mode into command mode.
+  local term_escape = [[<C-\><C-n>]]
+  local tmap = function(input, command)
+    vim.api.nvim_buf_set_keymap(0, 't', input, term_escape .. command, { noremap = true })
+  end
+
+  tmap('<C-h>', '<C-w>h')
+  tmap('<C-j>', '<C-w>j')
+  tmap('<C-k>', '<C-w>k')
+  tmap('<C-l>', '<C-w>l')
+
+  vim.api.nvim_buf_set_keymap(0, 't', toggleterm_open_mapping, term_escape .. '<cmd>ToggleTerm<CR>', { noremap = true })
+  vim.api.nvim_buf_set_keymap(0, 't', '<esc>', term_escape, { noremap = true })
+end
+
+vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
+
+local Terminal = require('toggleterm.terminal').Terminal
+local floating_terminal = Terminal:new({
+  direction = 'float',
+
+})
+
+function _G.open_floating_terminal()
+  floating_terminal:toggle()
+end
+
+vim.cmd('command! FT :lua open_floating_terminal()')
 EOF
 
 " Comments

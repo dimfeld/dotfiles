@@ -29,12 +29,17 @@ Plug 'romainl/vim-qf'
 " Close buffers without closing split
 Plug 'qpkorr/vim-bufkill'
 
+" Performance fix for things that use CursorHold
+Plug 'antoinemadec/FixCursorHold.nvim'
+
 " === Editing Plugins === "
 " Trailing whitespace highlighting & automatic fixing
 Plug 'ntpeters/vim-better-whitespace'
 
 " Utilities for moving/renaming/deleting files
 Plug 'tpope/vim-eunuch'
+
+Plug 'tpope/vim-unimpaired'
 
 " Improved motion in Vim
 Plug 'ggandor/lightspeed.nvim'
@@ -53,6 +58,9 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'prettier/vim-prettier', {
   \ 'do': 'yarn install',
   \ }
+
+" Better terminal
+Plug 'akinsho/toggleterm.nvim'
 
 " === Git Plugins === "
 " Enable git changes to be shown in sign column
@@ -119,7 +127,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'dimfeld/oceanic-next'
 
 " Customized vim status line
-Plug 'hoob3rt/lualine.nvim'
+Plug 'shadmansaleh/lualine.nvim'
 
 " Debugging
 Plug 'mfussenegger/nvim-dap'
