@@ -13,9 +13,6 @@ let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
 " Remap leader key to ,
 let g:mapleader=','
 
-" Disable line numbers
-set nonumber
-
 " Don't show last command
 set noshowcmd
 
@@ -279,16 +276,24 @@ local status_diagnostics = {
   'diagnostics',
   sources={'coc'},
   sections={'error', 'warn'},
-  color_error = "#ff0000",
-  color_warn = "#ffff00"
+  diagnostics_color = {
+    error = "#ff0000",
+    warn = "#ffff00"
+  }
 }
 
 require('lualine').setup({
   options = {
     icons_enabled = true,
     theme = 'codedark',
-    component_separators = {'', ''},
-    section_separators = {'', ''},
+    component_separators = {
+      left = '',
+      right = ''
+    },
+    section_separators = {
+      left = '', 
+      right = ''
+    },
     disabled_filetypes = {}
   },
   sections = {
@@ -335,23 +340,16 @@ function _G.set_terminal_keymaps()
   tmap('<C-l>', '<C-w>l')
 
   vim.api.nvim_buf_set_keymap(0, 't', toggleterm_open_mapping, term_escape .. '<cmd>ToggleTerm<CR>', { noremap = true })
-  vim.api.nvim_buf_set_keymap(0, 't', '<esc>', term_escape, { noremap = true })
+  vim.api.nvim_buf_set_keymap(0, 't', '<esc><esc>', term_escape, { noremap = true })
 end
 
-vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
-
-local Terminal = require('toggleterm.terminal').Terminal
-local floating_terminal = Terminal:new({
-  direction = 'float',
-
-})
-
-function _G.open_floating_terminal()
-  floating_terminal:toggle()
-end
-
-vim.cmd('command! FT :lua open_floating_terminal()')
 EOF
+
+augroup TermKeys
+  autocmd!
+  autocmd TermOpen term://* lua set_terminal_keymaps()
+augroup END
+
 
 " Comments
 vmap <silent> <leader>c gc
@@ -467,7 +465,7 @@ colorscheme OceanicNext
 " ============================================================================ "
 
 " === Telescope finder shortcuts ===
-" lua require('telescope').load_extension('coc')
+lua require('telescope').load_extension('coc')
 lua require('telescope').load_extension('dap')
 nnoremap <silent> ; :lua require('telescope.builtin').buffers()<cr>
 nnoremap <silent> <leader>t :lua require('telescope.builtin').find_files()<cr>
@@ -490,35 +488,9 @@ nnoremap <silent> <leader>ws :Telescope coc workspace_symbols<cr>
 function! s:telescope_grep_on_git_repo()
   execute "lua require('telescope.builtin').live_grep({search_dirs={'".trim(system("git rev-parse --show-toplevel"))."'}})"
 endfunction
-" === Nerdtree shorcuts === "
-"  <leader>n - Toggle NERDTree on/off
-"  <leader>f - Opens current file location in NERDTree
-" " NERDTree disabled
-"nmap <leader>n :NERDTreeToggle<CR>
-"nmap <leader>f :NERDTreeFind<CR>
 
-" netrw file browser commands
-" Open netrw on git repo
-" nnoremap <silent> <leader>N :call <SID>netrw_on_git_repo()<CR>
-" Open netrw on vim CWD
-" nnoremap <silent> <leader>n :call <SID>netrw_on_cwd()<CR>
-nnoremap <silent> <leader>E :e %:h<CR>
-
-function! s:netrw_on_cwd()
-  execute "e ".getcwd()
-endfunction
-
-function! s:netrw_on_git_repo()
-  execute "e ".system("git rev-parse --show-toplevel")
-endfunction
-
-autocmd FileType netrw call s:netrw_keys()
-function! s:netrw_keys()
-  setlocal nohidden
-  nmap <silent><buffer> <leader>n :BD<CR>
-endfunction
-
-map <leader>e :e %:h/
+" Preload :e command with directory of current buffer.
+nmap <leader>e :e %:h/
 
 "   = - PageDown
 "   -       - PageUp
@@ -586,35 +558,37 @@ command! Cdme cd %:p:h
 command! CdRepo execute "cd ".system("git rev-parse --show-toplevel")
 
 " == Git keybindings
+" Open 3-way diff
 command! Gd :Gvdiffsplit!
+" Use chunk from left side
 nnoremap <expr> dgl &diff ? ':diffget //2<CR>' : ''
+" Use chunk from right side
 nnoremap <expr> dgr &diff ? ':diffget //3<CR>' : ''
 
 " ============================================================================ "
 " ===                                 MISC.                                === "
 " ============================================================================ "
 
-" Automaticaly close nvim if NERDTree is only thing left open
-" NERDTree disabled
-"autRocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-
 " === Search === "
 set incsearch
 
-" ignore case when searching
+" ignore case when searching, unless the search string has an upper case letter in it
 set ignorecase
-
-" if the search string has an upper case letter in it, the search will be case sensitive
 set smartcase
 
 " Automatically re-read file if a change was detected outside of vim
 set autoread
 
-" Enable line numbers
+" Enable relative line numbers
 set number
+set relativenumber
 
 " Enable spellcheck for markdown files
-autocmd BufRead,BufNewFile *.md setlocal spell
+augroup markdown
+  autocmd!
+  autocmd BufRead,BufNewFile *.md setlocal spell
+augroup END
+
 
 " Set backups
 if has('persistent_undo')
@@ -633,6 +607,7 @@ if exists('g:loaded_webdevicons')
 endif
 
 " Quick move cursor from insert mode
+" These map to cmd/option + arrow keys
 imap <C-a> <C-o>^
 imap <C-e> <C-o>$
 map <C-a> ^
@@ -649,6 +624,7 @@ function! ExecuteMacroOverVisualRange()
   execute ":'<,'>normal @".nr2char(getchar())
 endfunction
 
+" Quick run macro q
 nnoremap <Tab> @q
 
 command! EditInit e ~/.config/nvim/init.vim
@@ -675,9 +651,10 @@ let g:ft = ''
 
 
 " === Customize quickfix buffer ===
-autocmd FileType qf call s:quickfix_settings()
 function! s:quickfix_settings()
-  " o key opens the line under the quickfix and returns focus to Quickfix
+  " o key opens the line under the quickfix and returns focus to quickfix
   nnoremap <silent> <buffer> o <CR><C-w>p
+  " Open the selected line in the qucikfix buffer, and close the quickfix pane.
   nnoremap <silent> <buffer> O <CR>:cclose<CR>
 endfunction
+autocmd FileType qf call s:quickfix_settings()

@@ -82,7 +82,7 @@ Plug 'JoosepAlviste/nvim-ts-context-commentstring'
 Plug 'tpope/vim-commentary'
 
 " === Syntax Highlighting === "
-
+Plug 'gutenye/json5.vim'
 
 " Hashicorp Tools
 Plug 'hashivim/vim-hashicorp-tools'
