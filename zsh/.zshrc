@@ -125,8 +125,6 @@ if (( $+commands[tag] )); then
   alias ag=tag
 fi
 
-export RUSTFLAGS="-C target-cpu=native"
-
 export EDITOR=nvim
 export VISUAL=nvim
 
