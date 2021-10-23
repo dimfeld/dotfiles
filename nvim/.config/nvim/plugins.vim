@@ -64,7 +64,8 @@ Plug 'akinsho/toggleterm.nvim'
 
 " === Git Plugins === "
 " Enable git changes to be shown in sign column
-Plug 'mhinz/vim-signify'
+" Plug 'mhinz/vim-signify'
+Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 
 " === Javascript Plugins === "
@@ -105,7 +106,7 @@ Plug 'othree/yajs.vim'
 " Intellisense Engine
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'fannheyward/telescope-coc.nvim'
-Plug 'dimfeld/coc-svelte', {'branch': 'master', 'do': 'yarn install --frozen-lockfile && yarn build'}
+Plug 'dimfeld/coc-svelte', {'branch': 'updates', 'do': 'yarn install --frozen-lockfile && yarn build'}
 Plug 'rodrigore/coc-tailwind-intellisense', {'do': 'npm install'}
 
 Plug 'leafOfTree/vim-svelte-plugin'

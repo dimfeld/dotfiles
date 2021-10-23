@@ -70,7 +70,12 @@ let g:svelte_preprocessor_tags = [
   \ { 'name': 'postcss', 'tag': 'style', 'as': 'scss' }
   \ ]
 let g:svelte_preprocessors = ['typescript', 'postcss', 'scss']
-autocmd FileType svelte setlocal formatoptions+=ro
+
+augroup SvelteFiles
+  au!
+  au BufRead,BufNewFile *.svench set filetype=svelte
+  au FileType svelte setlocal formatoptions+=ro
+augroup END
 
 let g:vim_svelte_plugin_use_typescript = 1
 let g:vim_svelte_plugin_use_sass = 1
@@ -95,11 +100,16 @@ endfunction
 iabbrev </ </<C-X><C-O>
 
 "" Rust
-let g:rustfmt_autosave = 1
-autocmd FileType rust setlocal shiftwidth=4
+augroup RustFiles
+  au!
+  au FileType rust setlocal shiftwidth=4
+augroup END
 
 "" Go
-autocmd FileType go setlocal tabstop=4 shiftwidth=4
+augroup GoFiles
+  au!
+  au FileType go setlocal tabstop=4 shiftwidth=4
+augroup END
 
 " === Completion Settings === "
 
@@ -117,7 +127,6 @@ let g:coc_global_extensions = [
       \'coc-eslint',
       \'coc-git',
       \'coc-go',
-      \'coc-highlight',
       \'coc-html',
       \'coc-json',
       \'coc-pyright',
@@ -132,11 +141,18 @@ function! s:check_back_space() abort
   return !col || getline('.')[col - 1]  =~ '\s'
 endfunction
 "
- inoremap <silent><expr> <TAB>
+inoremap <silent><expr> <TAB>
        \ pumvisible() ? "\<C-n>" :
        \ <SID>check_back_space() ? "\<TAB>" :
        \ coc#refresh()
- inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+" Enter confirms completion if one has been selected.
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+inoremap <expr> <up> pumvisible() ? '<c-y><up>' : '<up>'
+inoremap <expr> <down> pumvisible() ? '<c-y><down>' : '<down>'
+inoremap <expr> <left> pumvisible() ? '<c-y><left>' : '<left>'
+inoremap <expr> <right> pumvisible() ? '<c-y><right>' : '<right>'
 
 " Close preview window when completion is done.
 autocmd! CompleteDone * if pumvisible() == 0 && getcmdwintype () == '' | pclose | endif
@@ -149,7 +165,7 @@ inoremap <silent> <c-k> <c-o><cmd>call <SID>toggle_documentation()<CR>
 nmap <leader>rn <Plug>(coc-rename)
 
 function! s:toggle_documentation()
-  if (coc#float#has_float())
+  if (coc#float#has_float() > 0)
     call coc#float#close_all()
   else
     call <SID>show_documentation()
@@ -185,7 +201,7 @@ nmap <leader>ac <Plug>(coc-codeaction-cursor)
 vnoremap <silent> <leader>y <cmd>OSCYank<CR>
 
 " Add `:Format` command to format current buffer.
-command! -nargs=0 Format <cmd>call CocAction('format')
+command! -nargs=0 Format :call CocAction('format')
 
 " Add `:OR` command for organize imports of the current buffer.
 command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
@@ -223,6 +239,7 @@ augroup pcss
 augroup END
 
 lua <<EOF
+
 local npairs = require'nvim-autopairs'
 local remap = vim.api.nvim_set_keymap
 
@@ -246,11 +263,11 @@ local Rule = require('nvim-autopairs.rule')
 local cond = require('nvim-autopairs.conds')
 -- Don't autopair the ' character in Rust if it's a lifetime specifier
 
-if not _G.initialized_npairs then
-  _G.initialized_npairs = true
-  local quote_rule = npairs.get_rule("'")
-  quote_rule:with_pair(cond.not_before_regex_check("[<&]"))
-end
+-- if not _G.initialized_npairs then
+--   _G.initialized_npairs = true
+--   local quote_rule = npairs.get_rule("'")
+--   quote_rule:with_pair(cond.not_before_regex_check("[<&]"))
+-- end
 
 require'nvim-treesitter.configs'.setup {
   ensure_installed = "maintained",
@@ -258,6 +275,10 @@ require'nvim-treesitter.configs'.setup {
     enable = true
   },
   highlight = {
+    enable = false,
+    disable = { 'rust', 'javascript', 'javascript.jsx' }
+  },
+  indent = {
     enable = false
   },
   autopairs = { enable = true }
@@ -276,10 +297,6 @@ local status_diagnostics = {
   'diagnostics',
   sources={'coc'},
   sections={'error', 'warn'},
-  diagnostics_color = {
-    error = "#ff0000",
-    warn = "#ffff00"
-  }
 }
 
 require('lualine').setup({
@@ -437,7 +454,7 @@ endfunc
 set synmaxcol=3000
 augroup Highlighting
   autocmd!
-  autocmd BufEnter * syntax sync minlines=500
+  autocmd BufEnter * syntax sync minlines=1000
 augroup END
 
 " autocmd! ColorScheme * call TrailingSpaceHighlights()
@@ -491,11 +508,6 @@ endfunction
 
 " Preload :e command with directory of current buffer.
 nmap <leader>e :e %:h/
-
-"   = - PageDown
-"   -       - PageUp
-noremap - <PageUp>
-noremap = <PageDown>
 
 " Quick window switching
 nmap <C-h> <C-w>h

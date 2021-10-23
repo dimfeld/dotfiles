@@ -10,13 +10,16 @@
   "diagnostic.refreshOnInsertMode": false,
   "diagnostic.checkCurrentLine": true,
   "diagnostic.virtualText": true,
-  "html.autoClosingTags": true,
+  "html.autoClosingTags": false,
   "javascript.format.enabled": false,
   "typescript.format.enabled": false,
   "typescript.preferences.importModuleSpecifier": "project-relative",
   "javascript.preferences.importModuleSpecifier": "project-relative",
+  "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
+  "javascript.suggest.includeAutomaticOptionalChainCompletions": true,
   "rust-analyzer.rustfmt.extraArgs": ["+nightly"],
-  "svelte.plugin.html.tagComplete.enable": false,
+  "svelte.enable-ts-plugin": true,
+  "svelte.plugin.html.tagComplete.enable": true,
   "coc.preferences.rootPatterns": [
     ".git",
     ".hg",
@@ -51,5 +54,7 @@
     "typeParameter": "\uf728",
     "default": "\uf29c"
   },
-  "svelte.enable-ts-plugin": true
+  "suggest.localityBonus": true,
+  "suggest.enablePreview": true,
+  "suggest.removeDuplicateItems":  true
 }
