@@ -20,6 +20,10 @@ endif
 
 call plug#begin('~/.config/nvim/plugged')
 
+" :AutoSaveToggle to automatically save files. Nice for markdown editing with
+" live preview.
+Plug '907th/vim-auto-save'
+
 " Command to yank to system clipboard
 Plug 'ojroques/vim-oscyank'
 
@@ -128,7 +132,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'dimfeld/oceanic-next'
 
 " Customized vim status line
-Plug 'shadmansaleh/lualine.nvim'
+Plug 'nvim-lualine/lualine.nvim'
 
 " Debugging
 Plug 'mfussenegger/nvim-dap'
