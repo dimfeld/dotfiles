@@ -261,13 +261,6 @@ npairs.setup({
 
 local Rule = require('nvim-autopairs.rule')
 local cond = require('nvim-autopairs.conds')
--- Don't autopair the ' character in Rust if it's a lifetime specifier
-
--- if not _G.initialized_npairs then
---   _G.initialized_npairs = true
---   local quote_rule = npairs.get_rule("'")
---   quote_rule:with_pair(cond.not_before_regex_check("[<&]"))
--- end
 
 require'nvim-treesitter.configs'.setup {
   ensure_installed = "maintained",
