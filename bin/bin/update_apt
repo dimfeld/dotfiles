@@ -8,6 +8,7 @@ cargo install-update --all
 
 if [ "$(uname)" == "Darwin" ]; then
   brew upgrade
+  brew upgrade neovim --fetch-HEAD
 elif [ -f "$(which apt)" ]; then
   sudo apt update && apt list --upgradable && sudo apt dist-upgrade
   sudo apt autoremove
