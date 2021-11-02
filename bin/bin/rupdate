@@ -1,2 +1,2 @@
 #!/bin/bash
-rsync -z -l -u -v --exclude=node_modules --exclude=.git -r "$@"
+rsync -z -l -u -v --filter=':- .gitignore' --exclude=node_modules --exclude=.git -r "$@"
