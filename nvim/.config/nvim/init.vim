@@ -10,6 +10,11 @@ let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
 " ===                           EDITING OPTIONS                            === "
 " ============================================================================ "
 
+set guifont=Inconsolata:h14
+let g:neovide_remember_window_size=v:true
+let g:neovide_cursor_animation_length=0.00
+let g:neovide_cursor_trail_length=0.0
+
 " Remap leader key to ,
 let g:mapleader=','
 
