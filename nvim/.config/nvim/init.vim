@@ -64,6 +64,7 @@ set updatetime=300
 " Setting for cursorhold workaround plugin
 let g:cursorhold_updatetime = 100
 
+set textwidth=120
 
 " Code Settings
 "
