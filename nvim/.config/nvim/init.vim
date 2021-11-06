@@ -524,10 +524,10 @@ nmap <silent> <leader>dd <Plug>(coc-definition)
 nmap <silent> <leader>dj <Plug>(coc-implementation)
 " nnoremap <silent> <leader>ds :<C-u>CocList -I -N --top symbols<CR>
 nmap <silent> <leader>dg <Plug>(coc-diagnostic-info)
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
-nmap <silent> [G <Plug>(coc-diagnostic-prev-error)
-nmap <silent> ]G <Plug>(coc-diagnostic-next-error)
+nmap <silent> [G <Plug>(coc-diagnostic-prev)
+nmap <silent> ]G <Plug>(coc-diagnostic-next)
+nmap <silent> [g <Plug>(coc-diagnostic-prev-error)
+nmap <silent> ]g <Plug>(coc-diagnostic-next-error)
 
 " === vim-better-whitespace === "
 "   <leader>y - Automatically remove trailing whitespace
