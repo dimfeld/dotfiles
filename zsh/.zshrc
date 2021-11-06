@@ -151,8 +151,21 @@ ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 zplug 'zplug/zplug', hook-build:'zplug --self-manage'
 zplug "plugins/ssh-agent", from:oh-my-zsh
 zplug "plugins/git", from:oh-my-zsh
-zplug "zsh-users/zsh-syntax-highlighting", defer:2
-# zplug "zsh-users/zsh-autosuggestions", defer:2
+zplug "Aloxaf/fzf-tab", defer:2
+zplug "zsh-users/zsh-syntax-highlighting", defer:3
+# zplug "zsh-users/zsh-autosuggestions", defer:3
+
+zstyle ':completion:*:git-checkout:*' sort false
+zstyle ':completion:*:git-switch:*' sort false
+# Enable completion list colorizing
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# preview directory's content with exa when completing cd
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+#
+# Do preview in tmux popup when available
+# zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+# Extra padding to make space for preview in tmux popup
+# zstyle ':fzf-tab:complete:cd:*' popup-pad 30 0
 
 if ! zplug check; then
     zplug install
