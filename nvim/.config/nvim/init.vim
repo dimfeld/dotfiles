@@ -65,6 +65,7 @@ set updatetime=300
 let g:cursorhold_updatetime = 100
 
 set textwidth=120
+set formatoptions-=t
 
 " Code Settings
 "
@@ -598,6 +599,7 @@ set relativenumber
 augroup markdown
   autocmd!
   autocmd BufRead,BufNewFile *.md setlocal spell
+  autocmd BufRead,BufNewFile *.md setlocal formatoptions+=t
 augroup END
 
 
