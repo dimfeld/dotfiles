@@ -1,6 +1,8 @@
 #!/bin/bash
 set -x
 
+mkdir -p ~/bin
+
 echo "Installing zplug"
 curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
 
