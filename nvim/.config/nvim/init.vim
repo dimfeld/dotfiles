@@ -67,6 +67,10 @@ let g:cursorhold_updatetime = 100
 set textwidth=120
 set formatoptions-=t
 
+" Scroll window without moving cursor
+noremap z<Up> 10<c-e>
+noremap z<Down> 10<c-y>
+
 " Code Settings
 "
 
