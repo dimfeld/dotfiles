@@ -84,7 +84,8 @@ let g:svelte_preprocessors = ['typescript', 'postcss', 'scss']
 
 augroup SvelteFiles
   au!
-  au BufRead,BufNewFile *.svench set filetype=svelte
+  au BufRead,BufNewFile *.svench setfiletype svelte
+  au BufWritePre *.svench noautocmd call prettier#Autoformat()
   au FileType svelte setlocal formatoptions+=ro
 augroup END
 
@@ -193,7 +194,8 @@ function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
     execute 'h '.expand('<cword>')
   elseif (coc#rpc#ready())
-    call CocActionAsync('showSignatureHelp', function('<SID>hover_callback'))
+    call CocActionAsync('doHover')
+    " call CocActionAsync('showSignatureHelp', function('<SID>hover_callback'))
   else
     execute '!' . &keywordprg . " " . expand('<cword>')
   endif
