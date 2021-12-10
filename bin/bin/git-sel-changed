@@ -27,12 +27,17 @@ if [ -n "${ABSOLUTE}" ]; then
   BASE_DIR="${PWD}/"
 fi
 
+CUT=cut
+if [ `which gcut` ]; then
+  CUT=gcut
+fi
+
 # -z does NUL-terminated outputs, puts new filenames first for renamed files,
 # etc.  -u includes untracked files.
 git status -u -z --porcelain | \
   # Take from the 4th character up to end-of-line (first 3 are status chars):
-  cut -z -c4- | \
+  $CUT -z -c4- | \
   # IFF we're inside a tmux, fzf-tmux will pop up in a separate pane:
-  fzf-tmux --multi --read0 --print0 "${@}" | \
+  fzf-tmux --multi --read0 --print0 "${@}" --preview "git diff --color ${BASE_DIR}{}" | \
   # This is ridiculous, but I never know how to combine stdin and args:
   xargs -0 -I{} -n1 echo "${BASE_DIR}{}"
