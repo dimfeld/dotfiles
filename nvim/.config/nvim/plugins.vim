@@ -45,16 +45,23 @@ Plug 'tpope/vim-eunuch'
 
 Plug 'tpope/vim-unimpaired'
 
+Plug 'tpope/vim-abolish'
+
 " Improved motion in Vim
 Plug 'ggandor/lightspeed.nvim'
 
 " Autoadd closing parentheses, brackets, etc.
 Plug 'windwp/nvim-autopairs'
 
+" Show popup with key combo info
+Plug 'folke/which-key.nvim'
+
 " Telescope fuzzy finder
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim'
+" Plug 'nvim-telescope/telescope.nvim'
+Plug 'dimfeld/telescope.nvim'
+Plug 'nvim-telescope/telescope-file-browser.nvim'
 
 " Treesitter for file syntax parsing used by other extensions
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -75,9 +82,6 @@ Plug 'tpope/vim-fugitive'
 " === Javascript Plugins === "
 " Typescript syntax highlighting
 Plug 'HerringtonDarkholme/yats.vim'
-
-" ReactJS JSX syntax highlighting
-Plug 'mxw/vim-jsx'
 
 " Generate JSDoc commands based on function signature
 Plug 'heavenshell/vim-jsdoc'
@@ -111,7 +115,7 @@ Plug 'othree/yajs.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'fannheyward/telescope-coc.nvim'
 Plug 'dimfeld/coc-svelte', {'branch': 'updates', 'do': 'yarn install --frozen-lockfile && yarn build'}
-Plug 'rodrigore/coc-tailwind-intellisense', {'do': 'npm install'}
+" Plug 'rodrigore/coc-tailwind-intellisense', {'do': 'npm install'}
 
 Plug 'leafOfTree/vim-svelte-plugin'
 Plug 'cakebaker/scss-syntax.vim'

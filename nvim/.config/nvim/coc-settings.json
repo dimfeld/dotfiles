@@ -10,24 +10,66 @@
   "diagnostic.refreshOnInsertMode": false,
   "diagnostic.checkCurrentLine": true,
   "diagnostic.virtualText": true,
+  "eslint.probe": ["javascript","javascript.jsx", "javascriptreact","typescript","typescriptreact","html","vue","markdown"],
   "html.autoClosingTags": false,
   "javascript.format.enabled": false,
   "typescript.format.enabled": false,
-  "typescript.preferences.importModuleSpecifier": "non-relative",
-  "javascript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.preferences.importModuleSpecifier": "shortest",
+  "javascript.preferences.importModuleSpecifier": "shortest",
   "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
   "javascript.suggest.includeAutomaticOptionalChainCompletions": true,
   "rust-analyzer.rustfmt.extraArgs": ["+nightly"],
   "rust-analyzer.checkOnSave.enable": true,
   "rust-analyzer.checkOnSave.command": "clippy",
   "svelte.enable-ts-plugin": true,
-  "svelte.plugin.html.tagComplete.enable": true,
+  "svelte.plugin.svelte.useNewTransformation": true,
   "coc.preferences.rootPatterns": [
     ".git",
     ".hg",
     "package.json",
     "Cargo.toml"
   ],
+  "languageserver": {
+    "tailwind-lsp": {
+      "command": "tailwindcss-language-server",
+      "args": ["--stdio"],
+
+      "filetypes": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "svelte"
+      ],
+
+      "rootPatterns": [
+        "tailwind.config.js",
+        "tailwind.config.cjs",
+        "tailwind.config.ts",
+        "postcss.config.js",
+        "postcss.config.ts",
+        "package.json",
+        "node_modules",
+        ".git"
+      ],
+      "settings": {
+        "tailwindCSS": {
+          "validate": true,
+          "lint": {
+            "cssConflict": "warning",
+            "invalidApply": "error",
+            "invalidScreen": "error",
+            "invalidVariant": "error",
+            "invalidConfigPath": "error",
+            "invalidTailwindDirective": "error",
+            "recommendedVariantOrder": "warning"
+          },
+          "classAttributes": ["class", "className", "classList", "ngClass"],
+          "experimental": {}
+        }
+      }
+    }
+  },
   "suggest.completionItemKindLabels": {
     "keyword": "\uf1de",
     "variable": "\ue79b",

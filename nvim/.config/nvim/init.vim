@@ -21,9 +21,6 @@ let g:mapleader=','
 " Don't show last command
 set noshowcmd
 
-" Yank and paste with the system clipboard
-set clipboard=unnamed
-
 " Hides buffers instead of closing them
 set hidden
 
@@ -171,7 +168,7 @@ autocmd! CompleteDone * if pumvisible() == 0 && getcmdwintype () == '' | pclose 
 
  " Use K to show documentation in preview window.
 nnoremap <silent> K <cmd>call <SID>toggle_documentation()<CR>
-inoremap <silent> <c-k> <c-o><cmd>call <SID>toggle_documentation()<CR>
+inoremap <silent> <c-k> <c-o><cmd>call <SID>toggle_signature_help()<CR>
 
 " Symbol renaming.
 nmap <leader>rn <Plug>(coc-rename)
@@ -181,6 +178,14 @@ function! s:toggle_documentation()
     call coc#float#close_all()
   else
     call <SID>show_documentation()
+  endif
+endfunction
+
+function! s:toggle_signature_help()
+  if (coc#float#has_float() > 0)
+    call coc#float#close_all()
+  else
+    call CocActionAsync('showSignatureHelp', function('<SID>hover_callback'))
   endif
 endfunction
 
@@ -195,7 +200,6 @@ function! s:show_documentation()
     execute 'h '.expand('<cword>')
   elseif (coc#rpc#ready())
     call CocActionAsync('doHover')
-    " call CocActionAsync('showSignatureHelp', function('<SID>hover_callback'))
   else
     execute '!' . &keywordprg . " " . expand('<cword>')
   endif
@@ -255,6 +259,8 @@ lua <<EOF
 
 local npairs = require'nvim-autopairs'
 local remap = vim.api.nvim_set_keymap
+
+-- require('which-key').setup{}
 
 _G.MUtils= {}
 MUtils.completion_confirm=function()
@@ -490,6 +496,7 @@ colorscheme OceanicNext
 " === Telescope finder shortcuts ===
 lua require('telescope').load_extension('coc')
 lua require('telescope').load_extension('dap')
+lua require("telescope").load_extension "file_browser"
 nnoremap <silent> ; :lua require('telescope.builtin').buffers()<cr>
 nnoremap <silent> <leader>t :lua require('telescope.builtin').find_files()<cr>
 nnoremap <silent> <leader>T :lua require('telescope.builtin').git_files()<cr>
@@ -497,8 +504,8 @@ nnoremap <silent> <leader>qf :lua require('telescope.builtin').quickfix()<cr>
 nnoremap <silent> <leader>L :lua require('telescope.builtin').loclist()<cr>
 nnoremap <silent> <leader>g :lua require('telescope.builtin').live_grep()<cr>
 nnoremap <silent> <leader>G :call <SID>telescope_grep_on_git_repo()<cr>
-nnoremap <silent> <leader>n :lua require('telescope.builtin').file_browser({ cwd=require('telescope.utils').buffer_dir() })<cr>
-nnoremap <silent> <leader>N :lua require('telescope.builtin').file_browser()<cr>
+nnoremap <silent> <leader>n :lua require('telescope').extensions.file_browser.file_browser({ cwd=require('telescope.utils').buffer_dir() })<cr>
+nnoremap <silent> <leader>N :lua require('telescope').extensions.file_browser.file_browser()<cr>
 nnoremap <silent> <leader>J :lua require('telescope.builtin').grep_string()<cr>
 nnoremap <silent> <leader>v :lua require('telescope.builtin').treesitter()<cr>
 nnoremap <silent> <leader>dl :Telescope coc document_diagnostics<cr>
@@ -543,6 +550,9 @@ nmap <leader>y :StripWhitespace<CR>
 " === Search shorcuts === "
 "   <leader>/ - Clear highlighted search terms while preserving history
 nmap <silent> <leader>/ <cmd>nohlsearch<CR>
+
+" Repeat last command over visual selection
+xnoremap <Leader>. q:<UP>I'<,'><Esc>$
 "
 " === Lightspeed Shortcuts
 " Unmap s and S to get default behavior back.
@@ -552,8 +562,8 @@ try
 catch
 endtry
 
-map <silent> f <Plug>Lightspeed_s<c-x>
-map <silent> F <Plug>Lightspeed_S<c-x>
+map <silent> f <Plug>Lightspeed_s
+map <silent> F <Plug>Lightspeed_S
 
 " Allows you to save files you opened without write permissions via sudo
 cmap w!! w !sudo tee %
@@ -569,6 +579,10 @@ vnoremap <leader>p "_dP
 
 " Delete current selection without yanking
 vnoremap <leader>d "_d
+
+" Copy last yanked/deleted text into register a.
+" For when you want to save into a register but forgot when you ran deleted.
+nmap <leader>s <cmd>let @a=@"<CR>
 
 " Change to the directory of the current file
 command! Cdme cd %:p:h
@@ -599,7 +613,7 @@ set autoread
 
 " Enable relative line numbers
 set number
-set relativenumber
+" set relativenumber
 
 " Enable spellcheck for markdown files
 augroup markdown

@@ -2,13 +2,17 @@
 # Sudo command at the start so I don't have to type the password halfway through
 # later.
 sudo echo
-sudo pnpm --global update
+if [ "$(uname)" = "Darwin" ]; then
+  pnpm --global update
+else
+  # Ugh need to fix this
+  sudo pnpm --global update
+fi
 rustup update stable
 cargo install-update --all
 
 if [ "$(uname)" == "Darwin" ]; then
   brew upgrade
-  brew upgrade neovim --fetch-HEAD
 elif [ -f "$(which apt)" ]; then
   sudo apt update && apt list --upgradable && sudo apt dist-upgrade
   sudo apt autoremove

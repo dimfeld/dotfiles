@@ -172,14 +172,14 @@ if ! zplug check; then
 fi
 zplug load
 
-eval "$(zoxide init zsh)"
-eval "$(starship init zsh)"
-
 source ~/.aliases.zsh
 source ~/.keybindings.zsh
 
 [ -f ~/.zprofile ] && source ~/.zprofile
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+eval "$(zoxide init zsh)"
+eval "$(starship init zsh)"
 
 # Use this if it's defined in the local file
 export DN_DISCORD_WEBHOOK=${DISCORD_WEBHOOK}
