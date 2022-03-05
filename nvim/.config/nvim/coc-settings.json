@@ -10,7 +10,7 @@
   "diagnostic.refreshOnInsertMode": false,
   "diagnostic.checkCurrentLine": true,
   "diagnostic.virtualText": true,
-  "eslint.probe": ["javascript","javascript.jsx", "javascriptreact","typescript","typescriptreact","html","vue","markdown"],
+  "eslint.probe": ["javascript","javascript.jsx", "javascriptreact","typescript","typescriptreact","html","vue","markdown","svelte"],
   "html.autoClosingTags": false,
   "javascript.format.enabled": false,
   "typescript.format.enabled": false,
