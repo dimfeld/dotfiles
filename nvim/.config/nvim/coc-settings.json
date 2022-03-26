@@ -18,6 +18,10 @@
   "javascript.preferences.importModuleSpecifier": "shortest",
   "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
   "javascript.suggest.includeAutomaticOptionalChainCompletions": true,
+  "typescript.inlayHints.variableTypes.enabled": true,
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "typescript.inlayHints.parameterNames.enabled": "all",
+  "javascript.inlayHints.parameterNames.enabled": "all",
   "rust-analyzer.rustfmt.extraArgs": ["+nightly"],
   "rust-analyzer.checkOnSave.enable": true,
   "rust-analyzer.checkOnSave.command": "clippy",
@@ -29,12 +33,18 @@
     "package.json",
     "Cargo.toml"
   ],
+  "workspace.ignoredFolders": [
+    "$HOME",
+    "~/Documents/cv/code",
+    "~/cv/code"
+  ],
   "languageserver": {
     "tailwind-lsp": {
       "command": "tailwindcss-language-server",
       "args": ["--stdio"],
 
       "filetypes": [
+        "html",
         "javascript",
         "javascriptreact",
         "typescript",

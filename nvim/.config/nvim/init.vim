@@ -494,15 +494,28 @@ colorscheme OceanicNext
 " ============================================================================ "
 
 " === Telescope finder shortcuts ===
+lua <<EOF
+  local telescope = require('telescope.builtin')
+  MUtils.findFilesInCocWorkspace = function()
+    local currentWorkspace = vim.fn.CocAction('currentWorkspacePath')
+    telescope.find_files({ cwd=currentWorkspace })
+  end
+
+  MUtils.liveGrepInCocWorkspace = function()
+    local currentWorkspace = vim.fn.CocAction('currentWorkspacePath')
+    telescope.live_grep({ cwd=currentWorkspace })
+  end
+EOF
+
 lua require('telescope').load_extension('coc')
 lua require('telescope').load_extension('dap')
 lua require("telescope").load_extension "file_browser"
 nnoremap <silent> ; :lua require('telescope.builtin').buffers()<cr>
-nnoremap <silent> <leader>t :lua require('telescope.builtin').find_files()<cr>
+nnoremap <silent> <leader>t :lua _G.MUtils.findFilesInCocWorkspace()<cr>
 nnoremap <silent> <leader>T :lua require('telescope.builtin').git_files()<cr>
 nnoremap <silent> <leader>qf :lua require('telescope.builtin').quickfix()<cr>
 nnoremap <silent> <leader>L :lua require('telescope.builtin').loclist()<cr>
-nnoremap <silent> <leader>g :lua require('telescope.builtin').live_grep()<cr>
+nnoremap <silent> <leader>g :lua _G.MUtils.liveGrepInCocWorkspace()<cr>
 nnoremap <silent> <leader>G :call <SID>telescope_grep_on_git_repo()<cr>
 nnoremap <silent> <leader>n :lua require('telescope').extensions.file_browser.file_browser({ cwd=require('telescope.utils').buffer_dir() })<cr>
 nnoremap <silent> <leader>N :lua require('telescope').extensions.file_browser.file_browser()<cr>
