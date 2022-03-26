@@ -59,8 +59,7 @@ Plug 'folke/which-key.nvim'
 " Telescope fuzzy finder
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
-" Plug 'nvim-telescope/telescope.nvim'
-Plug 'dimfeld/telescope.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-file-browser.nvim'
 
 " Treesitter for file syntax parsing used by other extensions
@@ -68,6 +67,7 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 Plug 'prettier/vim-prettier', {
   \ 'do': 'yarn install',
+  \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html']
   \ }
 
 " Better terminal
