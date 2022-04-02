@@ -404,7 +404,8 @@ set splitbelow
 set noshowmode
 
 " Set floating window to be slightly transparent
-set winbl=10
+" TEMP - disable transparency until it looks right with Warp
+set winblend=0
 
 nmap <silent> <M-h> :bp<CR>
 nmap <silent> <M-l> :bn<CR>
@@ -495,13 +496,19 @@ colorscheme OceanicNext
 
 " === Telescope finder shortcuts ===
 lua <<EOF
+  function waitForCocLoaded()
+    vim.wait(2000, function() return vim.g.coc_service_initialized == 1 end, 50)
+  end
+
   local telescope = require('telescope.builtin')
   MUtils.findFilesInCocWorkspace = function()
+    waitForCocLoaded()
     local currentWorkspace = vim.fn.CocAction('currentWorkspacePath')
     telescope.find_files({ cwd=currentWorkspace })
   end
 
   MUtils.liveGrepInCocWorkspace = function()
+    waitForCocLoaded()
     local currentWorkspace = vim.fn.CocAction('currentWorkspacePath')
     telescope.live_grep({ cwd=currentWorkspace })
   end
@@ -658,6 +665,12 @@ imap <C-a> <C-o>^
 imap <C-e> <C-o>$
 map <C-a> ^
 map <C-e> $
+
+imap <M-Left> <C-o>b
+imap <M-Right> <C-o>w
+map <M-Left> b
+map <M-Right> w
+
 imap <M-b> <C-o>b
 imap <M-f> <C-o>w
 map <M-b> b
