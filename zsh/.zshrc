@@ -111,8 +111,10 @@ fpath+=~/.zsh-functions
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 
-export ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX=YES
-[ -f ~/.iterm2_shell_integration.zsh ] && source ~/.iterm2_shell_integration.`basename $SHELL`
+if [[ $TERM_PROGRAM != "WarpTerminal" ]]; then
+  export ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX=YES
+  [ -f ~/.iterm2_shell_integration.zsh ] && source ~/.iterm2_shell_integration.`basename $SHELL`
+fi
 
 iterm2_print_user_vars() {
   it2git
