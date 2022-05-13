@@ -1,0 +1,14 @@
+# Tell git-sh-setup we're ok with being in a subdir:
+SUBDIRECTORY_OK=1
+
+. "$(git --exec-path)/git-sh-setup"
+
+# Make sure we're in a working tree
+require_work_tree_exists
+
+# Jump to top level so we can use $PWD below to print absolute paths
+# (this seems easier than trying to figure out relative paths from
+# porcelained git-status output):
+cd_to_toplevel
+
+echo $PWD

@@ -2,6 +2,10 @@ scriptencoding utf-8
 
 let g:BufKillCreateMappings = 0
 
+" Use Lua filetype detection
+let g:do_filetype_lua=1
+let g:did_load_filetypes=0
+
 source ~/.config/nvim/plugins.vim
 
 let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
@@ -9,6 +13,9 @@ let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
 " ============================================================================ "
 " ===                           EDITING OPTIONS                            === "
 " ============================================================================ "
+
+" Enable matchit for better % behavior
+runtime macros/matchit.vim
 
 set guifont=Inconsolata:h14
 let g:neovide_remember_window_size=v:true
@@ -81,7 +88,7 @@ let g:svelte_preprocessors = ['typescript', 'postcss', 'scss']
 
 augroup SvelteFiles
   au!
-  au BufRead,BufNewFile *.svench setfiletype svelte
+  " au BufRead,BufNewFile *.svench setfiletype svelte
   au BufWritePre *.svench noautocmd call prettier#Autoformat()
   au FileType svelte setlocal formatoptions+=ro
 augroup END
@@ -106,7 +113,11 @@ function! OnChangeSvelteSubtype(subtype)
   endif
 endfunction
 
-iabbrev </ </<C-X><C-O>
+augroup ClosingTag
+  au!
+  " au FileType html iabbrev </ </<C-X><C-O>
+  " au FileType svelte iabbrev </ </<C-X><C-O>
+augroup END
 
 "" Rust
 augroup RustFiles
@@ -282,7 +293,6 @@ local Rule = require('nvim-autopairs.rule')
 local cond = require('nvim-autopairs.conds')
 
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = "maintained",
   context_commentstring = {
     enable = true
   },
@@ -320,7 +330,7 @@ require('lualine').setup({
       right = ''
     },
     section_separators = {
-      left = '', 
+      left = '',
       right = ''
     },
     disabled_filetypes = {}
@@ -372,6 +382,20 @@ function _G.set_terminal_keymaps()
   vim.api.nvim_buf_set_keymap(0, 't', '<esc><esc>', term_escape, { noremap = true })
 end
 
+-- Debugging
+local dap, dapui = require("dap"), require("dapui")
+dapui.setup()
+
+dap.listeners.after.event_initialized["dapui_config"] = function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated["dapui_config"] = function()
+  dapui.close()
+end
+dap.listeners.before.event_exited["dapui_config"] = function()
+  dapui.close()
+end
+
 EOF
 
 augroup TermKeys
@@ -404,8 +428,7 @@ set splitbelow
 set noshowmode
 
 " Set floating window to be slightly transparent
-" TEMP - disable transparency until it looks right with Warp
-set winblend=0
+set winblend=10
 
 nmap <silent> <M-h> :bp<CR>
 nmap <silent> <M-l> :bn<CR>
@@ -518,7 +541,8 @@ lua require('telescope').load_extension('coc')
 lua require('telescope').load_extension('dap')
 lua require("telescope").load_extension "file_browser"
 nnoremap <silent> ; :lua require('telescope.builtin').buffers()<cr>
-nnoremap <silent> <leader>t :lua _G.MUtils.findFilesInCocWorkspace()<cr>
+nnoremap <silent> <leader>u :lua _G.MUtils.findFilesInCocWorkspace()<cr>
+nnoremap <silent> <leader>t :lua require('telescope.builtin').find_files()<cr>
 nnoremap <silent> <leader>T :lua require('telescope.builtin').git_files()<cr>
 nnoremap <silent> <leader>qf :lua require('telescope.builtin').quickfix()<cr>
 nnoremap <silent> <leader>L :lua require('telescope.builtin').loclist()<cr>
@@ -528,12 +552,15 @@ nnoremap <silent> <leader>n :lua require('telescope').extensions.file_browser.fi
 nnoremap <silent> <leader>N :lua require('telescope').extensions.file_browser.file_browser()<cr>
 nnoremap <silent> <leader>J :lua require('telescope.builtin').grep_string()<cr>
 nnoremap <silent> <leader>v :lua require('telescope.builtin').treesitter()<cr>
+nnoremap <silent> <leader>l :lua require('telescope.builtin').resume()<cr>
 nnoremap <silent> <leader>dl :Telescope coc document_diagnostics<cr>
 nnoremap <silent> <leader>wl :Telescope coc workspace_diagnostics<cr>
 nnoremap <silent> <leader>k :Telescope coc commands<cr>
 nnoremap <silent> <leader>dr :Telescope coc references<cr>
 nnoremap <silent> <leader>ds :Telescope coc document_symbols<cr>
 nnoremap <silent> <leader>ws :Telescope coc workspace_symbols<cr>
+
+command! Debug lua require'telescope'.extensions.dap.commands{}
 
 function! s:telescope_grep_on_git_repo()
   execute "lua require('telescope.builtin').live_grep({search_dirs={'".trim(system("git rev-parse --show-toplevel"))."'}})"
@@ -695,6 +722,15 @@ let g:prettier#quickfix_enabled = 0
 let g:prettier#quickfix_auto_focus = 0
 let g:prettier#autoformat_require_pragma = 0
 let g:prettier#autoformat_config_present = 1
+let g:prettier#autoformat_config_files = [
+      \'.prettierrc',
+      \'.prettierrc.yml',
+      \'.prettierrc.yaml',
+      \'.prettierrc.js',
+      \'.prettierrc.config.js',
+      \'.prettierrc.json',
+      \'.prettierrc.toml',
+      \'prettier.config.js']
 let g:prettier#exec_cmd_async = 1
 
 " If we do want to see the quickfix box, use this.
