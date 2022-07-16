@@ -231,6 +231,18 @@ vnoremap <silent> <leader>y <cmd>OSCYank<CR>
 " Add `:Format` command to format current buffer.
 command! -nargs=0 Format :call CocAction('format')
 
+augroup PrettierFormatting
+  au!
+  au BufWritePost *.cjs FormatWrite
+  au BufWritePost *.css FormatWrite
+  au BufWritePost *.js FormatWrite
+  au BufWritePost *.json FormatWrite
+  au BufWritePost *.mjs FormatWrite
+  au BufWritePost *.pcss FormatWrite
+  au BufWritePost *.svelte FormatWrite
+  au BufWritePost *.ts FormatWrite
+augroup END
+
 " Add `:OR` command for organize imports of the current buffer.
 command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
 
@@ -268,21 +280,23 @@ augroup END
 
 lua <<EOF
 
+require('config.core')
+require('config.formatters')
+
 local npairs = require'nvim-autopairs'
-local remap = vim.api.nvim_set_keymap
 
 -- require('which-key').setup{}
 
 _G.MUtils= {}
 MUtils.completion_confirm=function()
   if vim.fn.pumvisible() ~= 0  then
-      return npairs.esc("<cr>")
+    return npairs.esc("<cr>")
   else
     return npairs.autopairs_cr()
   end
 end
 
-remap('i', '<CR>', 'v:lua.MUtils.completion_confirm()', {expr = true , noremap = true})
+vim.keymap.set('i', '<CR>', MUtils.completion_confirm)
 
 npairs.setup({
   check_ts = true,
@@ -541,11 +555,14 @@ lua require('telescope').load_extension('coc')
 lua require('telescope').load_extension('dap')
 lua require("telescope").load_extension "file_browser"
 nnoremap <silent> ; :lua require('telescope.builtin').buffers()<cr>
-nnoremap <silent> <leader>u :lua _G.MUtils.findFilesInCocWorkspace()<cr>
-nnoremap <silent> <leader>t :lua require('telescope.builtin').find_files()<cr>
+nnoremap <silent> <leader>t :lua _G.MUtils.findFilesInCocWorkspace()<cr>
+nnoremap <silent> <leader>u :lua require('telescope.builtin').find_files()<cr>
 nnoremap <silent> <leader>T :lua require('telescope.builtin').git_files()<cr>
 nnoremap <silent> <leader>qf :lua require('telescope.builtin').quickfix()<cr>
+nnoremap <silent> <leader>qh :lua require('telescope.builtin').quickfixhistory()<cr>
 nnoremap <silent> <leader>L :lua require('telescope.builtin').loclist()<cr>
+nnoremap <silent> <leader>: :lua require('telescope.builtin').command_history()<cr>
+nnoremap <silent> <leader>h :lua require('telescope.builtin').search_history()<cr>
 nnoremap <silent> <leader>g :lua _G.MUtils.liveGrepInCocWorkspace()<cr>
 nnoremap <silent> <leader>G :call <SID>telescope_grep_on_git_repo()<cr>
 nnoremap <silent> <leader>n :lua require('telescope').extensions.file_browser.file_browser({ cwd=require('telescope.utils').buffer_dir() })<cr>
@@ -581,7 +598,6 @@ nmap <C-l> <C-w>l
 "   <leader>dj    - Jump to implementation of current symbol
 "   <leader>ds    - Fuzzy search current project symbols
 nmap <silent> <leader>dd <Plug>(coc-definition)
-" nmap <silent> <leader>dr <Plug>(coc-references)
 nmap <silent> <leader>dj <Plug>(coc-implementation)
 " nnoremap <silent> <leader>ds :<C-u>CocList -I -N --top symbols<CR>
 nmap <silent> <leader>dg <Plug>(coc-diagnostic-info)
@@ -712,9 +728,11 @@ endfunction
 
 " Quick run macro q
 nnoremap <Tab> @q
+" Clear it on startup so that we don't inadvertently run old macros from previous sessions.
+let @q = ''
 
 command! EditInit e ~/.config/nvim/init.vim
-command! ReloadInit source ~/.config/nvim/init.vim
+command! ReloadInit lua reload_nvim_conf()
 
 " Prettier Settings
 " Disable quickfix by default since it runs on every save

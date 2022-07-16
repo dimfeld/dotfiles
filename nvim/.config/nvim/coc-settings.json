@@ -1,5 +1,4 @@
 {
-  "suggest.echodocSupport": true,
   "suggest.maxCompleteItemCount": 20,
   "coc.preferences.formatOnSaveFiletypes": ["go", "rust"],
   "diagnostic.errorSign": "•",
@@ -10,7 +9,17 @@
   "diagnostic.refreshOnInsertMode": false,
   "diagnostic.checkCurrentLine": true,
   "diagnostic.virtualText": true,
-  "eslint.probe": ["javascript","javascript.jsx", "javascriptreact","typescript","typescriptreact","html","vue","markdown","svelte"],
+  "eslint.probe": [
+    "javascript",
+    "javascript.jsx",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "html",
+    "vue",
+    "markdown",
+    "svelte"
+  ],
   "html.autoClosingTags": false,
   "javascript.format.enabled": false,
   "typescript.format.enabled": false,
@@ -22,22 +31,18 @@
   "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
   "typescript.inlayHints.parameterNames.enabled": "all",
   "javascript.inlayHints.parameterNames.enabled": "all",
+
+  "svelte.enable-ts-plugin": true,
+  "svelte.plugin.svelte.useNewTransformation": true,
+
   "rust-analyzer.rustfmt.extraArgs": ["+nightly"],
   "rust-analyzer.checkOnSave.enable": true,
   "rust-analyzer.checkOnSave.command": "clippy",
-  "svelte.enable-ts-plugin": true,
-  "svelte.plugin.svelte.useNewTransformation": true,
-  "coc.preferences.rootPatterns": [
-    ".git",
-    ".hg",
-    "package.json",
-    "Cargo.toml"
-  ],
-  "workspace.ignoredFolders": [
-    "$HOME",
-    "~/Documents/cv/code",
-    "~/cv/code"
-  ],
+  "rust-analyzer.inlayHints.enable": true,
+
+  "coc.preferences.rootPatterns": [".git", ".hg", "package.json", "Cargo.toml"],
+  "workspace.ignoredFolders": ["$HOME", "~/Documents/cv/code", "~/cv/code"],
+
   "languageserver": {
     "tailwind-lsp": {
       "command": "tailwindcss-language-server",
@@ -80,6 +85,7 @@
       }
     }
   },
+
   "suggest.completionItemKindLabels": {
     "keyword": "\uf1de",
     "variable": "\ue79b",
@@ -110,5 +116,5 @@
   },
   "suggest.localityBonus": true,
   "suggest.enablePreview": true,
-  "suggest.removeDuplicateItems":  true
+  "suggest.removeDuplicateItems": true
 }
