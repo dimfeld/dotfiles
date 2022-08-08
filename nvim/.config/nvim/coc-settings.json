@@ -1,5 +1,4 @@
 {
-  "suggest.maxCompleteItemCount": 20,
   "coc.preferences.formatOnSaveFiletypes": ["go", "rust"],
   "diagnostic.errorSign": "•",
   "diagnostic.warningSign": "•",
@@ -114,7 +113,6 @@
     "typeParameter": "\uf728",
     "default": "\uf29c"
   },
-  "suggest.localityBonus": true,
-  "suggest.enablePreview": true,
-  "suggest.removeDuplicateItems": true
+  "suggest.noselect": true,
+  "suggest.virtualText": true
 }

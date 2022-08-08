@@ -162,20 +162,16 @@ function! s:check_back_space() abort
 endfunction
 "
 inoremap <silent><expr> <TAB>
-       \ pumvisible() ? "\<C-n>" :
+       \ coc#pum#visible() ? coc#pum#next(1) :
        \ <SID>check_back_space() ? "\<TAB>" :
        \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
 " Enter confirms completion if one has been selected.
-inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-inoremap <expr> <up> pumvisible() ? '<c-y><up>' : '<up>'
-inoremap <expr> <down> pumvisible() ? '<c-y><down>' : '<down>'
-inoremap <expr> <left> pumvisible() ? '<c-y><left>' : '<left>'
-inoremap <expr> <right> pumvisible() ? '<c-y><right>' : '<right>'
+inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>"
 
 " Close preview window when completion is done.
-autocmd! CompleteDone * if pumvisible() == 0 && getcmdwintype () == '' | pclose | endif
+autocmd! CompleteDone * if coc#pum#visible() == 0 && getcmdwintype () == '' | pclose | endif
 
  " Use K to show documentation in preview window.
 nnoremap <silent> K <cmd>call <SID>toggle_documentation()<CR>
@@ -221,7 +217,7 @@ inoremap <silent><expr> <c-space> coc#refresh()
 
 " Use <leader>c to trigger code action in autocomplete popup, like autoimport.
 inoremap <silent><expr> <leader>c
-    \ pumvisible() ? "<c-g>u" : "<leader>c"
+    \ coc#pum#visible() ? "<c-g>u" : "<leader>c"
 " When not in import mode, run code action on current line (usually auto-import)
 nmap <leader>al <Plug>(coc-codeaction-line)
 nmap <leader>ac <Plug>(coc-codeaction-cursor)
@@ -289,7 +285,7 @@ local npairs = require'nvim-autopairs'
 
 _G.MUtils= {}
 MUtils.completion_confirm=function()
-  if vim.fn.pumvisible() ~= 0  then
+  if vim.fn['coc#pum#visible']() ~= 0  then
     return npairs.esc("<cr>")
   else
     return npairs.autopairs_cr()
