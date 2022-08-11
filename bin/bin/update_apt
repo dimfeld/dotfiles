@@ -2,12 +2,7 @@
 # Sudo command at the start so I don't have to type the password halfway through
 # later.
 sudo echo
-if [ "$(uname)" = "Darwin" ]; then
-  pnpm --global update
-else
-  # Ugh need to fix this
-  sudo pnpm --global update
-fi
+pnpm --global update
 rustup update stable
 cargo install-update --all
 
