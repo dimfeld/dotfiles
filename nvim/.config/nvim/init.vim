@@ -467,6 +467,8 @@ function! s:custom_jarvis_colors()
   hi link CocWarningSign Number
   hi link CocInfoSign Type
 
+  hi! CocMenuSel ctermbg=7 ctermfg=0 guifg=#111111 guibg=#aaaaff
+
   " Make background transparent for many things
   hi Normal ctermbg=NONE guibg=NONE
   hi NonText ctermbg=NONE guibg=NONE
