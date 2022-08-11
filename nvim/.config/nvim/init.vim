@@ -169,6 +169,10 @@ inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
 " Enter confirms completion if one has been selected.
 inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>"
+inoremap <expr> <up> coc#pum#visible() ? '<c-y><up>' : '<up>'
+inoremap <expr> <down> coc#pum#visible() ? '<c-y><down>' : '<down>'
+inoremap <expr> <left> coc#pum#visible() ? '<c-y><left>' : '<left>'
+inoremap <expr> <right> coc#pum#visible() ? '<c-y><right>' : '<right>'
 
 " Close preview window when completion is done.
 autocmd! CompleteDone * if coc#pum#visible() == 0 && getcmdwintype () == '' | pclose | endif
@@ -217,7 +221,7 @@ inoremap <silent><expr> <c-space> coc#refresh()
 
 " Use <leader>c to trigger code action in autocomplete popup, like autoimport.
 inoremap <silent><expr> <leader>c
-    \ coc#pum#visible() ? "<c-g>u" : "<leader>c"
+    \ coc#pum#visible() ? coc#pum#confirm() : "<leader>c"
 " When not in import mode, run code action on current line (usually auto-import)
 nmap <leader>al <Plug>(coc-codeaction-line)
 nmap <leader>ac <Plug>(coc-codeaction-cursor)

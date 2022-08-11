@@ -114,5 +114,6 @@
     "default": "\uf29c"
   },
   "suggest.noselect": true,
-  "suggest.virtualText": true
+  "suggest.virtualText": true,
+  "suggest.maxCompleteItemCount": 20
 }
