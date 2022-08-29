@@ -1,2 +1,2 @@
 #!/bin/bash
-fd -t d -d 1 | xargs stow "${@}"
+find ./* -maxdepth 0  -type d | xargs -n1 basename | xargs stow "${@}"
