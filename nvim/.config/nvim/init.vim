@@ -169,10 +169,10 @@ inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
 " Enter confirms completion if one has been selected.
 inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>"
-inoremap <expr> <up> coc#pum#visible() ? '<c-y><up>' : '<up>'
-inoremap <expr> <down> coc#pum#visible() ? '<c-y><down>' : '<down>'
-inoremap <expr> <left> coc#pum#visible() ? '<c-y><left>' : '<left>'
-inoremap <expr> <right> coc#pum#visible() ? '<c-y><right>' : '<right>'
+inoremap <expr> <up> coc#pum#visible() ?  '<cmd>call coc#pum#stop()<CR><up>' : '<up>'
+inoremap <expr> <down> coc#pum#visible() ?  '<cmd>call coc#pum#stop()<CR><down>' : '<down>'
+inoremap <expr> <left> coc#pum#visible() ?  '<cmd>call coc#pum#stop()<CR><left>' : '<left>'
+inoremap <expr> <right> coc#pum#visible() ?  '<cmd>call coc#pum#stop()<CR><right>' : '<right>'
 
 " Close preview window when completion is done.
 autocmd! CompleteDone * if coc#pum#visible() == 0 && getcmdwintype () == '' | pclose | endif
