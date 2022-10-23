@@ -42,49 +42,6 @@
   "coc.preferences.rootPatterns": [".git", ".hg", "package.json", "Cargo.toml"],
   "workspace.ignoredFolders": ["$HOME", "~/Documents/cv/code", "~/cv/code"],
 
-  "languageserver": {
-    "tailwind-lsp": {
-      "command": "tailwindcss-language-server",
-      "args": ["--stdio"],
-
-      "filetypes": [
-        "html",
-        "javascript",
-        "javascriptreact",
-        "typescript",
-        "typescriptreact",
-        "svelte"
-      ],
-
-      "rootPatterns": [
-        "tailwind.config.js",
-        "tailwind.config.cjs",
-        "tailwind.config.ts",
-        "postcss.config.js",
-        "postcss.config.ts",
-        "package.json",
-        "node_modules",
-        ".git"
-      ],
-      "settings": {
-        "tailwindCSS": {
-          "validate": true,
-          "lint": {
-            "cssConflict": "warning",
-            "invalidApply": "error",
-            "invalidScreen": "error",
-            "invalidVariant": "error",
-            "invalidConfigPath": "error",
-            "invalidTailwindDirective": "error",
-            "recommendedVariantOrder": "warning"
-          },
-          "classAttributes": ["class", "className", "classList", "ngClass"],
-          "experimental": {}
-        }
-      }
-    }
-  },
-
   "suggest.completionItemKindLabels": {
     "keyword": "\uf1de",
     "variable": "\ue79b",

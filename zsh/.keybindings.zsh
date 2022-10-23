@@ -30,7 +30,7 @@ zle -N down-line-or-local-history
 
 
 # Use vim cli mode
-bindkey -v
+#bindkey -v
 
 # Reinstate some emacs shortcuts for convenience
 

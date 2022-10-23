@@ -65,6 +65,9 @@ Plug 'nvim-telescope/telescope-file-browser.nvim'
 " Treesitter for file syntax parsing used by other extensions
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
+" justfile highlighting
+Plug 'NoahTheDuke/vim-just'
+
 " Plug 'prettier/vim-prettier', {
 "   \ 'do': 'yarn install',
 "   \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html', 'svelte']

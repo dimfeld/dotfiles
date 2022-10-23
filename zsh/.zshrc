@@ -146,6 +146,7 @@ alias gd='git diff'
 alias ig="sk -i --ansi -c 'rg --color=always --line-number "{}"'"
 alias el="exa -l --git"
 alias cat="bat"
+alias j="just"
 
 # Must go before zsh-syntax-highlighting
 autoload -U select-word-style && select-word-style bash
@@ -190,6 +191,8 @@ eval "$(starship init zsh)"
 
 # Use this if it's defined in the local file
 export DN_DISCORD_WEBHOOK=${DISCORD_WEBHOOK}
+
+export PRETTIERD_LOCAL_PRETTIER_ONLY=true
 
 setopt auto_pushd
 

@@ -8,6 +8,7 @@ local prettier_config_files = {
   '.prettierrc.js',
   '.prettierrc.json',
   'prettier.config.js',
+  'prettier.config.cjs',
 }
 
 local prettierd = function()
@@ -35,6 +36,7 @@ local prettierd = function()
 end
 
 require('formatter').setup({
+  logging = true,
   filetype = {
     css = { prettierd },
     less = { prettierd },

@@ -18,9 +18,6 @@ let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
 runtime macros/matchit.vim
 
 set guifont=Inconsolata:h14
-let g:neovide_remember_window_size=v:true
-let g:neovide_cursor_animation_length=0.00
-let g:neovide_cursor_trail_length=0.0
 
 " Remap leader key to ,
 let g:mapleader=','
@@ -56,6 +53,8 @@ set cmdheight=1
 
 " Allow mouse clicking
 set mouse=a
+" For Warp
+"set mousescroll=ver:2,hor:4
 
 " Always show sign column so that it doesn't shift the buffer around when it
 " shows up
@@ -91,6 +90,8 @@ augroup SvelteFiles
   " au BufRead,BufNewFile *.svench setfiletype svelte
   au BufWritePre *.svench noautocmd call prettier#Autoformat()
   au FileType svelte setlocal formatoptions+=ro
+  au FileType svelte let b:coc_additional_keywords = ["-"]
+  au FileType svelte setlocal iskeyword=@,48-57,_,.,-,192-255
 augroup END
 
 let g:vim_svelte_plugin_use_typescript = 1
@@ -153,6 +154,7 @@ let g:coc_global_extensions = [
       \'coc-rust-analyzer',
       \'coc-tsserver',
       \'coc-xml',
+      \'@yaegassy/coc-tailwindcss3'
       \]
 
 " use <tab> for trigger completion and navigate to next complete item
@@ -166,6 +168,7 @@ inoremap <silent><expr> <TAB>
        \ <SID>check_back_space() ? "\<TAB>" :
        \ coc#refresh()
 inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+inoremap <expr><c-y> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
 " Enter confirms completion if one has been selected.
 inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>"
@@ -443,10 +446,9 @@ set noshowmode
 
 " Set floating window to be slightly transparent
 set winblend=10
+" Warp needs this instead
+" set winblend=0
 
-nmap <silent> <M-h> :bp<CR>
-nmap <silent> <M-l> :bn<CR>
-nmap <silent> <M-p> :b#<CR>
 nmap <silent> <leader>p :b#<CR>
 
 " ============================================================================ "
@@ -710,6 +712,21 @@ imap <C-a> <C-o>^
 imap <C-e> <C-o>$
 map <C-a> ^
 map <C-e> $
+
+imap <C-Left> <C-o>^
+imap <C-Right> <C-o>$
+map <C-Left> ^
+map <C-Right> $
+
+imap <M-h> <C-o>b
+imap <M-l> <C-o>w
+map <M-h> b
+map <M-l> w
+
+imap <M-g> <C-o>^
+imap <M-;> <C-o>$
+map <M-g> ^
+map <M-;> $
 
 imap <M-Left> <C-o>b
 imap <M-Right> <C-o>w
