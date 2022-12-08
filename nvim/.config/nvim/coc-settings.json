@@ -20,8 +20,8 @@
     "svelte"
   ],
   "html.autoClosingTags": false,
-  "javascript.format.enabled": false,
-  "typescript.format.enabled": false,
+  "javascript.format.enable": false,
+  "typescript.format.enable": false,
   "typescript.preferences.importModuleSpecifier": "shortest",
   "javascript.preferences.importModuleSpecifier": "shortest",
   "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
@@ -37,9 +37,10 @@
   "rust-analyzer.rustfmt.extraArgs": ["+nightly"],
   "rust-analyzer.checkOnSave.enable": true,
   "rust-analyzer.checkOnSave.command": "clippy",
-  "rust-analyzer.inlayHints.enable": true,
+  "rust-analyzer.inlayHints.typeHints.enable": true,
+  "rust-analyzer.completion.callable.snippets": "none",
 
-  "coc.preferences.rootPatterns": [".git", ".hg", "package.json", "Cargo.toml"],
+  "workspace.rootPatterns": [".git", ".hg", "package.json", "Cargo.toml"],
   "workspace.ignoredFolders": ["$HOME", "~/Documents/cv/code", "~/cv/code"],
 
   "suggest.completionItemKindLabels": {

@@ -24,6 +24,8 @@ call plug#begin('~/.config/nvim/plugged')
 " live preview.
 Plug '907th/vim-auto-save'
 
+Plug 'github/copilot.vim'
+
 " Command to yank to system clipboard
 Plug 'ojroques/vim-oscyank'
 
@@ -45,6 +47,7 @@ Plug 'tpope/vim-eunuch'
 
 Plug 'tpope/vim-unimpaired'
 
+" Better text replacement for replacing multiple similar words (different cases, etc)
 Plug 'tpope/vim-abolish'
 
 " Improved motion in Vim

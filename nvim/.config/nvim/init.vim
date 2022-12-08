@@ -90,8 +90,8 @@ augroup SvelteFiles
   " au BufRead,BufNewFile *.svench setfiletype svelte
   au BufWritePre *.svench noautocmd call prettier#Autoformat()
   au FileType svelte setlocal formatoptions+=ro
-  au FileType svelte let b:coc_additional_keywords = ["-"]
-  au FileType svelte setlocal iskeyword=@,48-57,_,.,-,192-255
+  " au FileType svelte let b:coc_additional_keywords = ["-"]
+  " au FileType svelte setlocal iskeyword=@,48-57,_,.,-,192-255
 augroup END
 
 let g:vim_svelte_plugin_use_typescript = 1
@@ -163,10 +163,17 @@ function! s:check_back_space() abort
   return !col || getline('.')[col - 1]  =~ '\s'
 endfunction
 "
+
+" Handling this manually so that copilot doesn't take precedence over the autocomplete.
+let g:copilot_no_tab_map = v:true
+" Copilot.vim doesn't work on node 18 yet
+let g:copilot_node_command = '/opt/homebrew/opt/node@16/bin/node'
 inoremap <silent><expr> <TAB>
        \ coc#pum#visible() ? coc#pum#next(1) :
        \ <SID>check_back_space() ? "\<TAB>" :
        \ coc#refresh()
+imap <silent><script><expr> <C-J> copilot#Accept("")
+imap <silent><script><expr> <C-]> copilot#Accept("")
 inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 inoremap <expr><c-y> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
@@ -382,6 +389,8 @@ toggleterm.setup{
   direction = 'vertical',
 }
 
+vim.cmd('command! HTerm ToggleTerm size=20 direction=horizontal')
+
 -- Tell neovim to catch these keystrokes instead of passing them through to the terminal.
 function _G.set_terminal_keymaps()
   -- This key sequence exits from "terminal" mode into command mode.
@@ -424,6 +433,10 @@ augroup END
 " Comments
 vmap <silent> <leader>c gc
 nmap <silent> <leader>c gcc
+
+let g:copilot_filetypes = {
+  \ 'markdown': v:true,
+  \ }
 
 " ============================================================================ "
 " ===                                UI                                    === "
@@ -495,6 +508,9 @@ function! s:custom_jarvis_colors()
 
   hi DiffAdded guibg=#207020
   hi DiffRemoved guibg=#902020
+
+  hi Search  cterm=reverse ctermfg=237 ctermbg=209 guifg=#343d46 guibg=#f99157
+  hi CopilotSuggestion guifg=#aaddaa ctermfg=10
 endfunction
 
 command! ShowColors :call <SID>SynStack()<CR>
