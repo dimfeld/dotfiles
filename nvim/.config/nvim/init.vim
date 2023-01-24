@@ -166,8 +166,6 @@ endfunction
 
 " Handling this manually so that copilot doesn't take precedence over the autocomplete.
 let g:copilot_no_tab_map = v:true
-" Copilot.vim doesn't work on node 18 yet
-let g:copilot_node_command = '/opt/homebrew/opt/node@16/bin/node'
 inoremap <silent><expr> <TAB>
        \ coc#pum#visible() ? coc#pum#next(1) :
        \ <SID>check_back_space() ? "\<TAB>" :
@@ -510,7 +508,7 @@ function! s:custom_jarvis_colors()
   hi DiffRemoved guibg=#902020
 
   hi Search  cterm=reverse ctermfg=237 ctermbg=209 guifg=#343d46 guibg=#f99157
-  hi CopilotSuggestion guifg=#aaddaa ctermfg=10
+  hi CopilotSuggestion guifg=#eeaaaa ctermfg=10
 endfunction
 
 command! ShowColors :call <SID>SynStack()<CR>
