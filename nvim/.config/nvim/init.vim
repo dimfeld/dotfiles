@@ -1,4 +1,4 @@
-scriptencoding utf-8
+scriptencoding utf-8'
 
 let g:BufKillCreateMappings = 0
 
@@ -164,14 +164,31 @@ function! s:check_back_space() abort
 endfunction
 "
 
+let g:codeium_enabled = v:true
+
+augroup DisableCopilot
+  autocmd!
+  if (g:codeium_enabled)
+    autocmd BufEnter <silent><script><expr> let b:copilot_enabled=v:false
+  endif
+augroup END
+
 " Handling this manually so that copilot doesn't take precedence over the autocomplete.
+let g:codeium_no_map_tab = v:true
 let g:copilot_no_tab_map = v:true
+if (g:codeium_enabled)
+  imap <silent><script><expr> <C-J> codeium#Accept()
+  imap <silent><script><expr> <C-]> codeium#Accept()
+else
+  imap <silent><script><expr> <C-J> copilot#Accept("")
+  imap <silent><script><expr> <C-]> copilot#Accept("")
+endif
+
+
 inoremap <silent><expr> <TAB>
        \ coc#pum#visible() ? coc#pum#next(1) :
        \ <SID>check_back_space() ? "\<TAB>" :
        \ coc#refresh()
-imap <silent><script><expr> <C-J> copilot#Accept("")
-imap <silent><script><expr> <C-]> copilot#Accept("")
 inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 inoremap <expr><c-y> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
@@ -508,6 +525,7 @@ function! s:custom_jarvis_colors()
   hi DiffRemoved guibg=#902020
 
   hi Search  cterm=reverse ctermfg=237 ctermbg=209 guifg=#343d46 guibg=#f99157
+  hi CodeiumSuggestion guifg=#eeaaaa ctermfg=10
   hi CopilotSuggestion guifg=#eeaaaa ctermfg=10
 endfunction
 

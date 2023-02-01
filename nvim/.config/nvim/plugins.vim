@@ -25,6 +25,7 @@ call plug#begin('~/.config/nvim/plugged')
 Plug '907th/vim-auto-save'
 
 Plug 'github/copilot.vim'
+Plug 'Exafunction/codeium.vim'
 
 " Command to yank to system clipboard
 Plug 'ojroques/vim-oscyank'
