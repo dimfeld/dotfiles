@@ -87,8 +87,6 @@ let g:svelte_preprocessors = ['typescript', 'postcss', 'scss']
 
 augroup SvelteFiles
   au!
-  " au BufRead,BufNewFile *.svench setfiletype svelte
-  au BufWritePre *.svench noautocmd call prettier#Autoformat()
   au FileType svelte setlocal formatoptions+=ro
   " au FileType svelte let b:coc_additional_keywords = ["-"]
   " au FileType svelte setlocal iskeyword=@,48-57,_,.,-,192-255
@@ -132,6 +130,29 @@ augroup GoFiles
   au FileType go setlocal tabstop=4 shiftwidth=4
 augroup END
 
+lua require('section-wordcount').setup{}
+
+let g:asciidoctor_folding = 1
+let g:asciidoctor_fenced_languages = [
+      \'sql',
+      \'svelte',
+      \'rust',
+      \'bash'
+      \]
+
+augroup AsciiDoc
+  au!
+  au FileType asciidoc setlocal shiftwidth=2 wrap lbr foldlevel=99
+  au FileType asciidoc nnoremap <buffer> <Down> gj
+  au FileType asciidoc nnoremap <buffer> <Up> gk
+  au FileType markdown lua require('section-wordcount').wordcounter{}
+  au FileType asciidoc lua require('section-wordcount').wordcounter({
+  \   header_char = '=',
+  \ })
+  "au FileType asciidoc inoremap <buffer> <silent> <Down> <c-\><c-o>gj
+  "au FileType asciidoc inoremap <buffer> <silent> <Up> <c-\><c-o>gk
+augroup END
+
 " === Completion Settings === "
 
 " Don't give completion messages like 'match 1 of 2'
@@ -164,7 +185,7 @@ function! s:check_back_space() abort
 endfunction
 "
 
-let g:codeium_enabled = v:true
+let g:codeium_enabled = v:false
 
 augroup DisableCopilot
   autocmd!
@@ -310,7 +331,7 @@ require('config.formatters')
 
 local npairs = require'nvim-autopairs'
 
--- require('which-key').setup{}
+require('which-key').setup{}
 
 _G.MUtils= {}
 MUtils.completion_confirm=function()
@@ -360,6 +381,27 @@ local status_diagnostics = {
   sections={'error', 'warn'},
 }
 
+local get_words_filetypes = {
+  markdown = true,
+  text = true,
+  md = true,
+  asciidoc = true,
+  adoc = true,
+}
+local function lualine_get_words()
+  local filetype = vim.bo.filetype
+  if get_words_filetypes[filetype] == nil then
+    return ""
+  end
+
+  local words = vim.fn.wordcount().words
+  if words == 1 then
+    return "1 word"
+  else
+    return string.format("%d words", words)
+  end
+end
+
 require('lualine').setup({
   options = {
     icons_enabled = true,
@@ -376,10 +418,10 @@ require('lualine').setup({
   },
   sections = {
     lualine_a = {'mode'},
-    lualine_b = {'branch'},
+    lualine_b = { { 'branch', fmt = function(str) return str:sub(1,16) end } },
     lualine_c = {status_filename},
     lualine_x = {'filetype'},
-    lualine_y = {status_diagnostics},
+    lualine_y = {status_diagnostics, lualine_get_words},
     lualine_z = {'progress', 'location'}
   },
   inactive_sections = {
@@ -387,7 +429,7 @@ require('lualine').setup({
     lualine_b = {},
     lualine_c = {status_filename},
     lualine_x = {'filetype'},
-    lualine_y = {},
+    lualine_y = {lualine_get_words},
     lualine_z = {'location'}
   },
 })
@@ -396,14 +438,15 @@ require('lualine').setup({
 local toggleterm = require('toggleterm')
 local toggleterm_open_mapping = [[<C-\>]]
 toggleterm.setup{
-  size = 80,
+  size = 40,
   open_mapping = toggleterm_open_mapping,
   hide_numbers = true,
   start_in_insert = true,
   insert_mappings = false,
-  direction = 'vertical',
+  direction = 'horizontal',
 }
 
+vim.cmd('command! VTerm ToggleTerm size=80 direction=vertical')
 vim.cmd('command! HTerm ToggleTerm size=20 direction=horizontal')
 
 -- Tell neovim to catch these keystrokes instead of passing them through to the terminal.
@@ -442,6 +485,7 @@ EOF
 augroup TermKeys
   autocmd!
   autocmd TermOpen term://* lua set_terminal_keymaps()
+  autocmd TermOpen term://* DisableWhitespace
 augroup END
 
 
@@ -541,6 +585,7 @@ set synmaxcol=3000
 augroup Highlighting
   autocmd!
   autocmd BufEnter * syntax sync minlines=1000
+  autocmd FileType vim lua vim.treesitter.start()
 augroup END
 
 " autocmd! ColorScheme * call TrailingSpaceHighlights()
@@ -568,28 +613,8 @@ colorscheme OceanicNext
 " ============================================================================ "
 
 " === Telescope finder shortcuts ===
-lua <<EOF
-  function waitForCocLoaded()
-    vim.wait(2000, function() return vim.g.coc_service_initialized == 1 end, 50)
-  end
+lua require('config.telescope')
 
-  local telescope = require('telescope.builtin')
-  MUtils.findFilesInCocWorkspace = function()
-    waitForCocLoaded()
-    local currentWorkspace = vim.fn.CocAction('currentWorkspacePath')
-    telescope.find_files({ cwd=currentWorkspace })
-  end
-
-  MUtils.liveGrepInCocWorkspace = function()
-    waitForCocLoaded()
-    local currentWorkspace = vim.fn.CocAction('currentWorkspacePath')
-    telescope.live_grep({ cwd=currentWorkspace })
-  end
-EOF
-
-lua require('telescope').load_extension('coc')
-lua require('telescope').load_extension('dap')
-lua require("telescope").load_extension "file_browser"
 nnoremap <silent> ; :lua require('telescope.builtin').buffers()<cr>
 nnoremap <silent> <leader>t :lua _G.MUtils.findFilesInCocWorkspace()<cr>
 nnoremap <silent> <leader>u :lua require('telescope.builtin').find_files()<cr>
@@ -597,6 +622,7 @@ nnoremap <silent> <leader>T :lua require('telescope.builtin').git_files()<cr>
 nnoremap <silent> <leader>qf :lua require('telescope.builtin').quickfix()<cr>
 nnoremap <silent> <leader>qh :lua require('telescope.builtin').quickfixhistory()<cr>
 nnoremap <silent> <leader>L :lua require('telescope.builtin').loclist()<cr>
+nnoremap <silent> <leader>j :lua require('telescope.builtin').jumplist()<cr>
 nnoremap <silent> <leader>: :lua require('telescope.builtin').command_history()<cr>
 nnoremap <silent> <leader>h :lua require('telescope.builtin').search_history()<cr>
 nnoremap <silent> <leader>g :lua _G.MUtils.liveGrepInCocWorkspace()<cr>
@@ -608,7 +634,8 @@ nnoremap <silent> <leader>v :lua require('telescope.builtin').treesitter()<cr>
 nnoremap <silent> <leader>l :lua require('telescope.builtin').resume()<cr>
 nnoremap <silent> <leader>dl :Telescope coc document_diagnostics<cr>
 nnoremap <silent> <leader>wl :Telescope coc workspace_diagnostics<cr>
-nnoremap <silent> <leader>k :Telescope coc commands<cr>
+" nnoremap <silent> <leader>k :Telescope coc commands<cr>
+nnoremap <silent> <leader>k :lua require('config.telescope').showCommonCommandsPicker()<cr>
 nnoremap <silent> <leader>dr :Telescope coc references<cr>
 nnoremap <silent> <leader>ds :Telescope coc document_symbols<cr>
 nnoremap <silent> <leader>ws :Telescope coc workspace_symbols<cr>
@@ -652,17 +679,17 @@ nmap <silent> <leader>/ <cmd>nohlsearch<CR>
 
 " Repeat last command over visual selection
 xnoremap <Leader>. q:<UP>I'<,'><Esc>$
-"
-" === Lightspeed Shortcuts
-" Unmap s and S to get default behavior back.
-try
-  unmap s
-  unmap S
-catch
-endtry
 
-map <silent> f <Plug>Lightspeed_s
-map <silent> F <Plug>Lightspeed_S
+" === Leap For Quick Navigation
+lua <<EOF
+
+require('leap')
+vim.keymap.set({'n'}, 'f', '<Plug>(leap-forward-to)', {noremap = false})
+vim.keymap.set({'n'}, 'F', '<Plug>(leap-backward-to)', {noremap = false})
+vim.keymap.set({'x', 'o'}, 'f', '<Plug>(leap-forward-till)', {noremap = false})
+vim.keymap.set({'x', 'o'}, 'F', '<Plug>(leap-backward-till)', {noremap = false})
+
+EOF
 
 " Allows you to save files you opened without write permissions via sudo
 cmap w!! w !sudo tee %
@@ -691,6 +718,8 @@ command! CdRepo execute "cd ".system("git rev-parse --show-toplevel")
 " == Git keybindings
 " Open 3-way diff
 command! Gd :Gvdiffsplit!
+" Stage current file
+command! Gadd Git add %
 " Use chunk from left side
 nnoremap <expr> dgl &diff ? ':diffget //2<CR>' : ''
 " Use chunk from right side

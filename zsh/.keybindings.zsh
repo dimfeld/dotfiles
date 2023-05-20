@@ -9,6 +9,7 @@ function zle-line-init zle-keymap-select {
 zle
 zle -N zle-line-init
 zle -N zle-keymap-select
+bindkey -e
 
 bindkey "${key[Up]}" up-line-or-local-history
 bindkey "${key[Down]}" down-line-or-local-history
@@ -27,10 +28,6 @@ down-line-or-local-history() {
     zle set-local-history 0
 }
 zle -N down-line-or-local-history
-
-
-# Use vim cli mode
-#bindkey -v
 
 # Reinstate some emacs shortcuts for convenience
 
@@ -53,7 +50,9 @@ bindkey '^r' history-incremental-search-backward
 
 bindkey '^[b' backward-word
 bindkey '^[f' forward-word
-bindkey '^E' end-of-line
 bindkey '^A' beginning-of-line
+bindkey "${key[Home]}" beginning-of-line
+bindkey '^E' end-of-line
+bindkey "${key[End]}" end-of-line
 
 bindkey '^ ' autosuggest-accept

@@ -22,11 +22,11 @@
 [pull]
 	rebase = false
 	ff = only
+[user]
+	name = Daniel Imfeld
+	email = daniel@imfeld.dev
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
-[user]
-	name = Daniel Imfeld
-	email = daniel@imfeld.dev

@@ -198,3 +198,4 @@ setopt auto_pushd
 
 # Better autocompletion
 autoload -Uz compinit && compinit
+

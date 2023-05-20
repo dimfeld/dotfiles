@@ -20,6 +20,11 @@ endif
 
 call plug#begin('~/.config/nvim/plugged')
 
+Plug 'dimfeld/section-wordcount.nvim'
+
+" Support library for plugins to enable repeating via .
+Plug 'tpope/vim-repeat'
+
 " :AutoSaveToggle to automatically save files. Nice for markdown editing with
 " live preview.
 Plug '907th/vim-auto-save'
@@ -39,6 +44,9 @@ Plug 'qpkorr/vim-bufkill'
 " Performance fix for things that use CursorHold
 Plug 'antoinemadec/FixCursorHold.nvim'
 
+" When saving a file, create the directories if needed.
+Plug 'jghauser/mkdir.nvim'
+
 " === Editing Plugins === "
 " Trailing whitespace highlighting & automatic fixing
 Plug 'ntpeters/vim-better-whitespace'
@@ -52,7 +60,7 @@ Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-abolish'
 
 " Improved motion in Vim
-Plug 'ggandor/lightspeed.nvim'
+Plug 'ggandor/leap.nvim'
 
 " Autoadd closing parentheses, brackets, etc.
 Plug 'windwp/nvim-autopairs'
@@ -111,6 +119,8 @@ Plug 'jvirtanen/vim-hcl'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }}
+
+Plug 'habamax/vim-asciidoctor'
 
 " Syntax highlighting for nginx
 Plug 'chr4/nginx.vim'
