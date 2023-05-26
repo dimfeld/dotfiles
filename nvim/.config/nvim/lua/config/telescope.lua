@@ -44,6 +44,7 @@ local commands = {
   { name = 'Restart Typescript LS', category = "LS", action = function() vim.fn.CocAction('runCommand', 'tsserver.restart') end },
   { name = 'Reload Rust Analyzer Workspace', category = "LS", action = function() vim.fn.CocAction('runCommand', 'rust-analyzer.reloadWorkspace') end  },
   { name = 'Reload Typescript Project', category = "LS", action = function() vim.fn.CocAction('runCommand', 'tsserver.reloadProjects') end },
+  { name = 'Show LS Output', category = "LS", action = function() vim.fn.CocAction('runCommand', 'workspace.showOutput') end },
 
   { name = "Git permalink", category = "Git", action = function() vim.fn.CocAction('runCommand', 'git.copyPermalink') end },
   { name = "Git blame popup", category = "Git", action = function() vim.fn.CocAction('runCommand', 'git.showBlameDoc') end },
@@ -54,21 +55,60 @@ local commands = {
   { name = 'Stage Git chunk', category = "Git", action = function() vim.fn.CocAction('runCommand', 'git.chunkStage') end },
   { name = 'Git chunk Info', category = "Git", action = function() vim.fn.CocAction('runCommand', 'git.chunkInfo') end },
   { name = 'Git Difftool', category = "Git",  action = function () vim.cmd('Git difftool') end },
+  { name = 'Git Blame', category = "Git",  action = function () vim.cmd('Git blame') end },
 
   { name = 'Vertical Terminal', category = "Terminal", action = function () vim.cmd('VTerm') end },
   { name = 'Horizontal Terminal', category = "Terminal", action = function () vim.cmd('HTerm') end },
 }
 
-local longest_command_name = 0
-for _, command in ipairs(commands) do
-  if #command.name > longest_command_name then
-    longest_command_name = #command.name
-  end
-end
-
 
 M.showCommonCommandsPicker = function(opts)
   opts = opts or {}
+
+  local filetype = vim.bo.filetype
+  local coc_commands = vim.fn.CocAction('commands')
+
+  local longest_command_name = 0
+  local these_commands = {}
+  for i, command in ipairs(coc_commands) do
+    local id = command.id
+
+    if id:find('rust-analyzer.', 1, true) == 1 and filetype ~= 'rust' then
+      goto continue
+    elseif id:find('pyright.', 1, true) == 1 and filetype ~= 'python' then
+      goto continue
+    elseif id:find('python.', 1, true) == 1 and filetype ~= 'python' then
+      goto continue
+    elseif id:find('svelte.', 1, true) == 1 and filetype ~= 'svelte' then
+      goto continue
+    elseif id:find('tsserver.', 1, true) == 1 and filetype ~= 'typescript' then
+      goto continue
+    end
+
+    local title = command.title
+    if title == '' then
+      title = command.id
+    end
+    converted_command = {
+      name = title,
+      category = command.id,
+      action = function() vim.fn.CocAction(command.id) end,
+    }
+
+    these_commands[#these_commands+1] = converted_command
+    if #converted_command.name > longest_command_name then
+      longest_command_name = #converted_command.name
+    end
+
+    ::continue::
+  end
+
+  for i, command in ipairs(commands) do
+    these_commands[#these_commands+1] = command
+    if #command.name > longest_command_name then
+      longest_command_name = #command.name
+    end
+  end
 
   local displayer = entry_display.create {
     separator = " ",
@@ -81,7 +121,7 @@ M.showCommonCommandsPicker = function(opts)
   pickers.new(opts, {
     prompt_title = 'Common commands',
     finder = finders.new_table {
-      results = commands,
+      results = these_commands,
       entry_maker = function(entry)
         return {
           value = entry,

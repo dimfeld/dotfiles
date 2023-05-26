@@ -34,6 +34,7 @@ set expandtab
 
 " Change number of spaces that a <Tab> counts for during editing ops
 set softtabstop=2
+set tabstop=4
 
 " Indentation amount for < and > commands.
 set shiftwidth=2
@@ -88,6 +89,7 @@ let g:svelte_preprocessors = ['typescript', 'postcss', 'scss']
 augroup SvelteFiles
   au!
   au FileType svelte setlocal formatoptions+=ro
+  au FileType svelte setlocal tabstop=2
   " au FileType svelte let b:coc_additional_keywords = ["-"]
   " au FileType svelte setlocal iskeyword=@,48-57,_,.,-,192-255
 augroup END
@@ -271,6 +273,7 @@ inoremap <silent><expr> <leader>c
 " When not in import mode, run code action on current line (usually auto-import)
 nmap <leader>al <Plug>(coc-codeaction-line)
 nmap <leader>ac <Plug>(coc-codeaction-cursor)
+nmap <leader>af <Plug>(coc-codeaction)
 
 vnoremap <silent> <leader>y <cmd>OSCYank<CR>
 
