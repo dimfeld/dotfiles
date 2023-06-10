@@ -92,7 +92,7 @@ M.showCommonCommandsPicker = function(opts)
     converted_command = {
       name = title,
       category = command.id,
-      action = function() vim.fn.CocAction(command.id) end,
+      action = function() vim.fn.CocAction('runCommand', command.id) end,
     }
 
     these_commands[#these_commands+1] = converted_command
