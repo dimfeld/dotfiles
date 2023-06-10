@@ -24,3 +24,6 @@ untracked = "U"
 modified = "M"
 style = "red"
 
+[python]
+detect_files = []
+format = 'via [${symbol}${pyenv_prefix}(\($virtualenv\) )]($style)'

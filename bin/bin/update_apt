@@ -6,6 +6,10 @@ pnpm --global update
 rustup update stable
 cargo install-update --all
 
+if [ -f "$(which rye)" ]; then
+  rye self update
+fi
+
 if [ "$(uname)" == "Darwin" ]; then
   brew upgrade
 elif [ -f "$(which apt)" ]; then
