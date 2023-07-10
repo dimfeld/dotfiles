@@ -187,7 +187,7 @@ function! s:check_back_space() abort
 endfunction
 "
 
-let g:codeium_enabled = v:false
+let g:codeium_enabled = v:true
 
 augroup DisableCopilot
   autocmd!
@@ -313,9 +313,6 @@ let g:javascript_plugin_jsdoc = 1
 " === vim-jsx === "
 " Highlight jsx syntax even in non .jsx files
 let g:jsx_ext_required = 0
-
-" === javascript-libraries-syntax === "
-let g:used_javascript_libs = 'underscore,requirejs,chai,jquery'
 
 " === Signify === "
 let g:signify_sign_delete = '-'
@@ -619,6 +616,7 @@ colorscheme OceanicNext
 lua require('config.telescope')
 
 nnoremap <silent> ; :lua require('telescope.builtin').buffers()<cr>
+nnoremap <silent> <space> :lua require('telescope').extensions.smart_open.smart_open()<cr>
 nnoremap <silent> <leader>t :lua _G.MUtils.findFilesInCocWorkspace()<cr>
 nnoremap <silent> <leader>u :lua require('telescope.builtin').find_files()<cr>
 nnoremap <silent> <leader>T :lua require('telescope.builtin').git_files()<cr>
@@ -637,8 +635,8 @@ nnoremap <silent> <leader>v :lua require('telescope.builtin').treesitter()<cr>
 nnoremap <silent> <leader>l :lua require('telescope.builtin').resume()<cr>
 nnoremap <silent> <leader>dl :Telescope coc document_diagnostics<cr>
 nnoremap <silent> <leader>wl :Telescope coc workspace_diagnostics<cr>
-" nnoremap <silent> <leader>k :Telescope coc commands<cr>
 nnoremap <silent> <leader>k :lua require('config.telescope').showCommonCommandsPicker()<cr>
+xnoremap <silent> <leader>k :lua require('config.telescope').showCommonCommandsPicker()<cr>
 nnoremap <silent> <leader>dr :Telescope coc references<cr>
 nnoremap <silent> <leader>ds :Telescope coc document_symbols<cr>
 nnoremap <silent> <leader>ws :Telescope coc workspace_symbols<cr>
@@ -742,9 +740,7 @@ set smartcase
 " Automatically re-read file if a change was detected outside of vim
 set autoread
 
-" Enable relative line numbers
 set number
-" set relativenumber
 
 " Enable spellcheck for markdown files
 augroup markdown

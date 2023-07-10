@@ -22,6 +22,9 @@ call plug#begin('~/.config/nvim/plugged')
 
 Plug 'dimfeld/section-wordcount.nvim'
 
+" SQLite, used by various other plugins, including smart-open
+Plug 'kkharji/sqlite.lua'
+
 " Support library for plugins to enable repeating via .
 Plug 'tpope/vim-repeat'
 
@@ -30,7 +33,7 @@ Plug 'tpope/vim-repeat'
 Plug '907th/vim-auto-save'
 
 Plug 'github/copilot.vim'
-Plug 'Exafunction/codeium.vim'
+Plug 'Exafunction/codeium.vim', { 'branch': 'main' }
 
 " Command to yank to system clipboard
 Plug 'ojroques/vim-oscyank'
@@ -73,6 +76,9 @@ Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-file-browser.nvim'
+Plug 'nvim-telescope/telescope-fzy-native.nvim'
+
+Plug 'danielfalk/smart-open.nvim'
 
 " Treesitter for file syntax parsing used by other extensions
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
