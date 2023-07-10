@@ -5,6 +5,8 @@ alias cp='cp -iv'
 alias scp='scp -C'
 alias ls='exa'
 alias l='exa -l --git'
+alias ad='pushd'
+alias pd='popd'
 
 if [[ `uname` == Darwin ]]; then
     alias top='top -o -cpu'
