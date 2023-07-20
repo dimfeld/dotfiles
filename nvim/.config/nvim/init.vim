@@ -628,9 +628,10 @@ nnoremap <silent> <leader>: :lua require('telescope.builtin').command_history()<
 nnoremap <silent> <leader>h :lua require('telescope.builtin').search_history()<cr>
 nnoremap <silent> <leader>g :lua _G.MUtils.liveGrepInCocWorkspace()<cr>
 nnoremap <silent> <leader>G :call <SID>telescope_grep_on_git_repo()<cr>
+nnoremap <silent> <leader>s :lua require('telescope.builtin').grep_string()<cr>
+nnoremap <silent> <leader>S :call <SID>telescope_grep_string_on_git_repo()<cr>
 nnoremap <silent> <leader>n :lua require('telescope').extensions.file_browser.file_browser({ cwd=require('telescope.utils').buffer_dir() })<cr>
 nnoremap <silent> <leader>N :lua require('telescope').extensions.file_browser.file_browser()<cr>
-nnoremap <silent> <leader>J :lua require('telescope.builtin').grep_string()<cr>
 nnoremap <silent> <leader>v :lua require('telescope.builtin').treesitter()<cr>
 nnoremap <silent> <leader>l :lua require('telescope.builtin').resume()<cr>
 nnoremap <silent> <leader>dl :Telescope coc document_diagnostics<cr>
@@ -645,6 +646,10 @@ command! Debug lua require'telescope'.extensions.dap.commands{}
 
 function! s:telescope_grep_on_git_repo()
   execute "lua require('telescope.builtin').live_grep({search_dirs={'".trim(system("git rev-parse --show-toplevel"))."'}})"
+endfunction
+
+function! s:telescope_grep_string_on_git_repo()
+  execute "lua require('telescope.builtin').grep_string({search_dirs={'".trim(system("git rev-parse --show-toplevel"))."'}})"
 endfunction
 
 " Preload :e command with directory of current buffer.
@@ -671,8 +676,8 @@ nmap <silent> [g <Plug>(coc-diagnostic-prev-error)
 nmap <silent> ]g <Plug>(coc-diagnostic-next-error)
 
 " === vim-better-whitespace === "
-"   <leader>y - Automatically remove trailing whitespace
-nmap <leader>y :StripWhitespace<CR>
+"   <leader>ws - Automatically remove trailing whitespace
+nmap <leader>ws :StripWhitespace<CR>
 
 " === Search shorcuts === "
 "   <leader>/ - Clear highlighted search terms while preserving history
@@ -709,7 +714,7 @@ vnoremap <leader>d "_d
 
 " Copy last yanked/deleted text into register a.
 " For when you want to save into a register but forgot when you ran deleted.
-nmap <leader>s <cmd>let @a=@"<CR>
+nmap <leader>y <cmd>let @a=@"<CR>
 
 " Change to the directory of the current file
 command! Cdme cd %:p:h
