@@ -616,7 +616,7 @@ colorscheme OceanicNext
 lua require('config.telescope')
 
 nnoremap <silent> ; :lua require('telescope.builtin').buffers()<cr>
-nnoremap <silent> <space> :lua require('telescope').extensions.smart_open.smart_open()<cr>
+nnoremap <silent> <space> :lua require('telescope').extensions.smart_open.smart_open({ filename_first=false })<cr>
 nnoremap <silent> <leader>t :lua _G.MUtils.findFilesInCocWorkspace()<cr>
 nnoremap <silent> <leader>u :lua require('telescope.builtin').find_files()<cr>
 nnoremap <silent> <leader>T :lua require('telescope.builtin').git_files()<cr>
