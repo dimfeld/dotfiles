@@ -59,6 +59,7 @@ local commands = {
   { name = 'Git Difftool', category = "Git",  action = function () vim.cmd('Git difftool') end },
   { name = 'Git Blame', category = "Git",  action = function () vim.cmd('Git blame') end },
   { name = 'Git 3-way Diff', category = "Git",  action = function () vim.cmd('Gvdiffsplit') end },
+  { name = "Git Status", category = "Git", action = builtin.git_status },
 
   { name = 'Resync Syntax', category = "Buffer", action = function () vim.cmd('syntax sync fromstart') end },
 

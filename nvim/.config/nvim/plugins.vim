@@ -28,6 +28,9 @@ Plug 'kkharji/sqlite.lua'
 " Support library for plugins to enable repeating via .
 Plug 'tpope/vim-repeat'
 
+" Better increment/decrement
+Plug 'monaqa/dial.nvim'
+
 " :AutoSaveToggle to automatically save files. Nice for markdown editing with
 " live preview.
 Plug '907th/vim-auto-save'

@@ -288,12 +288,11 @@ augroup PrettierFormatting
   au BufWritePost *.json FormatWrite
   au BufWritePost *.mjs FormatWrite
   au BufWritePost *.pcss FormatWrite
+  au BufWritePost *.postcss FormatWrite
+  au BufWritePost *.html FormatWrite
   au BufWritePost *.svelte FormatWrite
   au BufWritePost *.ts FormatWrite
 augroup END
-
-" Add `:OR` command for organize imports of the current buffer.
-command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
 
 " Markdown
 let g:vim_markdown_conceal = 0
@@ -328,29 +327,10 @@ lua <<EOF
 
 require('config.core')
 require('config.formatters')
-
-local npairs = require'nvim-autopairs'
-
-require('which-key').setup{}
-
-_G.MUtils= {}
-MUtils.completion_confirm=function()
-  if vim.fn['coc#pum#visible']() ~= 0  then
-    return npairs.esc("<cr>")
-  else
-    return npairs.autopairs_cr()
-  end
-end
-
-vim.keymap.set('i', '<CR>', MUtils.completion_confirm)
-
-npairs.setup({
-  check_ts = true,
-  ignored_next_char = "[%w%.\"']", -- will ignore alphanumeric and `.` symbol
-})
-
-local Rule = require('nvim-autopairs.rule')
-local cond = require('nvim-autopairs.conds')
+require('config.edit_commands')
+require('config.status_line')
+require('config.terminal')
+require('config.debugging')
 
 require'nvim-treesitter.configs'.setup {
   context_commentstring = {
@@ -365,120 +345,6 @@ require'nvim-treesitter.configs'.setup {
   },
   autopairs = { enable = true }
 }
-
--- Status line configuration
-
-local status_filename = {
-  'filename',
-  file_status=true,
-  shorten=false,
-  path=1 -- relative path
-}
-
-local status_diagnostics = {
-  'diagnostics',
-  sources={'coc'},
-  sections={'error', 'warn'},
-}
-
-local get_words_filetypes = {
-  markdown = true,
-  text = true,
-  md = true,
-  asciidoc = true,
-  adoc = true,
-}
-local function lualine_get_words()
-  local filetype = vim.bo.filetype
-  if get_words_filetypes[filetype] == nil then
-    return ""
-  end
-
-  local words = vim.fn.wordcount().words
-  if words == 1 then
-    return "1 word"
-  else
-    return string.format("%d words", words)
-  end
-end
-
-require('lualine').setup({
-  options = {
-    icons_enabled = true,
-    theme = 'codedark',
-    component_separators = {
-      left = '',
-      right = ''
-    },
-    section_separators = {
-      left = '',
-      right = ''
-    },
-    disabled_filetypes = {}
-  },
-  sections = {
-    lualine_a = {'mode'},
-    lualine_b = { { 'branch', fmt = function(str) return str:sub(1,16) end } },
-    lualine_c = {status_filename},
-    lualine_x = {'filetype'},
-    lualine_y = {status_diagnostics, lualine_get_words},
-    lualine_z = {'progress', 'location'}
-  },
-  inactive_sections = {
-    lualine_a = {},
-    lualine_b = {},
-    lualine_c = {status_filename},
-    lualine_x = {'filetype'},
-    lualine_y = {lualine_get_words},
-    lualine_z = {'location'}
-  },
-})
-
-
-local toggleterm = require('toggleterm')
-local toggleterm_open_mapping = [[<C-\>]]
-toggleterm.setup{
-  size = 40,
-  open_mapping = toggleterm_open_mapping,
-  hide_numbers = true,
-  start_in_insert = true,
-  insert_mappings = false,
-  direction = 'horizontal',
-}
-
-vim.cmd('command! VTerm ToggleTerm size=80 direction=vertical')
-vim.cmd('command! HTerm ToggleTerm size=20 direction=horizontal')
-
--- Tell neovim to catch these keystrokes instead of passing them through to the terminal.
-function _G.set_terminal_keymaps()
-  -- This key sequence exits from "terminal" mode into command mode.
-  local term_escape = [[<C-\><C-n>]]
-  local tmap = function(input, command)
-    vim.api.nvim_buf_set_keymap(0, 't', input, term_escape .. command, { noremap = true })
-  end
-
-  tmap('<C-h>', '<C-w>h')
-  tmap('<C-j>', '<C-w>j')
-  tmap('<C-k>', '<C-w>k')
-  tmap('<C-l>', '<C-w>l')
-
-  vim.api.nvim_buf_set_keymap(0, 't', toggleterm_open_mapping, term_escape .. '<cmd>ToggleTerm<CR>', { noremap = true })
-  vim.api.nvim_buf_set_keymap(0, 't', '<esc><esc>', term_escape, { noremap = true })
-end
-
--- Debugging
-local dap, dapui = require("dap"), require("dapui")
-dapui.setup()
-
-dap.listeners.after.event_initialized["dapui_config"] = function()
-  dapui.open()
-end
-dap.listeners.before.event_terminated["dapui_config"] = function()
-  dapui.close()
-end
-dap.listeners.before.event_exited["dapui_config"] = function()
-  dapui.close()
-end
 
 EOF
 
@@ -677,7 +543,7 @@ nmap <silent> ]g <Plug>(coc-diagnostic-next-error)
 
 " === vim-better-whitespace === "
 "   <leader>ws - Automatically remove trailing whitespace
-nmap <leader>ws :StripWhitespace<CR>
+nmap <leader>ww :StripWhitespace<CR>
 
 " === Search shorcuts === "
 "   <leader>/ - Clear highlighted search terms while preserving history
@@ -685,17 +551,6 @@ nmap <silent> <leader>/ <cmd>nohlsearch<CR>
 
 " Repeat last command over visual selection
 xnoremap <Leader>. q:<UP>I'<,'><Esc>$
-
-" === Leap For Quick Navigation
-lua <<EOF
-
-require('leap')
-vim.keymap.set({'n'}, 'f', '<Plug>(leap-forward-to)', {noremap = false})
-vim.keymap.set({'n'}, 'F', '<Plug>(leap-backward-to)', {noremap = false})
-vim.keymap.set({'x', 'o'}, 'f', '<Plug>(leap-forward-till)', {noremap = false})
-vim.keymap.set({'x', 'o'}, 'F', '<Plug>(leap-backward-till)', {noremap = false})
-
-EOF
 
 " Allows you to save files you opened without write permissions via sudo
 cmap w!! w !sudo tee %

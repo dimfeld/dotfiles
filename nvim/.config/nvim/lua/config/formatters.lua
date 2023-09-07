@@ -38,9 +38,11 @@ end
 require('formatter').setup({
   logging = true,
   filetype = {
+    html = { prettierd },
     css = { prettierd },
     less = { prettierd },
     pcss = { prettierd },
+    postcss = { prettierd },
     javascript = { prettierd },
     json = { prettierd },
     typescript = { prettierd },
