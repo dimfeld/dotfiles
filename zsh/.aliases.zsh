@@ -3,14 +3,14 @@ alias mv='mv -iv'
 alias rm='rm -iv'
 alias cp='cp -iv'
 alias scp='scp -C'
-alias ls='exa'
-alias l='exa -l --git'
+alias ls='eza'
+alias l='eza -l --git'
 alias ad='pushd'
 alias pd='popd'
 
 if [[ `uname` == Darwin ]]; then
     alias top='top -o -cpu'
-    alias l='exa -l --git'
+    alias l='eza -l --git'
 else
    alias grep='grep --color=auto'
    alias fgrep='fgrep --color=auto'

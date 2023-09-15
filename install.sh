@@ -14,7 +14,7 @@ fi
 
 if [[ `which cargo` ]]; then
   # Prefer cargo for rust utils, if it's installed
-  cargo install basic-http-server bat bottom cargo-update exa fd-find git-delta ripgrep sd starship zoxide
+  cargo install basic-http-server bat bottom cargo-update eza fd-find git-delta ripgrep sd starship zoxide
 
   if [[ `which brew` ]]; then
     brew install fzf nvim stow
@@ -25,13 +25,19 @@ if [[ `which cargo` ]]; then
   fi
 elif [[ `which brew ` ]]; then
   brew tap clementtsang/bottom
-  brew install bat bottom exa fd git-delta ripgrep sd starship fzf stow nvim zoxide
+  brew install bat bottom eza fd git-delta ripgrep sd starship fzf stow nvim zoxide
 elif [[ `which apt ` ]]; then
   echo 'Installing starship'
   curl -fsSL https://starship.rs/install.sh | bash
   echo 'Installing fzf'
   ./install_fzf.sh
-  sudo apt install bat exa fd-find git-delta ripgrep sd stow nvim zoxide
+
+  echo 'Installing eza sources'
+  wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo tee /etc/apt/trusted.gpg.d/gierens.asc
+  echo "deb http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+  sudo apt update
+
+  sudo apt install bat eza fd-find git-delta ripgrep sd stow nvim zoxide
 fi
 
 python3 -m pip install --user --upgrade pynvim

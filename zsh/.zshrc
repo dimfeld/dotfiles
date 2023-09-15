@@ -144,7 +144,7 @@ alias rg='rg -S'
 alias gs='git status'
 alias gd='git diff'
 alias ig="sk -i --ansi -c 'rg --color=always --line-number "{}"'"
-alias el="exa -l --git"
+alias el="eza -l --git"
 alias cat="bat"
 alias j="just"
 
@@ -167,8 +167,8 @@ zstyle ':completion:*:git-checkout:*' sort false
 zstyle ':completion:*:git-switch:*' sort false
 # Enable completion list colorizing
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-# preview directory's content with exa when completing cd
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+# preview directory's content with eza when completing cd
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
 #
 # Do preview in tmux popup when available
 # zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
