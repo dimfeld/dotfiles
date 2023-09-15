@@ -1,0 +1,3 @@
+[diesel_cli]
+default_features = false
+features = ["postgres", "sqlite"]
