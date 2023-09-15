@@ -38,3 +38,7 @@ vim.keymap.set({'n'}, 'f', '<Plug>(leap-forward-to)', {noremap = false})
 vim.keymap.set({'n'}, 'F', '<Plug>(leap-backward-to)', {noremap = false})
 vim.keymap.set({'x', 'o'}, 'f', '<Plug>(leap-forward-till)', {noremap = false})
 vim.keymap.set({'x', 'o'}, 'F', '<Plug>(leap-backward-till)', {noremap = false})
+
+require('Comment').setup({
+   pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
+})

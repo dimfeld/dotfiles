@@ -99,19 +99,19 @@ let g:vim_svelte_plugin_use_sass = 1
 
 " set local options based on subtype
 function! OnChangeSvelteSubtype(subtype)
-  " echom 'Subtype is '.a:subtype
-  if empty(a:subtype) || a:subtype == 'html'
-    setlocal commentstring=<!--%s-->
-    setlocal comments=s:<!--,m:\ \ \ \ ,e:-->
-    setlocal omnifunc=htmlcomplete#CompleteTags
-  elseif a:subtype =~ 'css'
-    setlocal comments=s1:/*,mb:*,ex:*/ commentstring&
-    setlocal omnifunc=csscomplete#CompleteCSS
-  else
-    setlocal commentstring=//%s
-    setlocal comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,://
-    setlocal omnifunc=javascriptcomplete#CompleteJS
-  endif
+  echom 'Subtype is '.a:subtype
+  " if empty(a:subtype) || a:subtype == 'html'
+  "   setlocal commentstring=<!--%s-->
+  "   setlocal comments=s:<!--,m:\ \ \ \ ,e:-->
+  "   setlocal omnifunc=htmlcomplete#CompleteTags
+  " elseif a:subtype =~ 'css'
+  "   setlocal comments=s1:/*,mb:*,ex:*/ commentstring&
+  "   setlocal omnifunc=csscomplete#CompleteCSS
+  " else
+  "   setlocal commentstring=//%s
+  "   setlocal comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,://
+  "   setlocal omnifunc=javascriptcomplete#CompleteJS
+  " endif
 endfunction
 
 augroup ClosingTag
@@ -333,8 +333,12 @@ require('config.terminal')
 require('config.debugging')
 
 require'nvim-treesitter.configs'.setup {
+  ensure_installed = {
+    'svelte', 'typescript'
+  },
   context_commentstring = {
-    enable = true
+    enable = true,
+    enable_autocmd = false,
   },
   highlight = {
     enable = false,

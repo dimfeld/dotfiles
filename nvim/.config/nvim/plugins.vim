@@ -31,6 +31,9 @@ Plug 'tpope/vim-repeat'
 " Better increment/decrement
 Plug 'monaqa/dial.nvim'
 
+" Snippets
+Plug 'L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
+
 " :AutoSaveToggle to automatically save files. Nice for markdown editing with
 " live preview.
 Plug '907th/vim-auto-save'
@@ -85,6 +88,7 @@ Plug 'danielfalk/smart-open.nvim'
 
 " Treesitter for file syntax parsing used by other extensions
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 
 " justfile highlighting
 Plug 'NoahTheDuke/vim-just'
@@ -116,6 +120,7 @@ Plug 'heavenshell/vim-jsdoc'
 " Comment toggling
 Plug 'JoosepAlviste/nvim-ts-context-commentstring'
 Plug 'tpope/vim-commentary'
+Plug 'numToStr/Comment.nvim'
 
 " === Syntax Highlighting === "
 Plug 'gutenye/json5.vim'
