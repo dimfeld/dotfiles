@@ -179,6 +179,9 @@ Plug 'rcarriga/nvim-dap-ui'
 Plug 'nvim-telescope/telescope-dap.nvim'
 
 
+" === AI Stuff ===
+Plug 'sourcegraph/sg.nvim', { 'do': 'nvim -l build/init.lua' }
+
 
 
 " Initialize plugin system

@@ -98,8 +98,8 @@ let g:vim_svelte_plugin_use_typescript = 1
 let g:vim_svelte_plugin_use_sass = 1
 
 " set local options based on subtype
-function! OnChangeSvelteSubtype(subtype)
-  echom 'Subtype is '.a:subtype
+"function! OnChangeSvelteSubtype(subtype)
+  "echom 'Subtype is '.a:subtype
   " if empty(a:subtype) || a:subtype == 'html'
   "   setlocal commentstring=<!--%s-->
   "   setlocal comments=s:<!--,m:\ \ \ \ ,e:-->
@@ -112,7 +112,7 @@ function! OnChangeSvelteSubtype(subtype)
   "   setlocal comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,://
   "   setlocal omnifunc=javascriptcomplete#CompleteJS
   " endif
-endfunction
+"endfunction
 
 augroup ClosingTag
   au!
@@ -278,9 +278,9 @@ nmap <leader>af <Plug>(coc-codeaction)
 vnoremap <silent> <leader>y <cmd>OSCYank<CR>
 
 " Add `:Format` command to format current buffer.
-command! -nargs=0 Format :call CocAction('format')
+command! -nargs=0 Format :call CocAction('runCommand', 'editor.action.formatDocument')
 
-augroup PrettierFormatting
+augroup FormatOnSave
   au!
   au BufWritePost *.cjs FormatWrite
   au BufWritePost *.css FormatWrite
@@ -292,6 +292,7 @@ augroup PrettierFormatting
   au BufWritePost *.html FormatWrite
   au BufWritePost *.svelte FormatWrite
   au BufWritePost *.ts FormatWrite
+  au BufWritePost *.py FormatWrite
 augroup END
 
 " Markdown
@@ -326,6 +327,7 @@ augroup END
 lua <<EOF
 
 require('config.core')
+require('config.ai')
 require('config.formatters')
 require('config.edit_commands')
 require('config.status_line')

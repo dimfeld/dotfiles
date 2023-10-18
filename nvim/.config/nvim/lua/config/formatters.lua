@@ -1,5 +1,5 @@
-local path = require('plenary.path');
-local util = require('formatter.util');
+local path = require('plenary.path')
+local util = require('formatter.util')
 
 vim.env.PRETTIERD_LOCAL_PRETTIER_ONLY = 'true'
 
@@ -35,6 +35,14 @@ local prettierd = function()
   }
 end
 
+local black = function()
+  return {
+    exe = "python3",
+    args = { "-m", "black", "-q", "-" },
+    stdin = true,
+  }
+end
+
 require('formatter').setup({
   logging = true,
   filetype = {
@@ -47,5 +55,6 @@ require('formatter').setup({
     json = { prettierd },
     typescript = { prettierd },
     svelte = { prettierd },
+    python = { black }
   }
 })

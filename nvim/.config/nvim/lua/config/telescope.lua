@@ -1,6 +1,8 @@
 local M = {}
 
 local telescope = require('telescope');
+local cody = require('sg.cody.commands');
+local ai = require('commands.ai')
 
 telescope.load_extension('coc');
 telescope.load_extension('dap');
@@ -71,6 +73,15 @@ local commands = {
 
   { name = "Yank to Clipboard", category = "Clipboard", action = function() vim.cmd("'<,'>y*") end },
   { name = "Delete to Blackhole", category = "Clipboard", action = function() vim.cmd("'<,'>d_") end },
+
+  { name = "Cody Chat - New", category = "Sourcegraph", action = function() cody.chat() end },
+  { name = "Cody Chat - History", category = "Sourcegraph", action = function() cody.history() end },
+  { name = "Cody Chat - Toggle", category = "Sourcegraph", action = function() cody.toggle() end },
+  { name = "Cody Chat - Focus History", category = "Sourcegraph", action = function() cody.focus_history() end },
+  { name = "Cody Chat - Focus Prompt", category = "Sourcegraph", action = function() cody.focus_prompt() end },
+  { name = "Ask Cody", category = "Sourcegraph", action = function() ai.ask_cody() end },
+  { name = "Cody Task", category = "Sourcegraph", action = function() ai.cody_task() end },
+  { name = "Cody Task from List", category = "Sourcegraph", action = function() ai.cody_task_recipe() end },
 }
 
 local handled_coc_commands = {}
