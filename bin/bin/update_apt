@@ -2,7 +2,7 @@
 # Sudo command at the start so I don't have to type the password halfway through
 # later.
 sudo echo
-pnpm --global update
+pnpm --global update -L
 rustup update stable
 cargo install-update --all
 
