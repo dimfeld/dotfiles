@@ -1,3 +1,7 @@
 [diesel_cli]
 default_features = false
 features = ["postgres", "sqlite"]
+
+[dotenvy]
+default_features = true
+features = ["cli"]
