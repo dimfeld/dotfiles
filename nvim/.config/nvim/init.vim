@@ -97,23 +97,6 @@ augroup END
 let g:vim_svelte_plugin_use_typescript = 1
 let g:vim_svelte_plugin_use_sass = 1
 
-" set local options based on subtype
-"function! OnChangeSvelteSubtype(subtype)
-  "echom 'Subtype is '.a:subtype
-  " if empty(a:subtype) || a:subtype == 'html'
-  "   setlocal commentstring=<!--%s-->
-  "   setlocal comments=s:<!--,m:\ \ \ \ ,e:-->
-  "   setlocal omnifunc=htmlcomplete#CompleteTags
-  " elseif a:subtype =~ 'css'
-  "   setlocal comments=s1:/*,mb:*,ex:*/ commentstring&
-  "   setlocal omnifunc=csscomplete#CompleteCSS
-  " else
-  "   setlocal commentstring=//%s
-  "   setlocal comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,://
-  "   setlocal omnifunc=javascriptcomplete#CompleteJS
-  " endif
-"endfunction
-
 augroup ClosingTag
   au!
   " au FileType html iabbrev </ </<C-X><C-O>
@@ -132,60 +115,34 @@ augroup GoFiles
   au FileType go setlocal tabstop=4 shiftwidth=4
 augroup END
 
-lua require('section-wordcount').setup{}
 
-let g:asciidoctor_folding = 1
-let g:asciidoctor_fenced_languages = [
-      \'sql',
-      \'svelte',
-      \'rust',
-      \'bash'
-      \]
+" LUAREMOVE
+" lua require('section-wordcount').setup{}
+" let g:asciidoctor_folding = 1
+" let g:asciidoctor_fenced_languages = [
+"       \'sql',
+"       \'svelte',
+"       \'rust',
+"       \'bash'
+"       \]
 
-augroup AsciiDoc
-  au!
-  au FileType asciidoc setlocal shiftwidth=2 wrap lbr foldlevel=99
-  au FileType asciidoc nnoremap <buffer> <Down> gj
-  au FileType asciidoc nnoremap <buffer> <Up> gk
-  au FileType markdown lua require('section-wordcount').wordcounter{}
-  au FileType asciidoc lua require('section-wordcount').wordcounter({
-  \   header_char = '=',
-  \ })
-  "au FileType asciidoc inoremap <buffer> <silent> <Down> <c-\><c-o>gj
-  "au FileType asciidoc inoremap <buffer> <silent> <Up> <c-\><c-o>gk
-augroup END
+"augroup AsciiDoc
+"  au!
+"  au FileType asciidoc setlocal shiftwidth=2 wrap lbr foldlevel=99
+"  au FileType asciidoc nnoremap <buffer> <Down> gj
+"  au FileType asciidoc nnoremap <buffer> <Up> gk
+"  au FileType markdown lua require('section-wordcount').wordcounter{}
+"  au FileType asciidoc lua require('section-wordcount').wordcounter({
+"  \   header_char = '=',
+"  \ })
+"  "au FileType asciidoc inoremap <buffer> <silent> <Down> <c-\><c-o>gj
+"  "au FileType asciidoc inoremap <buffer> <silent> <Up> <c-\><c-o>gk
+"augroup END
 
-" === Completion Settings === "
-
-" Don't give completion messages like 'match 1 of 2'
-" or 'The only match'
-set shortmess+=c
 
 " ============================================================================ "
 " ===                           PLUGIN SETUP                               === "
 " ============================================================================ "
-
-" === Coc.nvim === "
-let g:coc_global_extensions = [
-      \'coc-css',
-      \'coc-eslint',
-      \'coc-git',
-      \'coc-go',
-      \'coc-html',
-      \'coc-json',
-      \'coc-pyright',
-      \'coc-rust-analyzer',
-      \'coc-tsserver',
-      \'coc-xml',
-      \'@yaegassy/coc-tailwindcss3'
-      \]
-
-" use <tab> for trigger completion and navigate to next complete item
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~ '\s'
-endfunction
-"
 
 let g:codeium_enabled = v:true
 
@@ -207,20 +164,10 @@ else
   imap <silent><script><expr> <C-]> copilot#Accept("")
 endif
 
+let g:copilot_filetypes = {
+  \ 'markdown': v:true,
+  \ }
 
-inoremap <silent><expr> <TAB>
-       \ coc#pum#visible() ? coc#pum#next(1) :
-       \ <SID>check_back_space() ? "\<TAB>" :
-       \ coc#refresh()
-inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
-inoremap <expr><c-y> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
-
-" Enter confirms completion if one has been selected.
-inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>"
-inoremap <expr> <up> coc#pum#visible() ?  '<cmd>call coc#pum#stop()<CR><up>' : '<up>'
-inoremap <expr> <down> coc#pum#visible() ?  '<cmd>call coc#pum#stop()<CR><down>' : '<down>'
-inoremap <expr> <left> coc#pum#visible() ?  '<cmd>call coc#pum#stop()<CR><left>' : '<left>'
-inoremap <expr> <right> coc#pum#visible() ?  '<cmd>call coc#pum#stop()<CR><right>' : '<right>'
 
 " Close preview window when completion is done.
 autocmd! CompleteDone * if coc#pum#visible() == 0 && getcmdwintype () == '' | pclose | endif
@@ -228,9 +175,6 @@ autocmd! CompleteDone * if coc#pum#visible() == 0 && getcmdwintype () == '' | pc
  " Use K to show documentation in preview window.
 nnoremap <silent> K <cmd>call <SID>toggle_documentation()<CR>
 inoremap <silent> <c-k> <c-o><cmd>call <SID>toggle_signature_help()<CR>
-
-" Symbol renaming.
-nmap <leader>rn <Plug>(coc-rename)
 
 function! s:toggle_documentation()
   if (coc#float#has_float() > 0)
@@ -264,21 +208,10 @@ function! s:show_documentation()
   endif
 endfunction
 
-" Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
-
-" Use <leader>c to trigger code action in autocomplete popup, like autoimport.
-inoremap <silent><expr> <leader>c
-    \ coc#pum#visible() ? coc#pum#confirm() : "<leader>c"
-" When not in import mode, run code action on current line (usually auto-import)
-nmap <leader>al <Plug>(coc-codeaction-line)
-nmap <leader>ac <Plug>(coc-codeaction-cursor)
-nmap <leader>af <Plug>(coc-codeaction)
-
 vnoremap <silent> <leader>y <cmd>OSCYank<CR>
 
 " Add `:Format` command to format current buffer.
-command! -nargs=0 Format :call CocAction('runCommand', 'editor.action.formatDocument')
+command! -nargs=0 Format :call CocAction('runCommand', 'editor.action.formatDocument')<CR>
 
 augroup FormatOnSave
   au!
@@ -327,12 +260,20 @@ augroup END
 lua <<EOF
 
 require('config.core')
-require('config.ai')
-require('config.formatters')
-require('config.edit_commands')
-require('config.status_line')
-require('config.terminal')
+require('config.completion')
 require('config.debugging')
+require('config.edit_commands')
+require('config.formatters')
+require('config.git')
+require('config.lsp')
+require('config.prose')
+require('config.quickfix')
+require('config.sourcegraph')
+require('config.status_line')
+require('config.telescope')
+require('config.telescope_commandbar')
+require('config.terminal')
+require('config.theme')
 
 require'nvim-treesitter.configs'.setup {
   ensure_installed = {
@@ -341,6 +282,10 @@ require'nvim-treesitter.configs'.setup {
   context_commentstring = {
     enable = true,
     enable_autocmd = false,
+    commentary_integration = {
+      Commentary = false,
+      CommentaryLine = false
+    }
   },
   highlight = {
     enable = false,
@@ -360,40 +305,12 @@ augroup TermKeys
   autocmd TermOpen term://* DisableWhitespace
 augroup END
 
-
-" Comments
-vmap <silent> <leader>c gc
-nmap <silent> <leader>c gcc
-
-let g:copilot_filetypes = {
-  \ 'markdown': v:true,
-  \ }
-
 " ============================================================================ "
 " ===                                UI                                    === "
 " ============================================================================ "
 
-" Enable true color support
-set termguicolors
-
-" Vim airline theme
-let g:airline_theme='dark_minimal'
-
-" Change vertical split character to be a space (essentially hide it)
-set fillchars+=vert:.
-
 " Set preview window to appear at bottom
 set splitbelow
-
-" Don't dispay mode in command line (airilne already shows it)
-set noshowmode
-
-" Set floating window to be slightly transparent
-set winblend=10
-" Warp needs this instead
-" set winblend=0
-
-nmap <silent> <leader>p :b#<CR>
 
 " ============================================================================ "
 " ===                      CUSTOM COLORSCHEME CHANGES                      === "
@@ -484,72 +401,6 @@ colorscheme OceanicNext
 " ===                             KEY MAPPINGS                             === "
 " ============================================================================ "
 
-" === Telescope finder shortcuts ===
-lua require('config.telescope')
-
-nnoremap <silent> ; :lua require('telescope.builtin').buffers()<cr>
-nnoremap <silent> <space> :lua require('telescope').extensions.smart_open.smart_open({ filename_first=false })<cr>
-nnoremap <silent> <leader>t :lua _G.MUtils.findFilesInCocWorkspace()<cr>
-nnoremap <silent> <leader>u :lua require('telescope.builtin').find_files()<cr>
-nnoremap <silent> <leader>T :lua require('telescope.builtin').git_files()<cr>
-nnoremap <silent> <leader>qf :lua require('telescope.builtin').quickfix()<cr>
-nnoremap <silent> <leader>qh :lua require('telescope.builtin').quickfixhistory()<cr>
-nnoremap <silent> <leader>L :lua require('telescope.builtin').loclist()<cr>
-nnoremap <silent> <leader>j :lua require('telescope.builtin').jumplist()<cr>
-nnoremap <silent> <leader>: :lua require('telescope.builtin').command_history()<cr>
-nnoremap <silent> <leader>h :lua require('telescope.builtin').search_history()<cr>
-nnoremap <silent> <leader>g :lua _G.MUtils.liveGrepInCocWorkspace()<cr>
-nnoremap <silent> <leader>G :call <SID>telescope_grep_on_git_repo()<cr>
-nnoremap <silent> <leader>s :lua require('telescope.builtin').grep_string()<cr>
-nnoremap <silent> <leader>S :call <SID>telescope_grep_string_on_git_repo()<cr>
-nnoremap <silent> <leader>n :lua require('telescope').extensions.file_browser.file_browser({ cwd=require('telescope.utils').buffer_dir() })<cr>
-nnoremap <silent> <leader>N :lua require('telescope').extensions.file_browser.file_browser()<cr>
-nnoremap <silent> <leader>v :lua require('telescope.builtin').treesitter()<cr>
-nnoremap <silent> <leader>l :lua require('telescope.builtin').resume()<cr>
-nnoremap <silent> <leader>dl :Telescope coc document_diagnostics<cr>
-nnoremap <silent> <leader>wl :Telescope coc workspace_diagnostics<cr>
-nnoremap <silent> <leader>k :lua require('config.telescope').showCommonCommandsPicker()<cr>
-xnoremap <silent> <leader>k :lua require('config.telescope').showCommonCommandsPicker()<cr>
-nnoremap <silent> <leader>dr :Telescope coc references<cr>
-nnoremap <silent> <leader>ds :Telescope coc document_symbols<cr>
-nnoremap <silent> <leader>ws :Telescope coc workspace_symbols<cr>
-
-command! Debug lua require'telescope'.extensions.dap.commands{}
-
-function! s:telescope_grep_on_git_repo()
-  execute "lua require('telescope.builtin').live_grep({search_dirs={'".trim(system("git rev-parse --show-toplevel"))."'}})"
-endfunction
-
-function! s:telescope_grep_string_on_git_repo()
-  execute "lua require('telescope.builtin').grep_string({search_dirs={'".trim(system("git rev-parse --show-toplevel"))."'}})"
-endfunction
-
-" Preload :e command with directory of current buffer.
-nmap <leader>e :e %:h/
-
-" Quick window switching
-nmap <C-h> <C-w>h
-nmap <C-j> <C-w>j
-nmap <C-k> <C-w>k
-nmap <C-l> <C-w>l
-
-" === coc.nvim === "
-"   <leader>dd    - Jump to definition of current symbol
-"   <leader>dr    - Jump to references of current symbol
-"   <leader>dj    - Jump to implementation of current symbol
-"   <leader>ds    - Fuzzy search current project symbols
-nmap <silent> <leader>dd <Plug>(coc-definition)
-nmap <silent> <leader>dj <Plug>(coc-implementation)
-" nnoremap <silent> <leader>ds :<C-u>CocList -I -N --top symbols<CR>
-nmap <silent> <leader>dg <Plug>(coc-diagnostic-info)
-nmap <silent> [G <Plug>(coc-diagnostic-prev)
-nmap <silent> ]G <Plug>(coc-diagnostic-next)
-nmap <silent> [g <Plug>(coc-diagnostic-prev-error)
-nmap <silent> ]g <Plug>(coc-diagnostic-next-error)
-
-" === vim-better-whitespace === "
-"   <leader>ws - Automatically remove trailing whitespace
-nmap <leader>ww :StripWhitespace<CR>
 
 " === Search shorcuts === "
 "   <leader>/ - Clear highlighted search terms while preserving history
@@ -565,119 +416,43 @@ cmap w!! w !sudo tee %
 " Generate jsdoc for function under cursor
 nmap <leader>z :JsDoc<CR>
 
-" Delete current visual selection and dump in black hole buffer before pasting
-" Used when you want to paste over something without it getting copied to
-" Vim's default buffer
-vnoremap <leader>p "_dP
-
-" Delete current selection without yanking
-vnoremap <leader>d "_d
-
-" Copy last yanked/deleted text into register a.
-" For when you want to save into a register but forgot when you ran deleted.
-nmap <leader>y <cmd>let @a=@"<CR>
-
 " Change to the directory of the current file
 command! Cdme cd %:p:h
 " Change to the directory of the git repository
 command! CdRepo execute "cd ".system("git rev-parse --show-toplevel")
-
-" == Git keybindings
-" Open 3-way diff
-command! Gd :Gvdiffsplit!
-" Stage current file
-command! Gadd Git add %
-" Use chunk from left side
-nnoremap <expr> dgl &diff ? ':diffget //2<CR>' : ''
-" Use chunk from right side
-nnoremap <expr> dgr &diff ? ':diffget //3<CR>' : ''
 
 " ============================================================================ "
 " ===                                 MISC.                                === "
 " ============================================================================ "
 
 " === Search === "
-set incsearch
-
-" ignore case when searching, unless the search string has an upper case letter in it
-set ignorecase
-set smartcase
-
-" Automatically re-read file if a change was detected outside of vim
-set autoread
-
-set number
 
 " Enable spellcheck for markdown files
-augroup markdown
-  autocmd!
-  autocmd BufRead,BufNewFile *.md setlocal spell
-  autocmd BufRead,BufNewFile *.md setlocal formatoptions+=t
-augroup END
+" LUAREMOVE
+" augroup markdown
+"   autocmd!
+"   autocmd BufRead,BufNewFile *.md setlocal spell
+"   autocmd BufRead,BufNewFile *.md setlocal formatoptions+=t
+" augroup END
 
 
+" LUAREMOVE
 " Set backups
-if has('persistent_undo')
-  set undofile
-  set undolevels=3000
-  set undoreload=10000
-endif
-set backupdir=~/tmp,.,~/
-set directory=~/tmp,.,~/  " Where to keep swap files
-set backup
-set noswapfile
+" if has('persistent_undo')
+"   set undofile
+"   set undolevels=3000
+"   set undoreload=10000
+" endif
+" set backupdir=~/tmp,.,~/
+" set directory=~/tmp,.,~/  " Where to keep swap files
+" set backup
+" set noswapfile
 
 " Reload icons after init source
 if exists('g:loaded_webdevicons')
   call webdevicons#refresh()
 endif
 
-" Quick move cursor from insert mode
-" These map to cmd/option + arrow keys
-imap <C-a> <C-o>^
-imap <C-e> <C-o>$
-map <C-a> ^
-map <C-e> $
-
-imap <C-Left> <C-o>^
-imap <C-Right> <C-o>$
-map <C-Left> ^
-map <C-Right> $
-
-imap <M-h> <C-o>b
-imap <M-l> <C-o>w
-map <M-h> b
-map <M-l> w
-
-imap <M-g> <C-o>^
-imap <M-;> <C-o>$
-map <M-g> ^
-map <M-;> $
-
-imap <M-Left> <C-o>b
-imap <M-Right> <C-o>w
-map <M-Left> b
-map <M-Right> w
-
-imap <M-b> <C-o>b
-imap <M-f> <C-o>w
-map <M-b> b
-map <M-f> w
-
-" When a visual range is selected, run a macro over each line in the range
-xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
-function! ExecuteMacroOverVisualRange()
-  echo "@".getcmdline()
-  execute ":'<,'>normal @".nr2char(getchar())
-endfunction
-
-" Quick run macro q
-nnoremap <Tab> @q
-" Clear it on startup so that we don't inadvertently run old macros from previous sessions.
-let @q = ''
-
-command! EditInit e ~/.config/nvim/init.vim
-command! ReloadInit lua reload_nvim_conf()
 
 " Prettier Settings
 " Disable quickfix by default since it runs on every save
@@ -708,12 +483,3 @@ endfunction
 
 let g:ft = ''
 
-
-" === Customize quickfix buffer ===
-function! s:quickfix_settings()
-  " o key opens the line under the quickfix and returns focus to quickfix
-  nnoremap <silent> <buffer> o <CR><C-w>p
-  " Open the selected line in the qucikfix buffer, and close the quickfix pane.
-  nnoremap <silent> <buffer> O <CR>:cclose<CR>
-endfunction
-autocmd FileType qf call s:quickfix_settings()

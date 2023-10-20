@@ -1,5 +1,9 @@
 local M = {}
 
+require("sg").setup {
+  on_attach = function() end
+}
+
 local cody = require('sg.cody.commands')
 local pickers = require('telescope.pickers')
 local finders = require 'telescope.finders'
@@ -77,6 +81,5 @@ M.cody_task_recipe = function(opts)
     end,
   }):find()
 end
-
 
 return M

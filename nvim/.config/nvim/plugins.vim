@@ -61,7 +61,8 @@ Plug 'jghauser/mkdir.nvim'
 Plug 'ntpeters/vim-better-whitespace'
 
 " Utilities for moving/renaming/deleting files
-Plug 'tpope/vim-eunuch'
+" fork without <CR> remapping which interferes with autopairs
+Plug 'dimfeld/vim-eunuch'
 
 Plug 'tpope/vim-unimpaired'
 
