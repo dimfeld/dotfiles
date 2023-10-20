@@ -17,59 +17,12 @@ let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
 " Enable matchit for better % behavior
 runtime macros/matchit.vim
 
-set guifont=Inconsolata:h14
-
 " Remap leader key to ,
 let g:mapleader=','
 
-" Don't show last command
-set noshowcmd
 
 " Hides buffers instead of closing them
 set hidden
-
-" === TAB/Space settings === "
-" Insert spaces when TAB is pressed.
-set expandtab
-
-" Change number of spaces that a <Tab> counts for during editing ops
-set softtabstop=2
-set tabstop=4
-
-" Indentation amount for < and > commands.
-set shiftwidth=2
-
-" do not wrap long lines by default
-set nowrap
-
-" Don't highlight current cursor line
-set nocursorline
-
-" Disable line/column number in status line
-" Shows up in preview window when airline is disabled if not
-set noruler
-
-" Only one line for command line
-set cmdheight=1
-
-" Allow mouse clicking
-set mouse=a
-" For Warp
-"set mousescroll=ver:2,hor:4
-
-" Always show sign column so that it doesn't shift the buffer around when it
-" shows up
-set signcolumn=yes
-
-" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
-" delays and poor user experience.
-set updatetime=300
-
-" Setting for cursorhold workaround plugin
-let g:cursorhold_updatetime = 100
-
-set textwidth=120
-set formatoptions-=t
 
 " Scroll window without moving cursor
 noremap z<Up> 10<c-e>
@@ -78,95 +31,71 @@ noremap z<Down> 10<c-y>
 " Code Settings
 "
 
-set redrawtime=2000
-
 "" Svelte
 let g:svelte_preprocessor_tags = [
   \ { 'name': 'postcss', 'tag': 'style', 'as': 'scss' }
   \ ]
 let g:svelte_preprocessors = ['typescript', 'postcss', 'scss']
 
-augroup SvelteFiles
-  au!
-  au FileType svelte setlocal formatoptions+=ro
-  au FileType svelte setlocal tabstop=2
-  " au FileType svelte let b:coc_additional_keywords = ["-"]
-  " au FileType svelte setlocal iskeyword=@,48-57,_,.,-,192-255
-augroup END
+" LUAREMOVE
+" augroup SvelteFiles
+"   au!
+"   au FileType svelte setlocal formatoptions+=ro
+"   au FileType svelte setlocal tabstop=2
+"   " au FileType svelte let b:coc_additional_keywords = ["-"]
+"   " au FileType svelte setlocal iskeyword=@,48-57,_,.,-,192-255
+" augroup END
 
 let g:vim_svelte_plugin_use_typescript = 1
 let g:vim_svelte_plugin_use_sass = 1
 
-augroup ClosingTag
-  au!
-  " au FileType html iabbrev </ </<C-X><C-O>
-  " au FileType svelte iabbrev </ </<C-X><C-O>
-augroup END
-
-"" Rust
-augroup RustFiles
-  au!
-  au FileType rust setlocal shiftwidth=4
-augroup END
-
-"" Go
-augroup GoFiles
-  au!
-  au FileType go setlocal tabstop=4 shiftwidth=4
-augroup END
-
+" augroup ClosingTag
+"   au!
+"   " au FileType html iabbrev </ </<C-X><C-O>
+"   " au FileType svelte iabbrev </ </<C-X><C-O>
+" augroup END
 
 " LUAREMOVE
-" lua require('section-wordcount').setup{}
-" let g:asciidoctor_folding = 1
-" let g:asciidoctor_fenced_languages = [
-"       \'sql',
-"       \'svelte',
-"       \'rust',
-"       \'bash'
-"       \]
+" "" Rust
+" augroup RustFiles
+"   au!
+"   au FileType rust setlocal shiftwidth=4
+" augroup END
 
-"augroup AsciiDoc
-"  au!
-"  au FileType asciidoc setlocal shiftwidth=2 wrap lbr foldlevel=99
-"  au FileType asciidoc nnoremap <buffer> <Down> gj
-"  au FileType asciidoc nnoremap <buffer> <Up> gk
-"  au FileType markdown lua require('section-wordcount').wordcounter{}
-"  au FileType asciidoc lua require('section-wordcount').wordcounter({
-"  \   header_char = '=',
-"  \ })
-"  "au FileType asciidoc inoremap <buffer> <silent> <Down> <c-\><c-o>gj
-"  "au FileType asciidoc inoremap <buffer> <silent> <Up> <c-\><c-o>gk
-"augroup END
+" "" Go
+" augroup GoFiles
+"   au!
+"   au FileType go setlocal tabstop=4 shiftwidth=4
+" augroup END
 
 
 " ============================================================================ "
 " ===                           PLUGIN SETUP                               === "
 " ============================================================================ "
 
-let g:codeium_enabled = v:true
+" let g:codeium_enabled = v:true
 
-augroup DisableCopilot
-  autocmd!
-  if (g:codeium_enabled)
-    autocmd BufEnter <silent><script><expr> let b:copilot_enabled=v:false
-  endif
-augroup END
+" augroup DisableCopilot
+"   autocmd!
+"   if (g:codeium_enabled)
+"     autocmd BufEnter <silent><script><expr> let b:copilot_enabled=v:false
+"   endif
+" augroup END
 
-" Handling this manually so that copilot doesn't take precedence over the autocomplete.
-let g:codeium_no_map_tab = v:true
-let g:copilot_no_tab_map = v:true
-if (g:codeium_enabled)
-  imap <silent><script><expr> <C-J> codeium#Accept()
-  imap <silent><script><expr> <C-]> codeium#Accept()
-else
-  imap <silent><script><expr> <C-J> copilot#Accept("")
-  imap <silent><script><expr> <C-]> copilot#Accept("")
-endif
+" " Handling this manually so that copilot doesn't take precedence over the autocomplete.
+" let g:codeium_no_map_tab = v:true
+" let g:copilot_no_tab_map = v:true
+" if (g:codeium_enabled)
+"   imap <silent><script><expr> <C-J> codeium#Accept()
+"   imap <silent><script><expr> <C-]> codeium#Accept()
+" else
+"   imap <silent><script><expr> <C-J> copilot#Accept("")
+"   imap <silent><script><expr> <C-]> copilot#Accept("")
+" endif
 
-let g:copilot_filetypes = {
-  \ 'markdown': v:true,
-  \ }
+" let g:copilot_filetypes = {
+"   \ 'markdown': v:true,
+"   \ }
 
 
 " Close preview window when completion is done.
@@ -228,17 +157,6 @@ augroup FormatOnSave
   au BufWritePost *.py FormatWrite
 augroup END
 
-" Markdown
-let g:vim_markdown_conceal = 0
-let g:tex_conceal = ""
-let g:vim_markdown_math = 1
-let g:vim_markdown_frontmatter = 1
-let g:vim_markdown_strikethrough = 1
-let g:vim_markdown_no_extensions_in_markdown = 1
-let g:vim_markdown_edit_url_in = 'vsplit'
-let g:vim_markdown_folding_style_pythonic = 1
-let g:vim_markdown_folding_level = 6
-
 " === vim-javascript === "
 " Enable syntax highlighting for JSDoc
 let g:javascript_plugin_jsdoc = 1
@@ -246,9 +164,6 @@ let g:javascript_plugin_jsdoc = 1
 " === vim-jsx === "
 " Highlight jsx syntax even in non .jsx files
 let g:jsx_ext_required = 0
-
-" === Signify === "
-let g:signify_sign_delete = '-'
 
 " === PostCss - SCSS syntax highlighting works here === "
 augroup pcss
@@ -261,6 +176,7 @@ lua <<EOF
 
 require('config.core')
 require('config.completion')
+require('config.copilot')
 require('config.debugging')
 require('config.edit_commands')
 require('config.formatters')
@@ -270,6 +186,7 @@ require('config.prose')
 require('config.quickfix')
 require('config.sourcegraph')
 require('config.status_line')
+require('config.tabstops')
 require('config.telescope')
 require('config.telescope_commandbar')
 require('config.terminal')
@@ -316,52 +233,6 @@ set splitbelow
 " ===                      CUSTOM COLORSCHEME CHANGES                      === "
 " ============================================================================ "
 "
-" Add custom highlights in method that is executed every time a colorscheme is sourced
-" See https://gist.github.com/romainl/379904f91fa40533175dfaec4c833f2f for details
-" function! TrailingSpaceHighlights() abort
-"   " Hightlight trailing whitespace
-"   highlight Trail ctermfg=red guifg=red cterm=underline gui=underline
-"   call matchadd('Trail', '\s\+\%#\@<!$', 100)
-" endfunction
-
-function! s:custom_jarvis_colors()
-  " coc.nvim color changes
-  hi link CocErrorSign WarningMsg
-  hi link CocWarningSign Number
-  hi link CocInfoSign Type
-
-  hi! CocMenuSel ctermbg=7 ctermfg=0 guifg=#111111 guibg=#aaaaff
-
-  " Make background transparent for many things
-  hi Normal ctermbg=NONE guibg=NONE
-  hi NonText ctermbg=NONE guibg=NONE
-  hi LineNr ctermfg=NONE guibg=NONE
-  hi SignColumn ctermfg=NONE guibg=NONE
-  hi StatusLine guifg=#16252b guibg=#6699CC
-  hi StatusLineNC guifg=#16252b guibg=#16252b
-
-  " Try to hide vertical spit and end of buffer symbol
-  hi VertSplit gui=NONE guifg=#17252c guibg=#17252c
-  hi EndOfBuffer ctermbg=NONE ctermfg=NONE guibg=#17252c guifg=#17252c
-
-  " Make background color transparent for git changes
-  hi SignifySignAdd guibg=NONE
-  hi SignifySignDelete guibg=NONE
-  hi SignifySignChange guibg=NONE
-
-  " Highlight git change signs
-  hi SignifySignAdd guifg=#99c794
-  hi SignifySignDelete guifg=#ec5f67
-  hi SignifySignChange guifg=#c594c5
-
-  hi DiffAdded guibg=#207020
-  hi DiffRemoved guibg=#902020
-
-  hi Search  cterm=reverse ctermfg=237 ctermbg=209 guifg=#343d46 guibg=#f99157
-  hi CodeiumSuggestion guifg=#eeaaaa ctermfg=10
-  hi CopilotSuggestion guifg=#eeaaaa ctermfg=10
-endfunction
-
 command! ShowColors :call <SID>SynStack()<CR>
 function! <SID>SynStack()
   if !exists("*synstack")
@@ -369,16 +240,6 @@ function! <SID>SynStack()
   endif
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
-
-set synmaxcol=3000
-augroup Highlighting
-  autocmd!
-  autocmd BufEnter * syntax sync minlines=1000
-  autocmd FileType vim lua vim.treesitter.start()
-augroup END
-
-" autocmd! ColorScheme * call TrailingSpaceHighlights()
-autocmd! ColorScheme OceanicNext call s:custom_jarvis_colors()
 
 " Call method on window enter
 augroup WindowManagement
@@ -393,18 +254,12 @@ function! Handle_Win_Enter()
   endif
 endfunction
 
-" Editor theme
-set background=dark
-colorscheme OceanicNext
-
 " ============================================================================ "
 " ===                             KEY MAPPINGS                             === "
 " ============================================================================ "
 
 
 " === Search shorcuts === "
-"   <leader>/ - Clear highlighted search terms while preserving history
-nmap <silent> <leader>/ <cmd>nohlsearch<CR>
 
 " Repeat last command over visual selection
 xnoremap <Leader>. q:<UP>I'<,'><Esc>$
@@ -421,65 +276,6 @@ command! Cdme cd %:p:h
 " Change to the directory of the git repository
 command! CdRepo execute "cd ".system("git rev-parse --show-toplevel")
 
-" ============================================================================ "
-" ===                                 MISC.                                === "
-" ============================================================================ "
-
-" === Search === "
-
-" Enable spellcheck for markdown files
-" LUAREMOVE
-" augroup markdown
-"   autocmd!
-"   autocmd BufRead,BufNewFile *.md setlocal spell
-"   autocmd BufRead,BufNewFile *.md setlocal formatoptions+=t
-" augroup END
-
-
-" LUAREMOVE
-" Set backups
-" if has('persistent_undo')
-"   set undofile
-"   set undolevels=3000
-"   set undoreload=10000
-" endif
-" set backupdir=~/tmp,.,~/
-" set directory=~/tmp,.,~/  " Where to keep swap files
-" set backup
-" set noswapfile
-
-" Reload icons after init source
-if exists('g:loaded_webdevicons')
-  call webdevicons#refresh()
-endif
-
-
-" Prettier Settings
-" Disable quickfix by default since it runs on every save
-let g:prettier#quickfix_enabled = 0
-let g:prettier#quickfix_auto_focus = 0
-let g:prettier#autoformat_require_pragma = 0
-let g:prettier#autoformat_config_present = 1
-let g:prettier#autoformat_config_files = [
-      \'.prettierrc',
-      \'.prettierrc.yml',
-      \'.prettierrc.yaml',
-      \'.prettierrc.js',
-      \'.prettierrc.config.js',
-      \'.prettierrc.json',
-      \'.prettierrc.toml',
-      \'prettier.config.js']
-let g:prettier#exec_cmd_async = 1
-
-" If we do want to see the quickfix box, use this.
-command! PO call PrettierWithOutput()
-
-function! PrettierWithOutput()
-  let old_quickfix = g:prettier#quickfix_enabled
-  let g:prettier#quickfix_enabled = 1
-  Prettier
-  let g:prettier#quickfix_enabled = old_quickfix
-endfunction
 
 let g:ft = ''
 

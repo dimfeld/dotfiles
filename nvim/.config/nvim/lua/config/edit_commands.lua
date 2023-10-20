@@ -118,4 +118,6 @@ vim.o.smartcase = true
 
 -- Repeat last replace across selected lines
 vim.keymap.set('x', '&', ":'<,'>&&<CR>", { silent = true })
+-- Clear search highlighting
+vim.keymap.set({'n', 'x'}, '<leader>/', '<cmd>nohlsearch<CR>', { silent = true })
 

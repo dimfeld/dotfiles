@@ -1,3 +1,14 @@
+-- # Markdown
+vim.g['vim_markdown_conceal'] = 0
+vim.g['tex_conceal'] = ""
+vim.g['vim_markdown_math'] = 1
+vim.g['vim_markdown_frontmatter'] = 1
+vim.g['vim_markdown_strikethrough'] = 1
+vim.g['vim_markdown_no_extensions_in_markdown'] = 1
+vim.g['vim_markdown_edit_url_in'] = 'vsplit'
+vim.g['vim_markdown_folding_style_pythonic'] = 1
+vim.g['vim_markdown_folding_level'] = 6
+
 local markdownGroup = vim.api.nvim_create_augroup('markdown', {})
 
 vim.api.nvim_create_autocmd({'BufRead' ,'BufNewFile'}, {
