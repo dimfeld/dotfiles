@@ -1,3 +1,5 @@
+local M = {}
+
 local telescope = require('telescope');
 local builtin = require('telescope.builtin');
 local pickers = require 'telescope.pickers'
@@ -9,7 +11,7 @@ local entry_display = require 'telescope.pickers.entry_display'
 local cody = require('sg.cody.commands');
 local ai = require('config.sourcegraph')
 
-local commands = {
+M.commands = {
   { name = 'Organize imports', category = "LS", coc_cmd = "editor.action.organizeImport" },
   { name = 'Format document', category = "LS", coc_cmd = "editor.action.formatDocument" },
   { name = 'Format selection', category = "LS", coc_cmd = "editor.action.formatSelection" },
@@ -24,46 +26,30 @@ local commands = {
   { name = 'Reload Typescript Project', category = "LS", coc_cmd = "tsserver.reloadProjects" },
   { name = 'Show LS Output', category = "LS", coc_cmd = "workspace.showOutput" },
 
-  { name = "Git permalink", category = "Git", coc_cmd = "git.copyPermalink" },
-  { name = "Git blame popup", category = "Git", coc_cmd = "git.showBlameDoc" },
-  { name = 'Open line in Github', category = "Git", coc_cmd = "git.browserOpen" },
-  { name = 'Show last Git commit', category = "Git", coc_cmd = "git.showCommit" },
-  { name = 'Undo Git chunk', category = "Git", coc_cmd = "git.chunkUndo" },
-  { name = 'Unstage Git chunk', category = "Git", coc_cmd = "git.chunkUnstage" },
-  { name = 'Stage Git chunk', category = "Git", coc_cmd = "git.chunkStage" },
-  { name = 'Git chunk Info', category = "Git", coc_cmd = "git.chunkInfo" },
-  { name = 'Git Difftool', category = "Git",  action = function () vim.cmd('Git difftool') end },
-  { name = 'Git Blame', category = "Git",  action = function () vim.cmd('Git blame') end },
-  { name = 'Git 3-way Diff', category = "Git",  action = function () vim.cmd('Gvdiffsplit') end },
-  { name = "Git Status", category = "Git", action = builtin.git_status },
-
   { name = 'Resync Syntax', category = "Buffer", action = function () vim.cmd('syntax sync fromstart') end },
-
-  { name = 'Vertical Terminal', category = "Terminal", action = function () vim.cmd('VTerm') end },
-  { name = 'Horizontal Terminal', category = "Terminal", action = function () vim.cmd('HTerm') end },
 
   { name = 'Quickfix Search', category = "Quickfix", action = builtin.quickfix },
   { name = 'Quickfix History', category = "Quickfix", action = builtin.quickfixhistory },
 
   { name = "Yank to Clipboard", category = "Clipboard", action = function() vim.cmd("'<,'>y*") end },
   { name = "Delete to Blackhole", category = "Clipboard", action = function() vim.cmd("'<,'>d_") end },
-
-  { name = "Cody Chat - New", category = "Sourcegraph", action = function() cody.chat() end },
-  { name = "Cody Chat - History", category = "Sourcegraph", action = function() cody.history() end },
-  { name = "Cody Chat - Toggle", category = "Sourcegraph", action = function() cody.toggle() end },
-  { name = "Cody Chat - Focus History", category = "Sourcegraph", action = function() cody.focus_history() end },
-  { name = "Cody Chat - Focus Prompt", category = "Sourcegraph", action = function() cody.focus_prompt() end },
-  { name = "Ask Cody", category = "Sourcegraph", action = function() ai.ask_cody() end },
-  { name = "Cody Task", category = "Sourcegraph", action = function() ai.cody_task() end },
-  { name = "Cody Task from List", category = "Sourcegraph", action = function() ai.cody_task_recipe() end },
 }
 
-local handled_coc_commands = {}
-for _, command in ipairs(commands) do
-  if command.coc_cmd then
-    handled_coc_commands[command.coc_cmd] = true
+M.add_commands = function(commands)
+  for _, command in ipairs(commands) do
+    table.insert(M.commands, command)
   end
 end
+
+-- After everything has initialized, see which CoC commands have been handled
+local handled_coc_commands = {}
+vim.schedule(function()
+  for _, command in ipairs(M.commands) do
+    if command.coc_cmd then
+      handled_coc_commands[command.coc_cmd] = true
+    end
+  end
+end)
 
 function showCommonCommandsPicker(opts)
   opts = opts or {}
@@ -108,7 +94,7 @@ function showCommonCommandsPicker(opts)
     ::continue::
   end
 
-  for i, command in ipairs(commands) do
+  for i, command in ipairs(M.commands) do
     if command.filetype ~= nil and filetype ~= command.filetype then
       goto continue_2
     end
@@ -166,3 +152,5 @@ function showCommonCommandsPicker(opts)
 end
 
 vim.keymap.set('n', '<leader>k', showCommonCommandsPicker)
+
+return M

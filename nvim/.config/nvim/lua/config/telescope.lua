@@ -4,6 +4,8 @@ local telescope = require('telescope');
 local builtin = require('telescope.builtin')
 local extensions = telescope.extensions
 
+local githelpers = require('helpers.git')
+
 telescope.load_extension('coc');
 telescope.load_extension('dap');
 telescope.load_extension('file_browser');
@@ -32,13 +34,11 @@ vim.keymap.set('n', '<leader>g', function()
 end, {})
 vim.keymap.set('n', '<leader>h', builtin.search_history, {})
 vim.keymap.set('n', '<leader>G', function()
-  local toplevel = vim.fn.trim(vim.fn.system("git rev-parse --show-toplevel"))
-  builtin.live_grep({ search_dirs={toplevel} })
+  builtin.live_grep({ search_dirs={githelpers.git_repo_toplevel()} })
 end, {})
 vim.keymap.set('n', '<leader>s', builtin.grep_string, {})
 vim.keymap.set('n', '<leader>S', function()
-  local toplevel = vim.fn.trim(vim.fn.system("git rev-parse --show-toplevel"))
-  builtin.grep_string({ search_dirs={toplevel} })
+  builtin.grep_string({ search_dirs={githelpers.git_repo_toplevel()} })
 end, {})
 vim.keymap.set('n', '<leader>n', function()
   extensions.file_browser.file_browser({ cwd=require('telescope.utils').buffer_dir() })

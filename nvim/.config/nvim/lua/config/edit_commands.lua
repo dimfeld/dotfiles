@@ -1,3 +1,5 @@
+local git_helpers = require('helpers.git')
+
 -- Dial does number incrementing and decrementing
 local dial = require('dial.map')
 vim.keymap.set("n", "<M-i>", dial.inc_normal())
@@ -123,8 +125,7 @@ vim.keymap.set('x', '@', function()
 vim.api.nvim_create_user_command('Cdme', 'cd %:p:h', {})
 -- Set CWD to repository root
 vim.api.nvim_create_user_command('CdRepo', function()
-  local toplevel = vim.fn.trim(vim.fn.system("git rev-parse --show-toplevel"))
-  vim.cmd('cd ' .. toplevel)
+  vim.cmd('cd ' .. git_helpers.git_repo_toplevel())
 end, {})
 
 -- Reload changed files automatically
@@ -147,3 +148,5 @@ vim.keymap.set({'n', 'x'}, '<leader>/', vim.cmd.nohlsearch,  { silent = true })
 
 -- Repeat last command over visual selection
 vim.keymap.set('x', '<Leader>.', "q:<UP>I'<,'><Esc>$", {})
+
+

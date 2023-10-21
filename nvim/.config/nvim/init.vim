@@ -1,11 +1,9 @@
 scriptencoding utf-8'
 
+" Include core before plugins
+lua require('config.core')
+
 let g:BufKillCreateMappings = 0
-
-" Use Lua filetype detection
-let g:do_filetype_lua=1
-let g:did_load_filetypes=0
-
 source ~/.config/nvim/plugins.vim
 
 let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
@@ -15,7 +13,6 @@ runtime macros/matchit.vim
 
 lua <<EOF
 
-require('config.core')
 require('config.code_langs')
 require('config.completion')
 require('config.copilot')
@@ -33,6 +30,10 @@ require('config.telescope')
 require('config.telescope_commandbar')
 require('config.terminal')
 require('config.theme')
+
+require('commands.dash')
+require('commands.git')
+require('commands.sourcegraph')
 
 EOF
 

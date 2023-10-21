@@ -8,7 +8,6 @@ vim.o.fillchars = 'vert:.'
 vim.o.splitbelow = true
 
 -- vim.g['airline_theme'] = 'dark_minimal'
-vim.g['signify_sign_delete'] = '-'
 
 
 vim.o.mouse = 'a'

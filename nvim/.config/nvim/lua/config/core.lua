@@ -1,11 +1,15 @@
 _G.MUtils= {}
 
 -- Remap leader key to ,
-vim.g['mapleader'] = ','
+vim.g.mapleader = ','
+
+-- Use Lua filetype detection. This might not be needed anymore?
+vim.g.do_filetype_lua = 1
+vim.g.did_load_filetypes = 0
 
 function reload_nvim_conf()
   for name,_ in pairs(package.loaded) do
-    if name:match('^core') or name:match('^lsp') or name:match('^plugins') or name:match('^config') or name:match('^commands') or name:match('^section-wordcount') then
+    if name:match('^core') or name:match('^lsp') or name:match('^plugins') or name:match('^config') or name:match('^commands') or name:match('^helpers') then
       package.loaded[name] = nil
     end
   end

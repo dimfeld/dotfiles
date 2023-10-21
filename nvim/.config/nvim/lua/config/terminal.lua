@@ -1,3 +1,5 @@
+local cmdbar = require('config.telescope_commandbar')
+
 local toggleterm = require('toggleterm')
 local toggleterm_open_mapping = [[<C-\>]]
 toggleterm.setup{
@@ -37,4 +39,9 @@ vim.api.nvim_create_autocmd('TermOpen', {
     set_terminal_keymaps()
     vim.cmd.DisableWhitespace()
   end
+})
+
+cmdbar.add_commands({
+  { name = 'Vertical Terminal', category = "Terminal", action = function () vim.cmd('VTerm') end },
+  { name = 'Horizontal Terminal', category = "Terminal", action = function () vim.cmd('HTerm') end },
 })
