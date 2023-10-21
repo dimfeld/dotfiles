@@ -21,16 +21,19 @@ local prettierd = function()
     limit = 1,
   })
 
-  -- print(vim.inspect(found_config))
 
-  local next = next
-  if next(found_config) == nil then
+  local _, found = next(found_config)
+  -- print(vim.inspect(found))
+  if found == nil then
     return nil
   end
+
+  local config_dirname = vim.fs.dirname(found)
 
   return {
     exe = "prettierd",
     args = { util.escape_path(current_path) },
+    cwd = config_dirname,
     stdin = true,
   }
 end
@@ -45,6 +48,7 @@ end
 
 require('formatter').setup({
   logging = true,
+  -- log_level = vim.log.levels.TRACE,
   filetype = {
     html = { prettierd },
     css = { prettierd },
