@@ -13,6 +13,9 @@ require('which-key').setup{}
 
 -- # Buffer Navigation --
 
+-- Hides buffers instead of closing them
+vim.o.hidden = true
+
 -- Quick move cursor from insert mode
 -- These map to cmd/option + arrow keys
 vim.keymap.set('i', '<C-a>', '<C-o>^', {})
@@ -44,6 +47,10 @@ vim.keymap.set('i', '<M-b>', '<C-o>b', {})
 vim.keymap.set('i', '<M-f>', '<C-o>w', {})
 vim.keymap.set('n', '<M-b>', 'b', {})
 vim.keymap.set('n', '<M-f>', 'w', {})
+
+-- Scroll window without moving cursor
+vim.keymap.set('n', 'z<Up>', '10<c-e>', {})
+vim.keymap.set('n', 'z<Down>', '10<c-y>', {})
 
 
 -- Quick window switching
@@ -84,11 +91,19 @@ vim.keymap.set('v', '<leader>d', '"_d', {})
 
 -- Copy last yanked/deleted text into register a.
 -- For when you want to save into a register but forgot when you ran delete.
-vim.keymap.set('n', '<leader>y', '<cmd>let @a=@"<CR>', { silent = true })
+vim.keymap.set('n', '<leader>y',
+  function()
+    local lastYanked = vim.fn.getreg('"')
+    vim.fn.setreg('a', lastYanked)
+  end,
+{ silent = true })
+
+-- Try to copy into local native clipboard when in an SSH session
+vim.keymap.set('x', '<leader>y', vim.cmd.OSCYank, { silent = true })
 
 -- # Macros
 
--- Quick run macro q
+-- Quick run macro @q
 vim.keymap.set('n', '<Tab>', '@q', {})
 -- Clear macro q at startup to prevent old ones from running by mistake
 vim.fn.setreg('q', '')
@@ -98,10 +113,19 @@ vim.keymap.set('x', '@', function()
     local macro_key = vim.fn.nr2char(vim.fn.getchar())
     print("@" .. macro_key)
     return ":normal @" .. macro_key .. '<CR>'
-  end, { expr = true, silent = true }
+  end,
+  { expr = true, silent = true }
 )
 
 -- # File System
+
+-- Set CWD to directory of current file
+vim.api.nvim_create_user_command('Cdme', 'cd %:p:h', {})
+-- Set CWD to repository root
+vim.api.nvim_create_user_command('CdRepo', function()
+  local toplevel = vim.fn.trim(vim.fn.system("git rev-parse --show-toplevel"))
+  vim.cmd('cd ' .. toplevel)
+end, {})
 
 -- Reload changed files automatically
 vim.o.autoread = true
@@ -119,5 +143,7 @@ vim.o.smartcase = true
 -- Repeat last replace across selected lines
 vim.keymap.set('x', '&', ":'<,'>&&<CR>", { silent = true })
 -- Clear search highlighting
-vim.keymap.set({'n', 'x'}, '<leader>/', '<cmd>nohlsearch<CR>', { silent = true })
+vim.keymap.set({'n', 'x'}, '<leader>/', vim.cmd.nohlsearch,  { silent = true })
 
+-- Repeat last command over visual selection
+vim.keymap.set('x', '<Leader>.', "q:<UP>I'<,'><Esc>$", {})

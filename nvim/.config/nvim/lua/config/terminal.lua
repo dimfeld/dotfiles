@@ -9,11 +9,11 @@ toggleterm.setup{
   direction = 'horizontal',
 }
 
-vim.cmd('command! VTerm ToggleTerm size=80 direction=vertical')
-vim.cmd('command! HTerm ToggleTerm size=20 direction=horizontal')
+vim.api.nvim_create_user_command('VTerm', 'ToggleTerm size=80 direction=vertical', {})
+vim.api.nvim_create_user_command('HTerm', 'ToggleTerm size=20 direction=horizontal', {})
 
 -- Tell neovim to catch these keystrokes instead of passing them through to the terminal.
-function _G.set_terminal_keymaps()
+function set_terminal_keymaps()
   -- This key sequence exits from "terminal" mode into command mode.
   local term_escape = [[<C-\><C-n>]]
   local tmap = function(input, command)
@@ -29,3 +29,12 @@ function _G.set_terminal_keymaps()
   vim.api.nvim_buf_set_keymap(0, 't', '<esc><esc>', term_escape, { noremap = true })
 end
 
+local auGroup = vim.api.nvim_create_augroup('TerminalKeymaps', {})
+vim.api.nvim_create_autocmd('TermOpen', {
+  group = auGroup,
+  pattern = 'term://*',
+  callback = function()
+    set_terminal_keymaps()
+    vim.cmd.DisableWhitespace()
+  end
+})

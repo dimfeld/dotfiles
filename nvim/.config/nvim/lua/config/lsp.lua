@@ -25,3 +25,42 @@ vim.g['coc_global_extensions'] = {
   'coc-xml',
   '@yaegassy/coc-tailwindcss3'
 }
+
+-- Documentation with K and c-K
+
+function toggle_documentation()
+  if vim.call('coc#float#has_float') > 0 then
+    vim.call('coc#float#close_all')
+  else
+    show_documentation()
+  end
+end
+
+function toggle_signature_help()
+  if vim.call('coc#float#has_float') > 0 then
+    vim.call('coc#float#close_all')
+  else
+    vim.call('CocActionAsync', 'showSignatureHelp', hover_callback)
+  end
+end
+
+function hover_callback(e, r)
+  if r == false then
+    vim.call('CocActionAsync', 'doHover')
+  end
+end
+
+function show_documentation()
+  local filetype = vim.bo.filetype
+  if filetype == 'vim' or filetype == 'help' then
+    vim.cmd('h ' .. vim.fn.expand('<cword>'))
+  elseif vim.call('coc#rpc#ready') then
+    vim.call('CocActionAsync', 'doHover')
+  else
+    vim.cmd('!' .. vim.bo.keywordprg .. ' ' .. vim.fn.expand('<cword>'))
+  end
+end
+
+vim.keymap.set('n', 'K', toggle_documentation, {})
+vim.keymap.set('i', '<C-K>', toggle_signature_help, {})
+

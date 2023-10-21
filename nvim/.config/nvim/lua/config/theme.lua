@@ -4,8 +4,10 @@ vim.o.guifont = 'Inconsolata:h14'
 
 -- Vertical split character is a space (hide it)
 vim.o.fillchars = 'vert:.'
+-- Set preview window to appear at bottom
+vim.o.splitbelow = true
 
-vim.g['airline_theme'] = 'dark_minimal'
+-- vim.g['airline_theme'] = 'dark_minimal'
 vim.g['signify_sign_delete'] = '-'
 
 
@@ -109,6 +111,17 @@ vim.api.nvim_create_autocmd('ColorScheme', {
       hi CodeiumSuggestion guifg=#eeaaaa ctermfg=10
       hi CopilotSuggestion guifg=#eeaaaa ctermfg=10
     ]])
+  end
+})
+
+-- Preview window color override
+vim.api.nvim_create_autocmd('WinEnter', {
+  group = highlightGroup,
+  pattern = '*',
+  callback = function()
+    if vim.wo.previewwindow then
+      vim.wo.winhighlight = "Normal:MarkdownError"
+    end
   end
 })
 

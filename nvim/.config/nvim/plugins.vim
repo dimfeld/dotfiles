@@ -94,11 +94,6 @@ Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 " justfile highlighting
 Plug 'NoahTheDuke/vim-just'
 
-" Plug 'prettier/vim-prettier', {
-"   \ 'do': 'yarn install',
-"   \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html', 'svelte']
-"   \ }
-
 Plug 'mhartington/formatter.nvim'
 Plug 'mattn/efm-langserver'
 
@@ -107,7 +102,6 @@ Plug 'akinsho/toggleterm.nvim'
 
 " === Git Plugins === "
 " Enable git changes to be shown in sign column
-" Plug 'mhinz/vim-signify'
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 

@@ -17,7 +17,8 @@ local cond = require('nvim-autopairs.conds')
 npairs.remove_rule('{')
 npairs.add_rules({
   Rule('{', '}'):end_wise(function(opts)
-    return string.sub(vim.trim(opts.line), -1) == '{'
+    local lastChar = string.sub(vim.trim(opts.line), -1)
+    return lastChar == '{' or lastChar == ')'
   end)
 })
 
@@ -52,6 +53,18 @@ function close_pum_when_pressed(key)
     return key
   end, { expr = true })
 end
+
+-- Close preview window when completion is done.
+local auGroup = vim.api.nvim_create_augroup('completion', {})
+vim.api.nvim_create_autocmd('CompleteDone', {
+  group = auGroup,
+  pattern = '*',
+  callback = function()
+    if not pum_visible() and vim.fn['getcmdwintype']() == '' then
+      vim.cmd('pclose')
+    end
+  end
+})
 
 close_pum_when_pressed('<up>')
 close_pum_when_pressed('<down>')

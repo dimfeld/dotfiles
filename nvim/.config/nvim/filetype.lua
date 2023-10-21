@@ -1,6 +1,7 @@
 vim.filetype.add({
   extension = {
     svench = "svelte",
-    postcss = "sass",
+    postcss = "scss",
+    pcss = "scss",
   },
 })

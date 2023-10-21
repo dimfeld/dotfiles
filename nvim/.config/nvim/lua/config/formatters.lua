@@ -58,3 +58,14 @@ require('formatter').setup({
     python = { black }
   }
 })
+
+local auGroup = vim.api.nvim_create_augroup('Autoformat', {})
+vim.api.nvim_create_autocmd('BufWritePost', {
+  group = auGroup,
+  pattern = '*',
+  callback = function() vim.cmd.FormatWrite() end,
+})
+
+vim.api.nvim_create_user_command('Format', function()
+  vim.fn.CocAction('runCommand', 'editor.action.formatDocument')
+end, {})
