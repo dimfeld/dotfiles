@@ -18,9 +18,10 @@ vim.g.codeium_no_map_tab = true
 vim.g.copilot_no_tab_map = true
 
 local acceptCmd = codeium_enabled and 'codeium#Accept()' or 'copilot#Accept("")'
+local acceptKeyOpts = {silent = true, expr = true, script=true, replace_keycodes = false }
 
-vim.keymap.set('i', '<C-J>', acceptCmd, {silent = true, expr = true})
-vim.keymap.set('i', '<C-]>', acceptCmd, {silent = true, expr = true})
+vim.keymap.set('i', '<C-J>', acceptCmd, acceptKeyOpts)
+vim.keymap.set('i', '<C-]>', acceptCmd, acceptKeyOpts)
 
 vim.g.copilot_filetypes = {
   markdown = true,
