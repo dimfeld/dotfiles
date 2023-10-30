@@ -72,7 +72,16 @@ close_pum_when_pressed('<left>')
 close_pum_when_pressed('<right>')
 
 -- Open completion popup
-vim.keymap.set('i', '<c-space>', function() vim.fn['coc#refresh']() end, { silent = true })
+vim.keymap.set('i', '<c-space>', function() vim.fn['coc#start']() end, { silent = true })
+
+-- Allow triggering code action, such as adding import, from completion window
+vim.keymap.set('i', '<leader>c', function()
+  if pum_visible() then
+    return vim.fn['coc#pum#confirm']()
+  else
+    return '<leader>c'
+  end
+end, { silent = true, expr = true })
 
 -- Don't give completion messages like 'match 1 of 2' or 'The only match'
 vim.opt.shortmess:append "c"

@@ -25,6 +25,10 @@ M.ask_cody = function()
   local startLine, endLine = getLineRange()
 
   local doIt = function(q)
+    if q == nil then
+      return
+    end
+
     cody.ask_range(0, startLine, endLine, q)
   end
 
@@ -37,6 +41,10 @@ M.cody_task = function()
   }
 
   local doIt = function(q)
+    if q == nil then
+      return
+    end
+
     -- The CodyTask command does extra bookkeeping that is required to make things like
     -- accepting the Task work properly, so just use that.
     vim.cmd('CodyTask ' .. q)

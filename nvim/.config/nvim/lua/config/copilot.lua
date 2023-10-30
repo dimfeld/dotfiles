@@ -1,5 +1,5 @@
 -- true for Codeium, false for Github Copilot
-local codeium_enabled = false
+local codeium_enabled = true
 
 vim.g.codeium_enabled = codeium_enabled
 
