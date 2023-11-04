@@ -1,0 +1,10 @@
+Create a {{style}} summary of the below files
+which are on the topic of {{topic}}. The summary should be about {{ len }} sentences long.
+
+{% for f in file -%}
+File {{ f.filename }}:
+{{ f.contents }}
+
+
+{%- endfor %}
+
