@@ -1,2 +1,5 @@
 [model]
 model = "gpt-3.5-turbo"
+
+alias.zephyr = "zephyr:7b-beta-q5_K_M"
+alias.yarn-mistral = "yarn-mistral:7b-128k-q5_K_M"
