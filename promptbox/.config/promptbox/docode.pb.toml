@@ -1,0 +1,38 @@
+template = '''
+You are an expert programmer tasked with {%if file %}updating{%else%}writing{% endif %} {%- if lang %} {{lang}}{% endif %} code.
+Existing files are delimited by BEGIN FILE and END FILE. 
+
+{%if file -%}
+
+Your task is to update {{f.filename}} file to {{task}}. Changes should be printed in Unix patch/diff format.
+
+BEGIN FILE {{file.filename}}
+{{file.contents}}
+END FILE
+
+{%else %}
+Your task is to write a new file to {{task}}.
+{% endif %}
+
+{%-if context.size -%}
+
+{% for f in context %}
+BEGIN FILE {{f.filename}}
+{{f.contents}}
+END FILE
+{% endfor %}
+
+{%- endif -%}
+
+Result:
+'''
+
+[options]
+task = { type = "string", description = "The task to be completed" }
+lang = { type = "string", optional = true, description = "The language of the file" }
+file = { type = "file", optional = true, description = "The file to update" }
+context = { type = "file", array = true, optional = true, description = "Additional files for context" }
+
+[model]
+model = "yarn-mistral"
+temperature = 0
