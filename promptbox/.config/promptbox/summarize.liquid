@@ -1,5 +1,6 @@
 Create a {{style}} summary of the below files
 which are on the topic of {{topic}}.{% if len %} The summary should be about {{ len }} sentences long.{% endif %}
+If there is more than one file, combine the summaries into a single summary.
 
 {% for f in file -%}
 File {{ f.filename }}:
