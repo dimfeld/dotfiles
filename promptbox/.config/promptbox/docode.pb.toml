@@ -1,14 +1,14 @@
 template = '''
 You are an expert programmer tasked with {%if file %}updating{%else%}writing{% endif %} {%- if lang %} {{lang}}{% endif %} code.
-Existing files are delimited by BEGIN FILE and END FILE. 
+Existing files start with --- and the filename, followed by the contents.
 
-{%if file -%}
+{% if file -%}
 
-Your task is to update {{f.filename}} file to {{task}}. Changes should be printed in Unix patch/diff format.
+Your task is to update {{file.filename}} file to {{task}}. Changes should be printed in Unix patch/diff format.
 
-BEGIN FILE {{file.filename}}
+
+--- {{file.path}}
 {{file.contents}}
-END FILE
 
 {%else %}
 Your task is to write a new file to {{task}}.
@@ -17,14 +17,13 @@ Your task is to write a new file to {{task}}.
 {%-if context.size -%}
 
 {% for f in context %}
-BEGIN FILE {{f.filename}}
+--- {{f.path}}
 {{f.contents}}
-END FILE
 {% endfor %}
 
 {%- endif -%}
 
-Result:
+Result{% if file %} in Unix patch format{% endif %}:
 '''
 
 [options]
