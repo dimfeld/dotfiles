@@ -143,8 +143,6 @@ Plug 'othree/yajs.vim'
 " Intellisense Engine
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'fannheyward/telescope-coc.nvim'
-Plug 'dimfeld/coc-svelte', {'branch': 'updates', 'do': 'yarn install --frozen-lockfile && yarn build'}
-" Plug 'rodrigore/coc-tailwind-intellisense', {'do': 'npm install'}
 
 Plug 'leafOfTree/vim-svelte-plugin'
 Plug 'cakebaker/scss-syntax.vim'

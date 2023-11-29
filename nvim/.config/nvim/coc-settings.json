@@ -31,10 +31,11 @@
   "typescript.inlayHints.parameterNames.enabled": "all",
   "javascript.inlayHints.parameterNames.enabled": "all",
 
-  "python.formatting.provider": "black",
+  "python.formatting.provider": "ruff",
+  "python.linting.ruffEnabled": true,
 
   "svelte.enable-ts-plugin": true,
-  "svelte.plugin.svelte.useNewTransformation": true,
+  "svelte.plugin.svelte.defaultScriptLanguage": "ts",
 
   "[go]": {
     "coc.preferences.formatOnSave": true
