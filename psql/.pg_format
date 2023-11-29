@@ -1,0 +1,5 @@
+comma-break = true
+spaces = 2
+placeholder = \{[{%](.+?)[%}]}
+
+wrap-limit = 100
