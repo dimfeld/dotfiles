@@ -33,5 +33,5 @@ file = { type = "file", optional = true, description = "The file to update" }
 context = { type = "file", array = true, optional = true, description = "Additional files for context" }
 
 [model]
-model = "yarn-mistral"
+model = "phind"
 temperature = 0
