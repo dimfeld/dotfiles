@@ -92,6 +92,34 @@ fgr() {
   fi
 }
 
+sw() {
+  if [[ -n "$1" ]]; then
+    SWITCH_WIN=$(kitten @ ls | jq ".[] | select(.wm_name == \"$1\") | .tabs | .[]| select(.is_active) | .windows |.[]| select(.is_active) | .id" | head -n1)
+    if [[ -n "$SWITCH_WIN" ]]; then
+      kitten @ focus-window -m "id:${SWITCH_WIN}"
+      return
+    fi
+  fi
+
+  SWITCH_TO=$(kitten @ ls | jq -r '.[] | .wm_name' | fzf --exit-0 --query "${1}")
+  if [ -z "$SWITCH_TO" ]; then
+    return
+  fi
+
+  # Get the ID of the window selected above
+  SWITCH_WIN=$(kitten @ ls | jq ".[] | select(.wm_name == \"${SWITCH_TO}\") | .tabs | .[]| select(.is_active) | .windows |.[]| select(.is_active) | .id" | head -n1)
+
+  kitten @ focus-window -m "id:${SWITCH_WIN}"
+}
+ 
+inover() {
+  kitty @ launch --type=overlay "$1"
+}
+
+inpane() {
+  kitty @ launch --location=neighbor "${@}"
+}
+
 # cd to git root
 cdgr() {
   cd `gitroot`
@@ -106,6 +134,10 @@ function delete-branches() {
 }
 
 export PATH="$HOME/google-cloud-sdk/bin:$HOME/bin/override:/usr/local/bin:/usr/local/sbin:/usr/local/share/python:$HOME/.cargo/bin:/usr/local/go/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/snap/bin:$HOME/bin/fzf/bin:$HOME/bin:$HOME/.local/bin"
+POSTGRES_APP_PATH="/Applications/Postgres.app/Contents/Versions/16/bin"
+if [[ -d ${POSTGRES_APP_PATH} ]]; then
+  export PATH=$PATH:${POSTGRES_APP_PATH}
+fi
 if [[ -d "$GOPATH" ]]; then
   export PATH=$PATH:$GOPATH/bin
 fi

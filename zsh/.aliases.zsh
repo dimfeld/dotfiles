@@ -8,6 +8,7 @@ alias l='eza -l --git'
 alias ad='pushd'
 alias pd='popd'
 
+[ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"
 
 if [[ `uname` == Darwin ]]; then
     alias top='top -o -cpu'

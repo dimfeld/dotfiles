@@ -50,6 +50,8 @@ bindkey '^r' history-incremental-search-backward
 
 bindkey '^[b' backward-word
 bindkey '^[f' forward-word
+bindkey '^[[1;9D' beginning-of-line
+bindkey '^[[1;9C' end-of-line
 bindkey '^A' beginning-of-line
 bindkey "${key[Home]}" beginning-of-line
 bindkey '^E' end-of-line
