@@ -98,6 +98,11 @@ function liquid_sql()
     return nil
   end
 
+  -- turn this off for now
+  if true then
+    return nil
+  end
+
   return pgformat()
 end
 

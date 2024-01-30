@@ -11,8 +11,18 @@
 [core]
   pager = delta --dark
 
-[diff]
-  colorMoved = default
+#[diff]
+  #external = difft
+  #colorMoved = default
+  #tool = difftastic
+
+#[difftool]
+#  prompt = false
+#[difftool "difftastic"]
+#  cmd = difft "$LOCAL" "$REMOTE"
+#[pager]
+#  difftool = true
+
 
 [delta]
   features = line-numbers gruvbox-dark relative-paths
@@ -32,3 +42,5 @@
 	required = true
 [init]
 	defaultBranch = master
+[merge]
+	conflictStyle = zdiff3

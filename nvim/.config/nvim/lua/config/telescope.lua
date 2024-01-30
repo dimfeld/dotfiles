@@ -54,7 +54,7 @@ function ripgrep_find(opts)
   return rg_command
 end
 
-vim.keymap.set("n", ";", function()
+vim.keymap.set("n", "\\", function()
   builtin.buffers()
 end, {})
 vim.keymap.set("n", "<space>", function()
@@ -69,7 +69,12 @@ end, {})
 vim.keymap.set("n", "<leader>u", function()
   builtin.find_files({ find_comments = ripgrep_find() })
 end, {})
-vim.keymap.set("n", "<leader>T", builtin.git_files, {})
+vim.keymap.set("n", "<leader>T", function()
+  builtin.find_files({
+    cwd = githelpers.git_repo_toplevel(),
+    find_command = ripgrep_find({ "--files" }),
+  })
+end, {})
 vim.keymap.set("n", "<leader>qf", builtin.quickfix, {})
 vim.keymap.set("n", "<leader>qh", builtin.quickfixhistory, {})
 vim.keymap.set("n", "<leader>L", builtin.loclist, {})

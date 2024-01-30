@@ -41,9 +41,6 @@ Plug '907th/vim-auto-save'
 Plug 'github/copilot.vim'
 Plug 'Exafunction/codeium.vim', { 'branch': 'main' }
 
-" Command to yank to system clipboard
-Plug 'ojroques/vim-oscyank'
-
 " Extra commands for working with quickfix buffer entries.
 Plug 'romainl/vim-qf'
 
@@ -119,6 +116,7 @@ Plug 'numToStr/Comment.nvim'
 
 " === Syntax Highlighting === "
 Plug 'gutenye/json5.vim'
+Plug 'HiPhish/jinja.vim'
 
 " Hashicorp Tools
 Plug 'hashivim/vim-hashicorp-tools'
@@ -174,6 +172,7 @@ Plug 'nvim-telescope/telescope-dap.nvim'
 
 " === AI Stuff ===
 Plug 'sourcegraph/sg.nvim', { 'do': 'nvim -l build/init.lua' }
+Plug 'dustinblackman/oatmeal.nvim'
 
 
 

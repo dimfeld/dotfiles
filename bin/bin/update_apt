@@ -16,8 +16,6 @@ fi
 
 if [ "$(uname)" == "Darwin" ]; then
   brew upgrade
-  brew uninstall --ignore-dependencies node
-  brew link --overwrite node@20
 elif [ -f "$(which apt)" ]; then
   sudo apt update && apt list --upgradable && sudo apt dist-upgrade
   sudo apt autoremove

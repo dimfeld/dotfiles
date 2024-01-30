@@ -26,6 +26,10 @@ M.commands = {
   { name = 'Reload Typescript Project', category = "LS", coc_cmd = "tsserver.reloadProjects" },
   { name = 'Show LS Output', category = "LS", coc_cmd = "workspace.showOutput" },
 
+  { name = "Prefix with 'pub'", category = "Editing", filetype = "rust", action = function()
+     vim.cmd([['<,'>s/^/pub/]])
+  end },
+
   { name = 'Resync Syntax', category = "Buffer", action = function () vim.cmd('syntax sync fromstart') end },
 
   { name = 'Quickfix Search', category = "Quickfix", action = builtin.quickfix },
@@ -152,5 +156,6 @@ function showCommonCommandsPicker(opts)
 end
 
 vim.keymap.set('n', '<leader>k', showCommonCommandsPicker)
+vim.keymap.set('v', '<leader>k', showCommonCommandsPicker)
 
 return M

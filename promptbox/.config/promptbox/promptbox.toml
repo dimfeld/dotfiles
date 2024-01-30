@@ -2,6 +2,8 @@
 model = "gpt-3.5-turbo-1106"
 
 [model.alias]
+deepseek-coder7b = "deepseek-coder:6.7b-instruct-q5_K_M"
+deepseek-coder33b = "deepseek-coder:33b-instruct-q5_K_M"
 codellama = "codellama:7b-instruct-q5_K_M"
 codellama-complete = "codellama:7b-code-q5_K_M"
 mistral = "mistral:7b-instruct-q5_K_M"
@@ -11,3 +13,5 @@ nous-hermes = "nous-hermes:13b-llama2-q5_K_M"
 openhermes = "openhermes2.5-mistral:7b-q5_K_M"
 phind = "phind-codellama:34b-v2-q5_K_M"
 mistrallite = "mistrallite:7b-v0.1-q5_K_M"
+
+

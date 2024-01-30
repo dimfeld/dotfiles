@@ -1,0 +1,17 @@
+template = '''
+This is a {{lang}} file named {{file.path}}:
+
+{{ file.contents }}
+
+Write a test that checks the following condition: {{ test }}
+
+'''
+
+[options]
+test = { type = "string", description = "What the test should test" }
+lang = { type = "string", default = "code", description = "The language of the code" }
+file = { type = "file" }
+
+[model]
+model = "magicoder"
+temperature = 0

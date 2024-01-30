@@ -7,6 +7,7 @@ alias ls='eza'
 alias l='eza -l --git'
 alias ad='pushd'
 alias pd='popd'
+alias cgr='cd $(gitroot)'
 
 [ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"
 
@@ -44,3 +45,5 @@ export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 #export PYTHONPATH=/Library/Python/2.7/site-packages:$PYTHONPATH
 alias py3env='source ~/py3env/bin/activate'
 alias pb='promptbox'
+
+alias gcm='git commit -m'

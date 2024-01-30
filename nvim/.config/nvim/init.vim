@@ -8,8 +8,6 @@ lua vim.g.skip_ts_context_commentstring_module = true
 let g:BufKillCreateMappings = 0
 source ~/.config/nvim/plugins.vim
 
-let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
-
 " Enable matchit for better % behavior
 runtime macros/matchit.vim
 

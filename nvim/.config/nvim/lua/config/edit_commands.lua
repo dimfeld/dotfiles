@@ -13,6 +13,9 @@ vim.keymap.set("v", "g<M-d>", dial.dec_gvisual())
 
 require("which-key").setup({})
 
+-- Map ; to : in case I don't press Shift quickly enough
+vim.keymap.set("n", ";", ":", {})
+
 -- # Buffer Navigation --
 
 -- Hides buffers instead of closing them
@@ -94,7 +97,7 @@ require("Comment").setup({
 
 -- vim-better-whitespace
 -- Strip whitespace from end of line throughout entire file
-vim.keymap.set("n", "<leader>ww", ":StripWhitespace<CR>", { silent = true })
+vim.keymap.set("n", "<leader>wh", ":StripWhitespace<CR>", { silent = true })
 
 -- # Registers --
 

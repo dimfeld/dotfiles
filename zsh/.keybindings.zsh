@@ -54,7 +54,9 @@ bindkey '^[[1;9D' beginning-of-line
 bindkey '^[[1;9C' end-of-line
 bindkey '^A' beginning-of-line
 bindkey "${key[Home]}" beginning-of-line
+bindkey '^[[H' beginning-of-line
 bindkey '^E' end-of-line
 bindkey "${key[End]}" end-of-line
+bindkey '^[[F' end-of-line
 
 bindkey '^ ' autosuggest-accept
