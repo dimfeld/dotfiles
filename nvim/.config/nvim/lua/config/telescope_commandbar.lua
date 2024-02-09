@@ -8,8 +8,6 @@ local conf = require 'telescope.config'.values
 local actions = require 'telescope.actions'
 local action_state = require 'telescope.actions.state'
 local entry_display = require 'telescope.pickers.entry_display'
-local cody = require('sg.cody.commands');
-local ai = require('config.sourcegraph')
 
 M.commands = {
   { name = 'Organize imports', category = "LS", coc_cmd = "editor.action.organizeImport" },

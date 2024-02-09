@@ -1,4 +1,3 @@
-require("sg").setup {
-  on_attach = function() end
-}
-
+-- require("sg").setup {
+--  on_attach = function() end
+--}

@@ -22,10 +22,10 @@ vim.keymap.set("n", ";", ":", {})
 vim.o.hidden = true
 
 -- Prevent diagonal scroll in Kitty
-vim.keymap.set("n", "<ScrollWheelLeft>", "<Nop>", {})
-vim.keymap.set("n", "<ScrollWheelRight>", "<Nop>", {})
-vim.keymap.set("n", "<S-ScrollWheelUp>", "<ScrollWheelRight>", {})
-vim.keymap.set("n", "<S-ScrollWheelDown>", "<ScrollWheelLeft>", {})
+vim.keymap.set({ "i", "n" }, "<ScrollWheelLeft>", "<Nop>", {})
+vim.keymap.set({ "i", "n" }, "<ScrollWheelRight>", "<Nop>", {})
+vim.keymap.set({ "i", "n" }, "<S-ScrollWheelUp>", "<ScrollWheelRight>", {})
+vim.keymap.set({ "i", "n" }, "<S-ScrollWheelDown>", "<ScrollWheelLeft>", {})
 
 -- Quick move cursor from insert mode
 -- These map to cmd/option + arrow keys

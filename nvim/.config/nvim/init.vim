@@ -23,7 +23,7 @@ require('config.git')
 require('config.lsp')
 require('config.prose')
 require('config.quickfix')
-require('config.sourcegraph')
+-- require('config.sourcegraph')
 require('config.status_line')
 require('config.tabstops')
 require('config.telescope')
@@ -33,7 +33,7 @@ require('config.theme')
 
 require('commands.dash')
 require('commands.git')
-require('commands.sourcegraph')
+-- require('commands.sourcegraph')
 
 EOF
 

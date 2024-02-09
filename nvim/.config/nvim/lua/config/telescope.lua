@@ -6,10 +6,22 @@ local extensions = telescope.extensions
 
 local githelpers = require("helpers.git")
 
+telescope.setup({
+  defaults = {
+    mappings = {
+      i = {
+        ["<C-u>"] = false,
+        ["<D-Down>"] = require("telescope.actions").cycle_history_next,
+        ["<D-Up>"] = require("telescope.actions").cycle_history_prev,
+      },
+    },
+  },
+})
+
 telescope.load_extension("coc")
 telescope.load_extension("dap")
 telescope.load_extension("file_browser")
-telescope.load_extension("fzy_native")
+-- telescope.load_extension("fzy_native")
 telescope.load_extension("smart_open")
 
 function getWorkspacePath()
