@@ -24,6 +24,10 @@ M.commands = {
   { name = 'Reload Typescript Project', category = "LS", coc_cmd = "tsserver.reloadProjects" },
   { name = 'Show LS Output', category = "LS", coc_cmd = "workspace.showOutput" },
 
+  { name = 'Unescape JSON quotes', category = "JSON", action = function()
+    vim.cmd([[s/\\"/"/g]])
+  end },
+
   { name = "Prefix with 'pub'", category = "Editing", filetype = "rust", action = function()
      vim.cmd([['<,'>s/^/pub/]])
   end },
