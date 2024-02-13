@@ -32,7 +32,7 @@ Plug 'tpope/vim-repeat'
 Plug 'monaqa/dial.nvim'
 
 " Snippets
-Plug 'L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
+" Plug 'L3MON4D3/LuaSnip', {'tag': 'v2.*', 'do': 'make install_jsregexp'}
 
 " :AutoSaveToggle to automatically save files. Nice for markdown editing with
 " live preview.
@@ -77,7 +77,7 @@ Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-file-browser.nvim'
-" Plug 'nvim-telescope/telescope-fzy-native.nvim'
+Plug 'nvim-telescope/telescope-fzy-native.nvim'
 
 Plug 'danielfalk/smart-open.nvim'
 
