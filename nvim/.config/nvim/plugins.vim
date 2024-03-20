@@ -161,6 +161,7 @@ Plug 'dimfeld/oceanic-next'
 Plug 'nvim-lualine/lualine.nvim'
 
 " Debugging
+Plug 'nvim-neotest/nvim-nio'
 Plug 'mfussenegger/nvim-dap'
 Plug 'theHamsta/nvim-dap-virtual-text'
 Plug 'rcarriga/nvim-dap-ui'
