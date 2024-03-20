@@ -144,7 +144,7 @@ Plug 'cakebaker/scss-syntax.vim'
 Plug 'rust-lang/rust.vim'
 Plug 'cespare/vim-toml'
 Plug 'mechatroner/rainbow_csv'
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+" Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 
 
 " === UI === "

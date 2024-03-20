@@ -1,22 +1,21 @@
 vim.o.number = true
 vim.o.termguicolors = true
-vim.o.guifont = 'Inconsolata:h14'
+vim.o.guifont = "Inconsolata:h14"
 
 -- Vertical split character is a space (hide it)
-vim.o.fillchars = 'vert:.'
+vim.o.fillchars = "vert:."
 -- Set preview window to appear at bottom
 vim.o.splitbelow = true
 
 -- vim.g['airline_theme'] = 'dark_minimal'
 
-
-vim.o.mouse = 'a'
+vim.o.mouse = "a"
 
 -- For Warp
 --vim.o.mousescroll = 'ver:2,hor:4'
 
 vim.o.textwidth = 120
-vim.opt.formatoptions:remove 't'
+vim.opt.formatoptions:remove("t")
 vim.o.wrap = false
 
 vim.o.cmdheight = 1
@@ -33,13 +32,13 @@ vim.o.redrawtime = 2000
 vim.o.updatetime = 300
 -- Always show sign column so that it doesn't shift the buffer around when it
 -- shows up
-vim.o.signcolumn= 'yes'
+vim.o.signcolumn = "yes"
 
 -- Don't highlight current cursor line
 vim.o.cursorline = false
 
 -- Setting for cursorhold workaround plugin
-vim.g['cursorhold_updatetime'] = 100
+vim.g["cursorhold_updatetime"] = 100
 
 -- Don't display mode in command line (lualine already shows it)
 vim.o.showmode = false
@@ -49,29 +48,28 @@ vim.o.winblend = 10
 -- Warp needs this instead
 -- set winblend=0
 
-
 vim.o.synmaxcol = 3000
-local highlightGroup = vim.api.nvim_create_augroup('Highlighting', {})
-vim.api.nvim_create_autocmd('BufEnter', {
+local highlightGroup = vim.api.nvim_create_augroup("Highlighting", {})
+vim.api.nvim_create_autocmd("BufEnter", {
   group = highlightGroup,
-  pattern = '*',
+  pattern = "*",
   callback = function()
-    vim.cmd('syntax sync minlines=1000')
-  end
+    vim.cmd("syntax sync minlines=1000")
+  end,
 })
 
-vim.api.nvim_create_autocmd('FileType', {
+vim.api.nvim_create_autocmd("FileType", {
   group = highlightGroup,
-  pattern = {'vim', 'lua'},
+  pattern = { "vim", "lua" },
   callback = function()
     vim.treesitter.start()
-  end
+  end,
 })
 
 -- Customize colors
-vim.api.nvim_create_autocmd('ColorScheme', {
+vim.api.nvim_create_autocmd("ColorScheme", {
   group = highlightGroup,
-  pattern = 'OceanicNext',
+  pattern = "OceanicNext",
   callback = function()
     vim.cmd([[
       " coc.nvim color changes
@@ -89,8 +87,11 @@ vim.api.nvim_create_autocmd('ColorScheme', {
       hi StatusLine guifg=#16252b guibg=#6699CC
       hi StatusLineNC guifg=#16252b guibg=#16252b
 
-      " Try to hide vertical spit and end of buffer symbol
+      hi CocInlayHint ctermfg=73 ctermbg=235 guifg=#62b3b2 guibg=#444444
+
+      " Try to hide vertical split and end of buffer symbol
       hi VertSplit gui=NONE guifg=#17252c guibg=#17252c
+      hi link WinSeparator VertSplit
       hi EndOfBuffer ctermbg=NONE ctermfg=NONE guibg=#17252c guifg=#17252c
 
       " Make background color transparent for git changes
@@ -109,24 +110,24 @@ vim.api.nvim_create_autocmd('ColorScheme', {
       hi Search  cterm=reverse ctermfg=237 ctermbg=209 guifg=#343d46 guibg=#f99157
       hi CodeiumSuggestion guifg=#eeaaaa ctermfg=10
       hi CopilotSuggestion guifg=#eeaaaa ctermfg=10
+
     ]])
-  end
+  end,
 })
 
 -- Preview window color override
-vim.api.nvim_create_autocmd('WinEnter', {
+vim.api.nvim_create_autocmd("WinEnter", {
   group = highlightGroup,
-  pattern = '*',
+  pattern = "*",
   callback = function()
     if vim.wo.previewwindow then
       vim.wo.winhighlight = "Normal:MarkdownError"
     end
-  end
+  end,
 })
 
 vim.cmd([[
   " Editor theme
-  set background=dark
   colorscheme OceanicNext
 
   " Reload icons after init source

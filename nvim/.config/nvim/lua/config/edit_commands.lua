@@ -97,7 +97,7 @@ require("Comment").setup({
 
 -- vim-better-whitespace
 -- Strip whitespace from end of line throughout entire file
-vim.keymap.set("n", "<leader>wh", ":StripWhitespace<CR>", { silent = true })
+vim.keymap.set("n", "<leader>wt", ":StripWhitespace<CR>", { silent = true })
 
 -- # Registers --
 

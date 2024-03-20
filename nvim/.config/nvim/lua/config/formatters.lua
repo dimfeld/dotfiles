@@ -85,8 +85,13 @@ end
 
 -- pg_format
 function pgformat()
+  local current_path = util.get_current_buffer_file_path()
+  if current_path:find(".sql.tera") then
+    return nil
+  end
+
   return {
-    exe = "pg_format --inplace -",
+    exe = "pg_format --inplace  -",
     stdin = true,
   }
 end

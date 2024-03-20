@@ -1,6 +1,8 @@
 local auGroup = vim.api.nvim_create_augroup("tera_ftdetect", {})
 
 filetypes = {
+  js = "javascript",
+  ts = "typescript",
   rs = "rust",
 }
 
