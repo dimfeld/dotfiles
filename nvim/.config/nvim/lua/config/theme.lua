@@ -9,8 +9,6 @@ vim.o.splitbelow = true
 
 -- vim.g['airline_theme'] = 'dark_minimal'
 
-vim.o.mouse = "a"
-
 -- For Warp
 --vim.o.mousescroll = 'ver:2,hor:4'
 
@@ -115,6 +113,36 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   end,
 })
 
+vim.api.nvim_create_autocmd("ColorScheme", {
+  group = highlightGroup,
+  pattern = "arctic",
+  callback = function()
+    vim.cmd([[
+      hi! CocMenuSel ctermbg=7 ctermfg=0 guifg=#111111 guibg=#aaaaff
+
+      " Make background transparent for many things
+      hi Normal ctermbg=NONE guibg=NONE
+      " hi NonText ctermbg=NONE guibg=NONE
+      " hi LineNr ctermfg=NONE guibg=NONE
+      " hi SignColumn ctermfg=NONE guibg=NONE
+
+      " Darker end of buffer
+      hi EndOfBuffer ctermbg=NONE ctermfg=NONE guibg=#101010 guifg=#101010
+
+      " Hide characters in line between panes
+      hi VertSplit gui=NONE guifg=#101010 guibg=#101010
+      hi clear WinSeparator
+      hi link WinSeparator VertSplit
+
+      hi CocInlayHint ctermfg=73 ctermbg=235 guifg=#999999 guibg=#222222
+
+      hi Search guibg=#825335
+      hi CodeiumSuggestion guifg=#eeaaaa ctermfg=10
+      hi CopilotSuggestion guifg=#eeaaaa ctermfg=10
+    ]])
+  end,
+})
+
 -- Preview window color override
 vim.api.nvim_create_autocmd("WinEnter", {
   group = highlightGroup,
@@ -128,7 +156,7 @@ vim.api.nvim_create_autocmd("WinEnter", {
 
 vim.cmd([[
   " Editor theme
-  colorscheme OceanicNext
+  colorscheme arctic
 
   " Reload icons after init source
   if exists('g:loaded_webdevicons')

@@ -26,10 +26,20 @@
   "javascript.preferences.importModuleSpecifier": "shortest",
   "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
   "javascript.suggest.includeAutomaticOptionalChainCompletions": true,
-  "typescript.inlayHints.variableTypes.enabled": true,
-  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
-  "typescript.inlayHints.parameterNames.enabled": "literals",
-  "javascript.inlayHints.parameterNames.enabled": "literals",
+
+  "typescript.inlayHints.variableTypes.enabled": false,
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": false,
+  "typescript.inlayHints.parameterTypes.enabled": false,
+  "typescript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
+  "typescript.inlayHints.parameterNames.enabled": "all",
+
+  "javascript.inlayHints.variableTypes.enabled": false,
+  "javascript.inlayHints.functionLikeReturnTypes.enabled": false,
+  "javascript.inlayHints.parameterTypes.enabled": false,
+  "javascript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
+  "javascript.inlayHints.parameterNames.enabled": "all",
+
+  "inlayHint.display": false,
 
   "python.formatting.provider": "ruff",
   "python.linting.ruffEnabled": true,
@@ -49,8 +59,12 @@
     "+nightly"
   ],
   "rust-analyzer.checkOnSave": true,
+  "rust-analyzer.inlayHints.typeHints.enable": false,
+  "rust-analyzer.inlayHints.parameterHints.enable": true,
+  "rust-analyzer.inlayHints.closureReturnTypeHints.enable": "never",
+  "rust-analyzer.inlayHints.bindingModeHints.enable": false,
   "rust-analyzer.inlayHints.renderColons": false,
-  "rust-analyzer.inlayHints.parameterHints.enable": false,
+  "rust-analyzer.inlayHints.maxLength": 25,
   "rust-analyzer.completion.callable.snippets": "none",
   "workspace.rootPatterns": [
     ".git",

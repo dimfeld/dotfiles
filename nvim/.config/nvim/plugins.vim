@@ -156,6 +156,8 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 
 " Colorscheme
 Plug 'dimfeld/oceanic-next'
+Plug 'rktjmp/lush.nvim'
+Plug 'rockyzhang24/arctic.nvim', { 'branch': 'v2' }
 
 " Customized vim status line
 Plug 'nvim-lualine/lualine.nvim'
