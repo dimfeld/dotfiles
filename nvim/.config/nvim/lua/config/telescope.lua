@@ -1,5 +1,3 @@
-require("config.debugging")
-
 local telescope = require("telescope")
 local builtin = require("telescope.builtin")
 local extensions = telescope.extensions

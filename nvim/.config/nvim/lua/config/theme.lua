@@ -2,6 +2,8 @@ vim.o.number = true
 vim.o.termguicolors = true
 vim.o.guifont = "Inconsolata:h14"
 
+vim.g.signify_sign_delete = "-"
+
 -- Vertical split character is a space (hide it)
 vim.o.fillchars = "vert:."
 -- Set preview window to appear at bottom
