@@ -3,11 +3,20 @@
   "diagnostic.errorSign": "•",
   "diagnostic.warningSign": "•",
   "diagnostic.infoSign": "•",
+  "diagnostic.floatConfig": {
+    "border": false,
+    "rounded": false,
+    "winblend": 10,
+    "shadow": true
+  },
+  "diagnostic.messageDelay": 200,
   "diagnostic.messageTarget": "float",
-  "diagnostic.enableMessage": "jump",
-  "diagnostic.refreshOnInsertMode": false,
+  "diagnostic.enableMessage": "always",
   "diagnostic.checkCurrentLine": true,
-  "diagnostic.virtualText": true,
+  "diagnostic.virtualText": false,
+  "diagnostic.virtualTextCurrentLineOnly": true,
+  "diagnostic.virtualTextAlign": "below",
+  "diagnostic.virtualTextLevel": "error",
   "eslint.probe": [
     "javascript",
     "javascript.jsx",
@@ -19,6 +28,7 @@
     "markdown",
     "svelte"
   ],
+  "html.autoCreateQuotes": false,
   "html.autoClosingTags": false,
   "javascript.format.enable": false,
   "typescript.format.enable": false,
@@ -38,6 +48,18 @@
   "javascript.inlayHints.parameterTypes.enabled": false,
   "javascript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
   "javascript.inlayHints.parameterNames.enabled": "all",
+
+  //"tailwindCSS.includeLanguages": {
+  //  // For in-source templates
+//    "rust": "html",
+//    "*.rs": "html"
+//  },
+//
+//  "tailwindCSS.experimental.classRegex": [
+//    "\\.\\\"?([a-zA-Z0-9_\\-\\[\\]]+)",
+//    //"\\w+((?:\\.\\s*\\S+\\s*)*)",
+//    //"\\.\"?([^.\"]+)\"?"
+//  ],
 
   "inlayHint.display": false,
 
@@ -74,6 +96,8 @@
   ],
   "workspace.ignoredFolders": [
     "$HOME",
+    "$HOME/.cargo/**",
+    "$HOME/.rustup/**",
     "~/Documents/cv/code",
     "~/cv/code"
   ],

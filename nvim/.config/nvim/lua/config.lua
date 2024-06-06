@@ -36,14 +36,34 @@ require("nvim-treesitter.configs").setup({
     },
   },
   highlight = {
-    enable = false,
-    disable = { "rust", "javascript", "javascript.jsx" },
+    enable = true,
+    -- disable = { "rust", "javascript", "javascript.jsx" },
   },
   indent = {
-    enable = false,
+    enable = true,
   },
   autopairs = { enable = true },
 })
+
+-- Enable treesitter-based folding
+vim.o.foldmethod = "expr"
+vim.o.foldexpr = "nvim_treesitter#foldexpr()"
+vim.o.foldenable = false
+
+require("ts_context_commentstring").setup({
+  enable = true,
+  enable_autocmd = false,
+  commentary_integration = {
+    Commentary = false,
+    CommentaryLine = false,
+  },
+})
+
+local get_option = vim.filetype.get_option
+vim.filetype.get_option = function(filetype, option)
+  return option == "commentstring" and require("ts_context_commentstring.internal").calculate_commentstring()
+    or get_option(filetype, option)
+end
 
 -- Autopairs
 local npairs = require("nvim-autopairs")
@@ -348,10 +368,10 @@ vim.keymap.set("n", ";", ":", {})
 vim.o.hidden = true
 
 -- Prevent diagonal scroll in Kitty
-vim.keymap.set({ "i", "n" }, "<ScrollWheelLeft>", "<Nop>", {})
-vim.keymap.set({ "i", "n" }, "<ScrollWheelRight>", "<Nop>", {})
-vim.keymap.set({ "i", "n" }, "<S-ScrollWheelUp>", "<ScrollWheelRight>", {})
-vim.keymap.set({ "i", "n" }, "<S-ScrollWheelDown>", "<ScrollWheelLeft>", {})
+vim.keymap.set({ "i", "n", "v" }, "<ScrollWheelLeft>", "<Nop>", {})
+vim.keymap.set({ "i", "n", "v" }, "<ScrollWheelRight>", "<Nop>", {})
+vim.keymap.set({ "i", "n", "v" }, "<S-ScrollWheelUp>", "<ScrollWheelRight>", {})
+vim.keymap.set({ "i", "n", "v" }, "<S-ScrollWheelDown>", "<ScrollWheelLeft>", {})
 
 -- Quick move cursor from insert mode
 -- These map to cmd/option + arrow keys
@@ -408,15 +428,17 @@ vim.keymap.set("c", "<M-Right>", "<S-Right>", {})
 
 -- Leap for quick navigation through the buffer
 require("leap")
-vim.keymap.set({ "n" }, "f", "<Plug>(leap-forward-to)", { noremap = false })
-vim.keymap.set({ "n" }, "F", "<Plug>(leap-backward-to)", { noremap = false })
-vim.keymap.set({ "x", "o" }, "f", "<Plug>(leap-forward-till)", { noremap = false })
-vim.keymap.set({ "x", "o" }, "F", "<Plug>(leap-backward-till)", { noremap = false })
+vim.keymap.set({ "n", "x", "o" }, "s", "<Plug>(leap-forward-to)", { noremap = false })
+vim.keymap.set({ "n", "x", "o" }, "S", "<Plug>(leap-backward-to)", { noremap = false })
+vim.keymap.set({ "x", "o" }, "x", "<Plug>(leap-forward-till)", { noremap = false })
+vim.keymap.set({ "x", "o" }, "X", "<Plug>(leap-backward-till)", { noremap = false })
+vim.keymap.set({ "n", "x", "o" }, "gs", "<Plug>(leap-from-window)", { noremap = false })
 
 -- # Comments
 vim.o.comments = "s1:/*,mb:*,ex:*/,://,b:#,:%,:XCOMM,fb:-"
 vim.keymap.set("n", "<leader>c", "gcc", { remap = true })
 vim.keymap.set("v", "<leader>c", "gc", { remap = true })
+-- vim.keymap.set("n", "gcu", "gcgc", { remap = true })
 require("Comment").setup({
   pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
 })
@@ -492,7 +514,9 @@ vim.keymap.set("x", "<Leader>.", "q:<UP>I'<,'><Esc>$", {})
 -- Editor Commands for LSP/CoC
 vim.keymap.set("n", "<leader>dd", "<Plug>(coc-definition)", { silent = true })
 vim.keymap.set("n", "<leader>dj", "<Plug>(coc-implementation)", { silent = true })
-vim.keymap.set("n", "<leader>dg", "<Plug>(coc-diagnostic-info)", { silent = true })
+vim.keymap.set("n", "<leader>dg", function()
+  vim.cmd("call CocActionAsync('diagnosticInfo', 'float')")
+end, { silent = true })
 vim.keymap.set("n", "<leader>rn", "<Plug>(coc-rename)", { silent = true })
 vim.keymap.set("n", "[G", "<Plug>(coc-diagnostic-prev)", { silent = true })
 vim.keymap.set("n", "]G", "<Plug>(coc-diagnostic-next)", { silent = true })

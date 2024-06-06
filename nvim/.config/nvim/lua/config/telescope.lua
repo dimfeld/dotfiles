@@ -33,16 +33,22 @@ function in_config_dir()
   return vim.fn.getcwd():find(".config/nvim") ~= nil
 end
 
+useGitIgnore = true
 function ripgrep_extra_options()
+  opts = {}
   if in_config_dir() then
-    return {
+    opts = {
       "--hidden",
       "--glob",
       "!**/.git/*",
     }
-  else
-    return {}
   end
+
+  if not useGitIgnore then
+    table.insert(opts, "-u")
+  end
+
+  return opts
 end
 
 function ripgrep_find(opts)
@@ -63,6 +69,11 @@ function ripgrep_find(opts)
 
   return rg_command
 end
+
+vim.api.nvim_create_user_command("BrowseGitIgnore", function()
+  useGitIgnore = not useGitIgnore
+  print("useGitIgnore: " .. tostring(useGitIgnore))
+end, {})
 
 vim.keymap.set("n", "\\", function()
   builtin.buffers()

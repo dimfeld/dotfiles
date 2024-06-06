@@ -59,6 +59,7 @@ Plug 'ntpeters/vim-better-whitespace'
 Plug 'dimfeld/vim-eunuch'
 
 Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-surround'
 
 " Better text replacement for replacing multiple similar words (different cases, etc)
 Plug 'tpope/vim-abolish'
@@ -114,6 +115,7 @@ Plug 'numToStr/Comment.nvim'
 " === Syntax Highlighting === "
 Plug 'gutenye/json5.vim'
 Plug 'HiPhish/jinja.vim'
+Plug 'aviator-co/av-vim-plugin'
 
 " Hashicorp Tools
 Plug 'hashivim/vim-hashicorp-tools'
@@ -133,7 +135,7 @@ Plug 'chr4/nginx.vim'
 Plug 'othree/javascript-libraries-syntax.vim'
 
 " Improved syntax highlighting and indentation
-Plug 'othree/yajs.vim'
+"Plug 'othree/yajs.vim'
 
 " Intellisense Engine
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -155,7 +157,6 @@ Plug 'kyazdani42/nvim-web-devicons'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 
 " Colorscheme
-Plug 'dimfeld/oceanic-next'
 Plug 'rktjmp/lush.nvim'
 Plug 'rockyzhang24/arctic.nvim', { 'branch': 'v2' }
 

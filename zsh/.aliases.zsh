@@ -1,4 +1,4 @@
-alias vi='nvim'
+alias vi='/opt/homebrew/bin/nvim'
 alias mv='mv -iv'
 alias rm='rm -iv'
 alias cp='cp -iv'
@@ -41,9 +41,17 @@ function mcd() {
 
 export NVM_DIR=~/.nvm
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
-#source /usr/local/opt/nvm/nvm.sh
-#export PYTHONPATH=/Library/Python/2.7/site-packages:$PYTHONPATH
 alias py3env='source ~/py3env/bin/activate'
 alias pb='promptbox'
 
 alias gcm='git commit -m'
+alias gco-='git checkout -'
+
+alias avpr='av pr create'
+alias avb='av stack branch'
+alias avbc='av stack branch-commit'
+alias avc='av commit'
+alias avs='av stack'
+alias avco='av stack switch'
+alias avsync='av stack sync --prune'
+alias avsub='av stack submit'

@@ -44,3 +44,6 @@
 	defaultBranch = master
 [merge]
 	conflictStyle = zdiff3
+[diff "lockb"]
+	textconv = bun
+	binary = true

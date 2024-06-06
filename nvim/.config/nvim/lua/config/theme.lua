@@ -69,54 +69,6 @@ vim.api.nvim_create_autocmd("FileType", {
 -- Customize colors
 vim.api.nvim_create_autocmd("ColorScheme", {
   group = highlightGroup,
-  pattern = "OceanicNext",
-  callback = function()
-    vim.cmd([[
-      " coc.nvim color changes
-      hi link CocErrorSign WarningMsg
-      hi link CocWarningSign Number
-      hi link CocInfoSign Type
-
-      hi! CocMenuSel ctermbg=7 ctermfg=0 guifg=#111111 guibg=#aaaaff
-
-      " Make background transparent for many things
-      hi Normal ctermbg=NONE guibg=NONE
-      hi NonText ctermbg=NONE guibg=NONE
-      hi LineNr ctermfg=NONE guibg=NONE
-      hi SignColumn ctermfg=NONE guibg=NONE
-      hi StatusLine guifg=#16252b guibg=#6699CC
-      hi StatusLineNC guifg=#16252b guibg=#16252b
-
-      hi CocInlayHint ctermfg=73 ctermbg=235 guifg=#62b3b2 guibg=#444444
-
-      " Try to hide vertical split and end of buffer symbol
-      hi VertSplit gui=NONE guifg=#17252c guibg=#17252c
-      hi link WinSeparator VertSplit
-      hi EndOfBuffer ctermbg=NONE ctermfg=NONE guibg=#17252c guifg=#17252c
-
-      " Make background color transparent for git changes
-      hi SignifySignAdd guibg=NONE
-      hi SignifySignDelete guibg=NONE
-      hi SignifySignChange guibg=NONE
-
-      " Highlight git change signs
-      hi SignifySignAdd guifg=#99c794
-      hi SignifySignDelete guifg=#ec5f67
-      hi SignifySignChange guifg=#c594c5
-
-      hi DiffAdded guibg=#207020
-      hi DiffRemoved guibg=#902020
-
-      hi Search  cterm=reverse ctermfg=237 ctermbg=209 guifg=#343d46 guibg=#f99157
-      hi CodeiumSuggestion guifg=#eeaaaa ctermfg=10
-      hi CopilotSuggestion guifg=#eeaaaa ctermfg=10
-
-    ]])
-  end,
-})
-
-vim.api.nvim_create_autocmd("ColorScheme", {
-  group = highlightGroup,
   pattern = "arctic",
   callback = function()
     vim.cmd([[
@@ -128,7 +80,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
       " hi LineNr ctermfg=NONE guibg=NONE
       " hi SignColumn ctermfg=NONE guibg=NONE
 
-      " Darker end of buffer
+      " Darker end of buffer. No need to set it apart when line numbers are enabled.
       hi EndOfBuffer ctermbg=NONE ctermfg=NONE guibg=#101010 guifg=#101010
 
       " Hide characters in line between panes
@@ -139,8 +91,15 @@ vim.api.nvim_create_autocmd("ColorScheme", {
       hi CocInlayHint ctermfg=73 ctermbg=235 guifg=#999999 guibg=#222222
 
       hi Search guibg=#825335
+      " Light pink for codeium/copilot. Easy to read but also clearly not part of the existing text
       hi CodeiumSuggestion guifg=#eeaaaa ctermfg=10
       hi CopilotSuggestion guifg=#eeaaaa ctermfg=10
+
+      " Tone down Treesitter styles a bit.
+      hi @variable guifg=None
+      hi @variable.member guifg=None
+      hi! link @module PreProc
+      hi! link @type Normal
     ]])
   end,
 })
