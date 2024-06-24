@@ -1,0 +1,1 @@
+bat --decorations=always --style header-filename,rule ${@} | pbcopy

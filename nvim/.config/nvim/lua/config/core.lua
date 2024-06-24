@@ -17,7 +17,8 @@ function reload_nvim_conf()
       or name:match("^plugins")
       or name:match("^config")
       or name:match("^commands")
-      or name:match("^helpers")
+      or name:match("^lib")
+      or name:match("^llm")
     then
       package.loaded[name] = nil
     end

@@ -39,6 +39,11 @@ M.commands = {
 
   { name = "Yank to Clipboard", category = "Clipboard", action = function() vim.cmd("'<,'>y*") end },
   { name = "Delete to Blackhole", category = "Clipboard", action = function() vim.cmd("'<,'>d_") end },
+
+  { name = "Aider", category = "AI", action = AiderOpen },
+  { name = "Aider Background", category = "AI", action = AiderBackground },
+
+  { name = "Call LLM", category = "AI", action = function() require('commands.llm').fill_holes() end }
 }
 
 M.add_commands = function(commands)

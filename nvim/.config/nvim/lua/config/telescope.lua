@@ -2,7 +2,7 @@ local telescope = require("telescope")
 local builtin = require("telescope.builtin")
 local extensions = telescope.extensions
 
-local githelpers = require("helpers.git")
+local githelpers = require("lib.git")
 
 telescope.setup({
   defaults = {

@@ -177,7 +177,7 @@ Plug 'dustinblackman/oatmeal.nvim'
 
 " Plug 'github/copilot.vim'
 Plug 'Exafunction/codeium.vim', { 'branch': 'main' }
-
+Plug 'joshuavial/aider.nvim'
 
 
 " Initialize plugin system

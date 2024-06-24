@@ -1,4 +1,4 @@
-local git_helpers = require("helpers.git")
+local git_helpers = require("lib.git")
 local path = require("plenary.path")
 local format_util = require("formatter.util")
 
@@ -244,7 +244,7 @@ vim.keymap.set("i", "<leader>c", function()
   else
     return "<leader>c"
   end
-end, { silent = true, expr = true })
+end, { silent = true, expr = true, desc = "Trigger code action" })
 
 -- Don't give completion messages like 'match 1 of 2' or 'The only match'
 vim.opt.shortmess:append("c")
@@ -282,8 +282,18 @@ vim.g.copilot_filetypes = {
 
 require("oatmeal").setup({
   backend = "ollama",
-  -- model = "deepseek-coder:33b",
-  model = "phind-codellama:34b-v2",
+  model = "deepseek-coder-v2:16b-lite-instruct-fp16",
+})
+
+require("aider").setup({
+  auto_manage_context = true,
+  default_keybindings = false,
+})
+
+vim.keymap.set("n", "<leader>m", function()
+  require("commands.llm").fill_holes()
+end, {
+  desc = "LLM fill-in",
 })
 
 ---- Debugging
@@ -348,30 +358,29 @@ vim.keymap.set("n", "<F57>", dap.up) -- <A-F9>
 
 -- Dial does number incrementing and decrementing
 local dial = require("dial.map")
-vim.keymap.set("n", "<M-i>", dial.inc_normal())
-vim.keymap.set("n", "<M-d>", dial.dec_normal())
-vim.keymap.set("n", "g<M-i>", dial.inc_gnormal())
-vim.keymap.set("n", "g<M-d>", dial.dec_gnormal())
-vim.keymap.set("v", "<M-i>", dial.inc_visual())
-vim.keymap.set("v", "<M-d>", dial.dec_visual())
-vim.keymap.set("v", "g<M-i>", dial.inc_gvisual())
-vim.keymap.set("v", "g<M-d>", dial.dec_gvisual())
+vim.keymap.set("n", "<M-i>", dial.inc_normal(), { desc = "Increment number" })
+vim.keymap.set("n", "<M-d>", dial.dec_normal(), { desc = "Decrement number" })
+vim.keymap.set("n", "g<M-i>", dial.inc_gnormal(), { desc = "Stacking increment" })
+vim.keymap.set("n", "g<M-d>", dial.dec_gnormal(), { desc = "Stacking decrement" })
+vim.keymap.set("v", "<M-i>", dial.inc_visual(), { desc = "Increment number" })
+vim.keymap.set("v", "<M-d>", dial.dec_visual(), { desc = "Decrement number" })
+vim.keymap.set("v", "g<M-i>", dial.inc_gvisual(), { desc = "Stacking increment" })
+vim.keymap.set("v", "g<M-d>", dial.dec_gvisual(), { desc = "Stacking decrement" })
 
 require("which-key").setup({})
 
 -- Map ; to : in case I don't press Shift quickly enough
 vim.keymap.set("n", ";", ":", {})
-
 -- # Buffer Navigation --
 
 -- Hides buffers instead of closing them
 vim.o.hidden = true
 
 -- Prevent diagonal scroll in Kitty
-vim.keymap.set({ "i", "n", "v" }, "<ScrollWheelLeft>", "<Nop>", {})
-vim.keymap.set({ "i", "n", "v" }, "<ScrollWheelRight>", "<Nop>", {})
-vim.keymap.set({ "i", "n", "v" }, "<S-ScrollWheelUp>", "<ScrollWheelRight>", {})
-vim.keymap.set({ "i", "n", "v" }, "<S-ScrollWheelDown>", "<ScrollWheelLeft>", {})
+vim.keymap.set({ "i", "n", "v", "t" }, "<ScrollWheelLeft>", "<Nop>", {})
+vim.keymap.set({ "i", "n", "v", "t" }, "<ScrollWheelRight>", "<Nop>", {})
+vim.keymap.set({ "i", "n", "v", "t" }, "<S-ScrollWheelUp>", "<ScrollWheelRight>", {})
+vim.keymap.set({ "i", "n", "v", "t" }, "<S-ScrollWheelDown>", "<ScrollWheelLeft>", {})
 
 -- Quick move cursor from insert mode
 -- These map to cmd/option + arrow keys
