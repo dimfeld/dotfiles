@@ -1,0 +1,4 @@
+bind "^[[1;3D" ed-prev-word
+bind "^[[1;3C" em-next-word
+bind "\e[1;9D" ed-move-to-beg
+bind "\e[1;9C" ed-move-to-end

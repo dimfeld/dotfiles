@@ -1,0 +1,7 @@
+"^[[1;3D": backward-word
+"^[[1;3C": forward-word
+"\e[1;9D": beginning-of-line
+"\e[1;9C": end-of-line
+"^[[1;9D" beginning-of-line
+"^[[1;9C" end-of-line
+"^[f" forward-word
