@@ -68,10 +68,10 @@ M.fill_holes = function(opts)
     if vim.fn.bufname("%") == "" then
       tmp_file = vim.fn.tempname()
       source_file = tmp_file
-      vim.cmd("w " .. tmp_file)
+      vim.cmd("noa w " .. tmp_file)
     else
       if vim.bo.modified then
-        vim.cmd("w")
+        vim.cmd("noa w")
       end
       source_file = vim.fn.expand("%:p")
     end
