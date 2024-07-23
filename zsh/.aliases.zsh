@@ -55,3 +55,7 @@ alias avs='av stack'
 alias avco='av stack switch'
 alias avsync='av stack sync --prune'
 alias avsub='av stack submit'
+
+# AWS
+
+alias aws-whoami='aws sts get-caller-identity'

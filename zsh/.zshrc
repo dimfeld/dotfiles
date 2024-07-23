@@ -54,7 +54,7 @@ fgb() {
 
   branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)") &&
   branch=$(echo "$branches" |
-    fzf-tmux -d $(( 2 + $(wc -l <<< "$branches") )) +m "$query" ) &&
+    fzf-tmux -d $(( 2 + $(wc -l <<< "$branches") )) +m "$query" --preview "git log {}" ) &&
   git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
 }
 
