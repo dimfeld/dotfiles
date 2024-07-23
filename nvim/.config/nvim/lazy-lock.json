@@ -60,6 +60,7 @@
   "vim-jsdoc": { "branch": "master", "commit": "6e5bc2a1f98a69e4902081c9f5969b228a7a5fd6" },
   "vim-just": { "branch": "main", "commit": "3143de2ee5b784d99e5322fd3382823ce8eb845c" },
   "vim-markdown": { "branch": "master", "commit": "a657e697376909c41475a686eeef7fc7a4972d94" },
+  "vim-matchup": { "branch": "master", "commit": "1535a769d5dca851fe7d41b0be95f7c7203a4bef" },
   "vim-qf": { "branch": "master", "commit": "7e65325651ff5a0b06af8df3980d2ee54cf10e14" },
   "vim-repeat": { "branch": "master", "commit": "65846025c15494983dafe5e3b46c8f88ab2e9635" },
   "vim-surround": { "branch": "master", "commit": "3d188ed2113431cf8dac77be61b842acb64433d9" },

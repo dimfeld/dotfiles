@@ -47,6 +47,8 @@ return {
   -- Improved motion in Vim
   "ggandor/leap.nvim",
 
+  "andymass/vim-matchup",
+
   -- Autoadd closing parentheses, brackets, etc.
   "windwp/nvim-autopairs",
 

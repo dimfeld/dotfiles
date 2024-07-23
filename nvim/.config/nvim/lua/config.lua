@@ -68,6 +68,9 @@ require("nvim-treesitter.configs").setup({
       CommentaryLine = false,
     },
   },
+  matchup = {
+    enable = true,
+  },
   highlight = {
     enable = true,
     -- disable = { "rust", "javascript", "javascript.jsx" },
