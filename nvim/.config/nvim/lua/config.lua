@@ -83,15 +83,6 @@ vim.o.foldmethod = "expr"
 vim.o.foldexpr = "nvim_treesitter#foldexpr()"
 vim.o.foldenable = false
 
-require("ts_context_commentstring").setup({
-  enable = true,
-  enable_autocmd = false,
-  commentary_integration = {
-    Commentary = false,
-    CommentaryLine = false,
-  },
-})
-
 local get_option = vim.filetype.get_option
 vim.filetype.get_option = function(filetype, option)
   return option == "commentstring" and require("ts_context_commentstring.internal").calculate_commentstring()
@@ -197,8 +188,6 @@ vim.g["asciidoctor_fenced_languages"] = {
   "rust",
   "bash",
 }
-
-require("section-wordcount").setup({})
 
 local asciidocGroup = vim.api.nvim_create_augroup("AsciiDoc", {})
 vim.api.nvim_create_autocmd("FileType", {
@@ -414,8 +403,6 @@ vim.keymap.set("v", "<M-i>", dial.inc_visual(), { desc = "Increment number" })
 vim.keymap.set("v", "<M-d>", dial.dec_visual(), { desc = "Decrement number" })
 vim.keymap.set("v", "g<M-i>", dial.inc_gvisual(), { desc = "Stacking increment" })
 vim.keymap.set("v", "g<M-d>", dial.dec_gvisual(), { desc = "Stacking decrement" })
-
--- require("which-key").setup({})
 
 -- Map ; to : in case I don't press Shift quickly enough
 vim.keymap.set("n", ";", ":", {})

@@ -21,4 +21,4 @@ elif [ -f "$(which apt)" ]; then
   sudo apt autoremove
 fi
 
-nvim +PlugUpdate +CocUpdate
+nvim "+Lazy sync" +CocUpdate

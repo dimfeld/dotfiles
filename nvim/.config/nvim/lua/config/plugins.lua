@@ -1,5 +1,5 @@
 return {
-  "dimfeld/section-wordcount.nvim",
+  { "dimfeld/section-wordcount.nvim", lazy = true, opts = {} },
 
   -- SQLite, used by various other plugins, including smart-open
   "kkharji/sqlite.lua",
@@ -17,7 +17,12 @@ return {
   "romainl/vim-qf",
 
   -- Close buffers without closing split
-  "qpkorr/vim-bufkill",
+  {
+    "qpkorr/vim-bufkill",
+    init = function()
+      vim.g.BufKillCreateMappings = 0
+    end,
+  },
 
   -- Performance fix for things that use CursorHold
   "antoinemadec/FixCursorHold.nvim",
@@ -47,7 +52,7 @@ return {
 
   -- Show popup with key combo info
   -- Disabled because it's causing problems
-  -- "folke/which-key.nvim",
+  -- { "folke/which-key.nvim", opts = {} },
 
   -- Telescope fuzzy finder
   "nvim-lua/popup.nvim",
@@ -84,7 +89,20 @@ return {
   "heavenshell/vim-jsdoc",
 
   -- Comment toggling
-  "JoosepAlviste/nvim-ts-context-commentstring",
+  {
+    "JoosepAlviste/nvim-ts-context-commentstring",
+    init = function()
+      vim.g.skip_ts_context_commentstring_module = true
+    end,
+    opts = {
+      enable = true,
+      enable_autocmd = false,
+      commentary_integration = {
+        Commentary = false,
+        CommentaryLine = false,
+      },
+    },
+  },
   "tpope/vim-commentary",
   "numToStr/Comment.nvim",
 
