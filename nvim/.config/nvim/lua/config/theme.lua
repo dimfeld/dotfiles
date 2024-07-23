@@ -9,8 +9,6 @@ vim.o.fillchars = "vert:."
 -- Set preview window to appear at bottom
 vim.o.splitbelow = true
 
--- vim.g['airline_theme'] = 'dark_minimal'
-
 -- For Warp
 --vim.o.mousescroll = 'ver:2,hor:4'
 
@@ -44,7 +42,7 @@ vim.g["cursorhold_updatetime"] = 100
 vim.o.showmode = false
 
 -- Set floating window to be slightly transparent
-vim.o.winblend = 10
+vim.o.winblend = 20
 -- Warp needs this instead
 -- set winblend=0
 

@@ -6,10 +6,9 @@
   "diagnostic.floatConfig": {
     "border": false,
     "rounded": false,
-    "winblend": 10,
-    "shadow": true
+    "winblend": 20
   },
-  "diagnostic.messageDelay": 200,
+  "diagnostic.messageDelay": 0,
   "diagnostic.messageTarget": "float",
   "diagnostic.enableMessage": "always",
   "diagnostic.checkCurrentLine": true,
@@ -61,7 +60,8 @@
 //    //"\\.\"?([^.\"]+)\"?"
 //  ],
 
-  "inlayHint.display": false,
+  "inlayHint.display": true,
+  "inlayHint.position": "eol",
 
   "python.formatting.provider": "ruff",
   "python.linting.ruffEnabled": true,
@@ -74,14 +74,15 @@
   },
 
   "[rust]": {
-    "coc.preferences.formatOnSave": true
+    "coc.preferences.formatOnSave": true,
+    "inlayHint.position": "eol"
   },
 
   "rust-analyzer.rustfmt.extraArgs": [
     "+nightly"
   ],
   "rust-analyzer.checkOnSave": true,
-  "rust-analyzer.inlayHints.typeHints.enable": false,
+  "rust-analyzer.inlayHints.typeHints.enable": true,
   "rust-analyzer.inlayHints.parameterHints.enable": true,
   "rust-analyzer.inlayHints.closureReturnTypeHints.enable": "never",
   "rust-analyzer.inlayHints.bindingModeHints.enable": false,

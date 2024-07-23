@@ -1,6 +1,39 @@
 local git_helpers = require("lib.git")
+local window_helpers = require("lib.window")
 local path = require("plenary.path")
 local format_util = require("formatter.util")
+
+vim.o.mousemodel = "extend"
+
+function reload_nvim_conf()
+  for name, _ in pairs(package.loaded) do
+    if
+      name:match("^core")
+      or name:match("^lsp")
+      or name:match("^plugins")
+      or name:match("^config")
+      or name:match("^commands")
+      or name:match("^lib")
+      or name:match("^llm")
+    then
+      package.loaded[name] = nil
+    end
+  end
+
+  vim.cmd("source" .. vim.env.MYVIMRC)
+  vim.notify("Nvim configuration reloaded!", vim.log.levels.INFO)
+end
+
+vim.api.nvim_create_user_command("ReloadInit", reload_nvim_conf, {})
+vim.api.nvim_create_user_command("EditInit", "e ~/.config/nvim/lua/config.lua", {})
+
+vim.o.undofile = true
+vim.o.undolevels = 3000
+vim.o.undoreload = 10000
+vim.o.backupdir = vim.fn.expand("~/tmp,.,~/")
+vim.o.directory = vim.fn.expand("~/tmp,.,~/") -- Where to keep swap files
+vim.o.backup = true
+vim.o.swapfile = false
 
 ---- code language configs
 
@@ -251,13 +284,14 @@ vim.opt.shortmess:append("c")
 
 ---- AI Assistants
 
--- true for Codeium, false for Github Copilot
-local codeium_enabled = true
+-- local completion_assistant = "copilot"
+local completion_assistant = "codeium"
+-- local completion_assistant = "supermaven"
 
-vim.g.codeium_enabled = codeium_enabled
+vim.g.codeium_enabled = completion_assistant == "codeium"
 
 local disable_copilot_group = vim.api.nvim_create_augroup("DisableCopilot", {})
-if codeium_enabled then
+if completion_assistant == "codeium" then
   vim.api.nvim_create_autocmd("BufEnter", {
     group = disable_copilot_group,
     pattern = "*",
@@ -270,15 +304,29 @@ end
 vim.g.codeium_no_map_tab = true
 vim.g.copilot_no_tab_map = true
 
-local acceptCmd = codeium_enabled and "codeium#Accept()" or 'copilot#Accept("")'
-local acceptKeyOpts = { silent = true, expr = true, script = true, replace_keycodes = false }
+if completion_assistant == "codeium" or completion_assistant == "copilot" then
+  local acceptCmd = completion_assistant == "codeium" and "codeium#Accept()" or 'copilot#Accept("")'
+  local acceptKeyOpts = { silent = true, expr = true, script = true, replace_keycodes = false }
 
-vim.keymap.set("i", "<C-J>", acceptCmd, acceptKeyOpts)
-vim.keymap.set("i", "<C-]>", acceptCmd, acceptKeyOpts)
+  vim.keymap.set("i", "<C-J>", acceptCmd, acceptKeyOpts)
+  vim.keymap.set("i", "<C-]>", acceptCmd, acceptKeyOpts)
 
-vim.g.copilot_filetypes = {
-  markdown = true,
-}
+  vim.g.copilot_filetypes = {
+    markdown = true,
+  }
+elseif completion_assistant == "supermaven" then
+  require("supermaven-nvim").setup({
+    keymaps = {
+      accept_suggestion = "<C-]>",
+      clear_suggestion = "<C-J>",
+      accept_word = "<M-]>",
+    },
+    color = {
+      suggestion_color = "#eeaaaa",
+      cterm = 10,
+    },
+  })
+end
 
 require("oatmeal").setup({
   backend = "ollama",
@@ -367,7 +415,7 @@ vim.keymap.set("v", "<M-d>", dial.dec_visual(), { desc = "Decrement number" })
 vim.keymap.set("v", "g<M-i>", dial.inc_gvisual(), { desc = "Stacking increment" })
 vim.keymap.set("v", "g<M-d>", dial.dec_gvisual(), { desc = "Stacking decrement" })
 
-require("which-key").setup({})
+-- require("which-key").setup({})
 
 -- Map ; to : in case I don't press Shift quickly enough
 vim.keymap.set("n", ";", ":", {})
@@ -588,6 +636,51 @@ end
 
 vim.keymap.set("n", "K", toggle_documentation, {})
 vim.keymap.set("i", "<C-K>", toggle_signature_help, {})
+
+local augroup = vim.api.nvim_create_augroup("RepositionFloat", {})
+vim.api.nvim_create_autocmd("User", {
+  -- This doesn't work right yet.
+  -- The scrollbar doesn't relocate with the window
+  -- When we jump to the next diagnostic, the popup relocates after this code is called.
+  group = augroup,
+  pattern = "CocOpenFloat",
+  callback = function(ev)
+    local float_win = vim.g.coc_last_float_win
+    if not window_helpers.is_coc_diagnostic_window(float_win) then
+      -- Don't reposition for normal popups, just for things like diagnostic window
+      return
+    end
+
+    local current_win = vim.api.nvim_get_current_win()
+    local buf = vim.api.nvim_win_get_buf(float_win)
+    local win_height = vim.api.nvim_win_get_height(current_win)
+    local win_width = vim.api.nvim_win_get_width(current_win)
+    local float_config = vim.api.nvim_win_get_config(float_win)
+    local new_col = math.floor((win_width - float_config.width))
+    local new_row = win_height - float_config.height - 1
+
+    -- Not working yet, it overrides a lot of the existing window config that I
+    -- don't know how to get yet.
+    -- vim.fn["coc#float#create_float_win"](float_win, buf, {
+    --   relative = "editor",
+    --   row = new_row,
+    --   width = float_config.width,
+    --   height = float_config.height,
+    --   col = new_col,
+    -- })
+
+    -- This also doesn't work yet, because it doesn't move the scrollbar and related windows along with the main
+    -- window. Ideally we could get the original config object and reuse it, just changing the values we want, but I don't think there's
+    -- an easy way to do that.
+    -- vim.api.nvim_win_set_config(float_win, {
+    --   relative = "win",
+    --   win = current_win,
+    --   row = win_height,
+    --   col = 0,
+    --   anchor = "SW",
+    -- })
+  end,
+})
 
 ---- Quickfix Buffer interaction
 
