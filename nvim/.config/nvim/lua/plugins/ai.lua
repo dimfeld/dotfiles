@@ -50,6 +50,7 @@ return {
         clear_suggestion = "<C-J>",
         accept_word = "<M-]>",
       },
+      disable_keymaps = true,
       color = {
         suggestion_color = "#eeaaaa",
         cterm = 10,

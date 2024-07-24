@@ -9,6 +9,7 @@ local prettier_config_files = {
 }
 
 local prettierd = function()
+  local format_util = require("formatter.util")
   local current_path = format_util.get_current_buffer_file_path()
   local current_dir = vim.fs.dirname(current_path)
   local found_config = vim.fs.find(prettier_config_files, {
@@ -43,6 +44,7 @@ local black = function()
 end
 
 local ruff = function()
+  local format_util = require("formatter.util")
   local current_path = format_util.get_current_buffer_file_path()
   return {
     exe = "python3",
@@ -53,6 +55,7 @@ end
 
 -- Stylua Lua formatter
 function stylua()
+  local format_util = require("formatter.util")
   return {
     exe = "stylua",
     args = {
@@ -72,6 +75,7 @@ end
 
 -- Sleek SQL formatter
 function sleek()
+  local format_util = require("formatter.util")
   local current_path = format_util.get_current_buffer_file_path()
   return {
     exe = "sleek",
@@ -82,6 +86,7 @@ end
 
 -- pg_format
 function pgformat()
+  local format_util = require("formatter.util")
   local current_path = format_util.get_current_buffer_file_path()
   if current_path:find(".sql.tera") then
     return nil
@@ -95,6 +100,7 @@ end
 
 -- Format .sql.liquid files
 function liquid_sql()
+  local format_util = require("formatter.util")
   local current_path = format_util.get_current_buffer_file_path()
   if current_path:find(".sql.liquid") == nil then
     return nil
