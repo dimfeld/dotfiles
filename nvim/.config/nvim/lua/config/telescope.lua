@@ -16,12 +16,6 @@ telescope.setup({
   },
 })
 
-telescope.load_extension("coc")
-telescope.load_extension("dap")
-telescope.load_extension("file_browser")
-telescope.load_extension("fzy_native")
-telescope.load_extension("smart_open")
-
 function getWorkspacePath()
   vim.wait(2000, function()
     return vim.g.coc_service_initialized == 1
@@ -123,5 +117,8 @@ vim.keymap.set("n", "<leader>wl", ":Telescope coc workspace_diagnostics<cr>", { 
 vim.keymap.set("n", "<leader>dr", ":Telescope coc references<cr>", { silent = true })
 vim.keymap.set("n", "<leader>ds", ":Telescope coc document_symbols<cr>", { silent = true })
 vim.keymap.set("n", "<leader>ws", ":Telescope coc workspace_symbols<cr>", { silent = true })
+vim.keymap.set("n", "<leader>U", function()
+  require("telescope").extensions.undo.undo()
+end, { silent = true, desc = "Show Undo History" })
 
 vim.api.nvim_create_user_command("Debug", extensions.dap.commands, {})

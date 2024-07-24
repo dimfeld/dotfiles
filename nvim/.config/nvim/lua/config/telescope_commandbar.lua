@@ -31,6 +31,7 @@ M.commands = {
   { name = "Prefix with 'pub'", category = "Editing", filetype = "rust", action = function()
      vim.cmd([['<,'>s/^/pub/]])
   end },
+  { name = "View Undo Tree", category = "Editing", action = function() require("telescope").extensions.undo.undo() end },
 
   { name = 'Resync Syntax', category = "Buffer", action = function () vim.cmd('syntax sync fromstart') end },
 
@@ -43,7 +44,8 @@ M.commands = {
   { name = "Aider", category = "AI", action = AiderOpen },
   { name = "Aider Background", category = "AI", action = AiderBackground },
 
-  { name = "Call LLM", category = "AI", action = function() require('commands.llm').fill_holes() end }
+  { name = "Call LLM", category = "AI", action = function() require('commands.llm').fill_holes() end },
+
 }
 
 M.add_commands = function(commands)

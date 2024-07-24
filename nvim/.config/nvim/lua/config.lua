@@ -34,17 +34,9 @@ vim.o.backupdir = vim.fn.expand("~/tmp,.,~/")
 vim.o.directory = vim.fn.expand("~/tmp,.,~/") -- Where to keep swap files
 vim.o.backup = true
 vim.o.swapfile = false
+vim.o.scrolloff = 8
 
 ---- code language configs
-
-vim.g.svelte_preprocessor_tags = {
-  { name = "postcss", tag = "style", as = "scss" },
-}
-
-vim.g.svelte_preprocessors = { "typescript", "postcss", "scss" }
-
-vim.g.vim_svelte_plugin_use_typescript = 1
-vim.g.vim_svelte_plugin_use_sass = 1
 
 local auGroup = vim.api.nvim_create_augroup("CodeLangs", {})
 vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
@@ -54,67 +46,6 @@ vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
     vim.bo.syntax = "scss"
   end,
 })
-
-require("nvim-treesitter.configs").setup({
-  ensure_installed = {
-    "svelte",
-    "typescript",
-  },
-  context_commentstring = {
-    enable = true,
-    enable_autocmd = false,
-    commentary_integration = {
-      Commentary = false,
-      CommentaryLine = false,
-    },
-  },
-  matchup = {
-    enable = true,
-  },
-  highlight = {
-    enable = true,
-    -- disable = { "rust", "javascript", "javascript.jsx" },
-  },
-  indent = {
-    enable = true,
-  },
-  autopairs = { enable = true },
-})
-
--- Enable treesitter-based folding
-vim.o.foldmethod = "expr"
-vim.o.foldexpr = "nvim_treesitter#foldexpr()"
-vim.o.foldenable = false
-
-local get_option = vim.filetype.get_option
-vim.filetype.get_option = function(filetype, option)
-  return option == "commentstring" and require("ts_context_commentstring.internal").calculate_commentstring()
-    or get_option(filetype, option)
-end
-
--- Autopairs
-local npairs = require("nvim-autopairs")
-
-function pum_visible()
-  return vim.fn["coc#pum#visible"]() == 1
-end
-
-npairs.setup({
-  check_ts = true,
-  ignored_next_char = "[%w%.\"']", -- will ignore alphanumeric and `.` symbol
-})
-
-local Rule = require("nvim-autopairs.rule")
-local cond = require("nvim-autopairs.conds")
-
--- Only add closing bracket if <CR> is hit right after the opening bracket
--- npairs.remove_rule('{')
--- npairs.add_rules({
---   Rule('{', '}'):end_wise(function(opts)
---     local lastChar = string.sub(vim.trim(opts.line), -1)
---     return lastChar == '{' or lastChar == ')'
---   end)
--- })
 
 -- Insert spaces when TAB is pressed.
 vim.o.expandtab = true
@@ -176,14 +107,6 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   end,
 })
 
-vim.api.nvim_create_autocmd("FileType", {
-  group = markdownGroup,
-  pattern = "markdown",
-  callback = function()
-    require("section-wordcount").wordcounter({})
-  end,
-})
-
 vim.g["asciidoctor_folding"] = 1
 vim.g["asciidoctor_fenced_languages"] = {
   "sql",
@@ -204,72 +127,8 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.foldlevel = 99
     vim.keymap.set("n", "<Down>", "gj", { buffer = true })
     vim.keymap.set("n", "<Up>", "gk", { buffer = true })
-    require("section-wordcount").wordcounter({
-      header_char = "=",
-    })
   end,
 })
-
--- # Completion --
-
--- Tab and S-Tab navigate completion popup, if it's open
-vim.keymap.set("i", "<TAB>", function()
-  if pum_visible() then
-    return vim.fn["coc#pum#next"](1)
-  else
-    return "<TAB>"
-  end
-end, { expr = true, silent = true })
-
-vim.keymap.set("i", "<S-TAB>", function()
-  if pum_visible() then
-    return vim.fn["coc#pum#prev"](1)
-  else
-    return "<S-TAB>"
-  end
-end, { expr = true, silent = true })
-
--- Cancel confirmation when arrow key is pressed
-function close_pum_when_pressed(key)
-  vim.keymap.set("i", key, function()
-    if pum_visible() then
-      vim.fn["coc#pum#stop"]()
-    end
-
-    return key
-  end, { expr = true })
-end
-
--- Close preview window when completion is done.
-local auGroup = vim.api.nvim_create_augroup("completion", {})
-vim.api.nvim_create_autocmd("CompleteDone", {
-  group = auGroup,
-  pattern = "*",
-  callback = function()
-    if not pum_visible() and vim.fn["getcmdwintype"]() == "" then
-      vim.cmd("pclose")
-    end
-  end,
-})
-
-close_pum_when_pressed("<up>")
-close_pum_when_pressed("<down>")
-close_pum_when_pressed("<left>")
-close_pum_when_pressed("<right>")
-
--- Open completion popup
-vim.keymap.set("i", "<c-space>", function()
-  vim.fn["coc#start"]()
-end, { silent = true })
-
--- Allow triggering code action, such as adding import, from completion window
-vim.keymap.set("i", "<leader>c", function()
-  if pum_visible() then
-    return vim.fn["coc#pum#confirm"]()
-  else
-    return "<leader>c"
-  end
-end, { silent = true, expr = true, desc = "Trigger code action" })
 
 -- Don't give completion messages like 'match 1 of 2' or 'The only match'
 vim.opt.shortmess:append("c")
@@ -396,17 +255,6 @@ vim.keymap.set("n", "<F57>", dap.up) -- <A-F9>
 
 ---- Editor Commands
 
--- Dial does number incrementing and decrementing
-local dial = require("dial.map")
-vim.keymap.set("n", "<M-i>", dial.inc_normal(), { desc = "Increment number" })
-vim.keymap.set("n", "<M-d>", dial.dec_normal(), { desc = "Decrement number" })
-vim.keymap.set("n", "g<M-i>", dial.inc_gnormal(), { desc = "Stacking increment" })
-vim.keymap.set("n", "g<M-d>", dial.dec_gnormal(), { desc = "Stacking decrement" })
-vim.keymap.set("v", "<M-i>", dial.inc_visual(), { desc = "Increment number" })
-vim.keymap.set("v", "<M-d>", dial.dec_visual(), { desc = "Decrement number" })
-vim.keymap.set("v", "g<M-i>", dial.inc_gvisual(), { desc = "Stacking increment" })
-vim.keymap.set("v", "g<M-d>", dial.dec_gvisual(), { desc = "Stacking decrement" })
-
 -- Map ; to : in case I don't press Shift quickly enough
 vim.keymap.set("n", ";", ":", {})
 -- # Buffer Navigation --
@@ -472,14 +320,6 @@ vim.keymap.set("c", "<D-Left>", "<Home>", {})
 vim.keymap.set("c", "<D-Right>", "<End>", {})
 vim.keymap.set("c", "<M-Left>", "<S-Left>", {})
 vim.keymap.set("c", "<M-Right>", "<S-Right>", {})
-
--- Leap for quick navigation through the buffer
-require("leap")
-vim.keymap.set({ "n", "x", "o" }, "s", "<Plug>(leap-forward-to)", { noremap = false })
-vim.keymap.set({ "n", "x", "o" }, "S", "<Plug>(leap-backward-to)", { noremap = false })
-vim.keymap.set({ "x", "o" }, "x", "<Plug>(leap-forward-till)", { noremap = false })
-vim.keymap.set({ "x", "o" }, "X", "<Plug>(leap-backward-till)", { noremap = false })
-vim.keymap.set({ "n", "x", "o" }, "gs", "<Plug>(leap-from-window)", { noremap = false })
 
 -- # Comments
 vim.o.comments = "s1:/*,mb:*,ex:*/,://,b:#,:%,:XCOMM,fb:-"
@@ -557,120 +397,6 @@ vim.keymap.set({ "n", "x" }, "<leader>/", vim.cmd.nohlsearch, { silent = true })
 
 -- Repeat last command over visual selection
 vim.keymap.set("x", "<Leader>.", "q:<UP>I'<,'><Esc>$", {})
-
--- Editor Commands for LSP/CoC
-vim.keymap.set("n", "<leader>dd", "<Plug>(coc-definition)", { silent = true })
-vim.keymap.set("n", "<leader>dj", "<Plug>(coc-implementation)", { silent = true })
-vim.keymap.set("n", "<leader>dg", function()
-  vim.cmd("call CocActionAsync('diagnosticInfo', 'float')")
-end, { silent = true })
-vim.keymap.set("n", "<leader>rn", "<Plug>(coc-rename)", { silent = true })
-vim.keymap.set("n", "[G", "<Plug>(coc-diagnostic-prev)", { silent = true })
-vim.keymap.set("n", "]G", "<Plug>(coc-diagnostic-next)", { silent = true })
-vim.keymap.set("n", "[g", "<Plug>(coc-diagnostic-prev-error)", { silent = true })
-vim.keymap.set("n", "]g", "<Plug>(coc-diagnostic-next-error)", { silent = true })
-
-vim.keymap.set("n", "<leader>al", "<Plug>(coc-codeaction-line)", { silent = true })
-vim.keymap.set("n", "<leader>ac", "<Plug>(coc-codeaction-cursor)", { silent = true })
-vim.keymap.set("n", "<leader>af", "<Plug>(coc-codeaction)", { silent = true })
-
-vim.g["coc_global_extensions"] = {
-  "coc-css",
-  "coc-eslint",
-  "coc-git",
-  "coc-go",
-  "coc-html",
-  "coc-json",
-  "coc-pyright",
-  "coc-rust-analyzer",
-  "coc-svelte",
-  "coc-tsserver",
-  "coc-xml",
-  "@yaegassy/coc-tailwindcss3",
-}
-
--- Documentation with K and c-K
-
-function toggle_documentation()
-  if vim.call("coc#float#has_float") > 0 then
-    vim.call("coc#float#close_all")
-  else
-    show_documentation()
-  end
-end
-
-function toggle_signature_help()
-  if vim.call("coc#float#has_float") > 0 then
-    vim.call("coc#float#close_all")
-  else
-    vim.call("CocActionAsync", "showSignatureHelp", hover_callback)
-  end
-end
-
-function hover_callback(e, r)
-  if r == false then
-    vim.call("CocActionAsync", "doHover")
-  end
-end
-
-function show_documentation()
-  local filetype = vim.bo.filetype
-  if filetype == "vim" or filetype == "help" then
-    vim.cmd("h " .. vim.fn.expand("<cword>"))
-  elseif vim.call("coc#rpc#ready") then
-    vim.call("CocActionAsync", "doHover")
-  else
-    vim.cmd("!" .. vim.bo.keywordprg .. " " .. vim.fn.expand("<cword>"))
-  end
-end
-
-vim.keymap.set("n", "K", toggle_documentation, {})
-vim.keymap.set("i", "<C-K>", toggle_signature_help, {})
-
-local augroup = vim.api.nvim_create_augroup("RepositionFloat", {})
-vim.api.nvim_create_autocmd("User", {
-  -- This doesn't work right yet.
-  -- The scrollbar doesn't relocate with the window
-  -- When we jump to the next diagnostic, the popup relocates after this code is called.
-  group = augroup,
-  pattern = "CocOpenFloat",
-  callback = function(ev)
-    local float_win = vim.g.coc_last_float_win
-    if not window_helpers.is_coc_diagnostic_window(float_win) then
-      -- Don't reposition for normal popups, just for things like diagnostic window
-      return
-    end
-
-    local current_win = vim.api.nvim_get_current_win()
-    local buf = vim.api.nvim_win_get_buf(float_win)
-    local win_height = vim.api.nvim_win_get_height(current_win)
-    local win_width = vim.api.nvim_win_get_width(current_win)
-    local float_config = vim.api.nvim_win_get_config(float_win)
-    local new_col = math.floor((win_width - float_config.width))
-    local new_row = win_height - float_config.height - 1
-
-    -- Not working yet, it overrides a lot of the existing window config that I
-    -- don't know how to get yet.
-    -- vim.fn["coc#float#create_float_win"](float_win, buf, {
-    --   relative = "editor",
-    --   row = new_row,
-    --   width = float_config.width,
-    --   height = float_config.height,
-    --   col = new_col,
-    -- })
-
-    -- This also doesn't work yet, because it doesn't move the scrollbar and related windows along with the main
-    -- window. Ideally we could get the original config object and reuse it, just changing the values we want, but I don't think there's
-    -- an easy way to do that.
-    -- vim.api.nvim_win_set_config(float_win, {
-    --   relative = "win",
-    --   win = current_win,
-    --   row = win_height,
-    --   col = 0,
-    --   anchor = "SW",
-    -- })
-  end,
-})
 
 ---- Quickfix Buffer interaction
 
@@ -829,10 +555,6 @@ vim.api.nvim_create_autocmd("BufWritePost", {
     vim.cmd.FormatWrite()
   end,
 })
-
-vim.api.nvim_create_user_command("Format", function()
-  vim.fn.CocAction("runCommand", "editor.action.formatDocument")
-end, {})
 
 ---- Telescope
 require("config.telescope")
