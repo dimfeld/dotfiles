@@ -107,14 +107,6 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   end,
 })
 
-vim.g["asciidoctor_folding"] = 1
-vim.g["asciidoctor_fenced_languages"] = {
-  "sql",
-  "svelte",
-  "rust",
-  "bash",
-}
-
 local asciidocGroup = vim.api.nvim_create_augroup("AsciiDoc", {})
 vim.api.nvim_create_autocmd("FileType", {
   group = asciidocGroup,
@@ -134,60 +126,6 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.opt.shortmess:append("c")
 
 ---- AI Assistants
-
--- local completion_assistant = "copilot"
-local completion_assistant = "codeium"
--- local completion_assistant = "supermaven"
-
-vim.g.codeium_enabled = completion_assistant == "codeium"
-
-local disable_copilot_group = vim.api.nvim_create_augroup("DisableCopilot", {})
-if completion_assistant == "codeium" then
-  vim.api.nvim_create_autocmd("BufEnter", {
-    group = disable_copilot_group,
-    pattern = "*",
-    callback = function()
-      vim.b.copilot_enabled = false
-    end,
-  })
-end
-
-vim.g.codeium_no_map_tab = true
-vim.g.copilot_no_tab_map = true
-
-if completion_assistant == "codeium" or completion_assistant == "copilot" then
-  local acceptCmd = completion_assistant == "codeium" and "codeium#Accept()" or 'copilot#Accept("")'
-  local acceptKeyOpts = { silent = true, expr = true, script = true, replace_keycodes = false }
-
-  vim.keymap.set("i", "<C-J>", acceptCmd, acceptKeyOpts)
-  vim.keymap.set("i", "<C-]>", acceptCmd, acceptKeyOpts)
-
-  vim.g.copilot_filetypes = {
-    markdown = true,
-  }
-elseif completion_assistant == "supermaven" then
-  require("supermaven-nvim").setup({
-    keymaps = {
-      accept_suggestion = "<C-]>",
-      clear_suggestion = "<C-J>",
-      accept_word = "<M-]>",
-    },
-    color = {
-      suggestion_color = "#eeaaaa",
-      cterm = 10,
-    },
-  })
-end
-
-require("oatmeal").setup({
-  backend = "ollama",
-  model = "deepseek-coder-v2:16b-lite-instruct-fp16",
-})
-
-require("aider").setup({
-  auto_manage_context = true,
-  default_keybindings = false,
-})
 
 vim.keymap.set("n", "<leader>m", function()
   require("commands.llm").fill_holes()
@@ -417,136 +355,6 @@ vim.api.nvim_create_autocmd("FileType", {
 
 ---- Code formatting
 
-vim.env.PRETTIERD_LOCAL_PRETTIER_ONLY = "true"
-
-local prettier_config_files = {
-  ".prettierrc",
-  ".prettierrc.js",
-  ".prettierrc.json",
-  "prettier.config.js",
-  "prettier.config.cjs",
-}
-
-local prettierd = function()
-  local current_path = format_util.get_current_buffer_file_path()
-  local current_dir = vim.fs.dirname(current_path)
-  local found_config = vim.fs.find(prettier_config_files, {
-    path = current_dir,
-    upward = true,
-    type = "file",
-    limit = 1,
-  })
-
-  local _, found = next(found_config)
-  -- print(vim.inspect(found))
-  if found == nil then
-    return nil
-  end
-
-  local config_dirname = vim.fs.dirname(found)
-
-  return {
-    exe = "prettierd",
-    args = { format_util.escape_path(current_path) },
-    cwd = config_dirname,
-    stdin = true,
-  }
-end
-
-local black = function()
-  return {
-    exe = "python3",
-    args = { "-m", "black", "-q", "-" },
-    stdin = true,
-  }
-end
-
-local ruff = function()
-  local current_path = format_util.get_current_buffer_file_path()
-  return {
-    exe = "python3",
-    args = { "-m", "ruff", "format", "--stdin-filename", format_util.escape_path(current_path), "-s" },
-    stdin = true,
-  }
-end
-
--- Stylua Lua formatter
-function stylua()
-  return {
-    exe = "stylua",
-    args = {
-      "--indent-type",
-      "Spaces",
-      "--indent-width",
-      "2",
-      "--search-parent-directories",
-      "--stdin-filepath",
-      format_util.escape_path(format_util.get_current_buffer_file_path()),
-      "--",
-      "-",
-    },
-    stdin = true,
-  }
-end
-
--- Sleek SQL formatter
-function sleek()
-  local current_path = format_util.get_current_buffer_file_path()
-  return {
-    exe = "sleek",
-    args = { "-i", "2" },
-    stdin = true,
-  }
-end
-
--- pg_format
-function pgformat()
-  local current_path = format_util.get_current_buffer_file_path()
-  if current_path:find(".sql.tera") then
-    return nil
-  end
-
-  return {
-    exe = "pg_format --inplace  -",
-    stdin = true,
-  }
-end
-
--- Format .sql.liquid files
-function liquid_sql()
-  local current_path = format_util.get_current_buffer_file_path()
-  if current_path:find(".sql.liquid") == nil then
-    return nil
-  end
-
-  -- turn this off for now
-  if true then
-    return nil
-  end
-
-  return pgformat()
-end
-
-require("formatter").setup({
-  logging = true,
-  -- log_level = vim.log.levels.TRACE,
-  filetype = {
-    html = { prettierd },
-    css = { prettierd },
-    less = { prettierd },
-    pcss = { prettierd },
-    postcss = { prettierd },
-    javascript = { prettierd },
-    json = { prettierd },
-    typescript = { prettierd },
-    svelte = { prettierd },
-    python = { ruff },
-    lua = { stylua },
-    sql = { pgformat },
-    liquid = { liquid_sql },
-  },
-})
-
 local auGroup = vim.api.nvim_create_augroup("Autoformat", {})
 vim.api.nvim_create_autocmd("BufWritePost", {
   group = auGroup,
@@ -557,11 +365,9 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 })
 
 ---- Telescope
-require("config.telescope")
-require("config.telescope_commandbar")
+require("config.telescope_commandbar").setup()
 
 ---- Theme
-require("config.status_line")
 require("config.theme")
 
 require("config.terminal")

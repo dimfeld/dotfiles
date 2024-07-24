@@ -164,7 +164,9 @@ function showCommonCommandsPicker(opts)
 
 end
 
-vim.keymap.set('n', '<leader>k', showCommonCommandsPicker)
-vim.keymap.set('v', '<leader>k', showCommonCommandsPicker)
+M.setup = function()
+  vim.keymap.set('n', '<leader>k', showCommonCommandsPicker)
+  vim.keymap.set('v', '<leader>k', showCommonCommandsPicker)
+end
 
 return M
