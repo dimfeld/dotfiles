@@ -60,25 +60,28 @@ function configure_telescope()
 
   vim.keymap.set("n", "\\", function()
     builtin.buffers()
-  end, {})
+  end, { desc = "List Buffers" })
   vim.keymap.set("n", "<space>", function()
     extensions.smart_open.smart_open({ filename_first = false })
-  end, {})
+  end, { desc = "Smart Open" })
   vim.keymap.set("n", "<leader>t", function()
     builtin.find_files({
       cwd = getWorkspacePath(),
       find_command = ripgrep_find({ "--files" }),
     })
-  end, {})
-  vim.keymap.set("n", "<leader>u", function()
-    builtin.find_files({ find_comments = ripgrep_find() })
-  end, {})
+  end, { desc = "Find files from Workspace Root" })
+  vim.keymap.set("n", "<leader>N", function()
+    builtin.find_files({
+      cwd = vim.fn.expand("%:p:h"),
+      find_command = ripgrep_find({ "--files" }),
+    })
+  end, { desc = "Find files from CWD" })
   vim.keymap.set("n", "<leader>T", function()
     builtin.find_files({
       cwd = githelpers.git_repo_toplevel(),
       find_command = ripgrep_find({ "--files" }),
     })
-  end, {})
+  end, { desc = "Find files from Git Root" })
   vim.keymap.set("n", "<leader>qf", builtin.quickfix, {})
   vim.keymap.set("n", "<leader>qh", builtin.quickfixhistory, {})
   vim.keymap.set("n", "<leader>L", builtin.loclist, {})
@@ -98,9 +101,8 @@ function configure_telescope()
   vim.keymap.set("n", "<leader>n", function()
     extensions.file_browser.file_browser({ cwd = require("telescope.utils").buffer_dir() })
   end, {})
-  vim.keymap.set("n", "<leader>N", extensions.file_browser.file_browser, {})
   vim.keymap.set("n", "<leader>v", builtin.treesitter, {})
-  vim.keymap.set("n", "<leader>l", builtin.resume, {})
+  vim.keymap.set("n", "<leader>r", builtin.resume, {})
   vim.keymap.set("n", "<leader>dl", ":Telescope coc document_diagnostics<cr>", { silent = true })
   vim.keymap.set("n", "<leader>wl", ":Telescope coc workspace_diagnostics<cr>", { silent = true })
   vim.keymap.set("n", "<leader>dr", ":Telescope coc references<cr>", { silent = true })

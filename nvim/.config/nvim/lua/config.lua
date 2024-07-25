@@ -127,7 +127,7 @@ vim.opt.shortmess:append("c")
 
 ---- AI Assistants
 
-vim.keymap.set("n", "<leader>m", function()
+vim.keymap.set("n", "<leader>lf", function()
   require("commands.llm").fill_holes()
 end, {
   desc = "LLM fill-in",

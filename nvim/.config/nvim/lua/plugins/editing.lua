@@ -62,7 +62,7 @@ return {
 
   -- Show popup with key combo info
   -- Disabled because it's causing problems
-  -- { "folke/which-key.nvim", opts = {} },
+  { "folke/which-key.nvim", opts = {} },
 
   -- Comment toggling
   {
