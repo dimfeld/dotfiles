@@ -24,7 +24,9 @@ return {
     end,
   },
   {
-    "Exafunction/codeium.vim",
+    -- "Exafunction/codeium.vim",
+    dir = "~/Documents/projects/codeium.vim",
+    name = "codeium.vim",
     branch = "main",
     cond = completion_assistant == "codeium",
     init = function()

@@ -82,37 +82,55 @@ function configure_telescope()
       find_command = ripgrep_find({ "--files" }),
     })
   end, { desc = "Find files from Git Root" })
-  vim.keymap.set("n", "<leader>qf", builtin.quickfix, {})
-  vim.keymap.set("n", "<leader>qh", builtin.quickfixhistory, {})
-  vim.keymap.set("n", "<leader>L", builtin.loclist, {})
-  vim.keymap.set("n", "<leader>j", builtin.jumplist, {})
-  vim.keymap.set("n", "<leader>:", builtin.command_history, {})
+  vim.keymap.set("n", "<leader>qf", builtin.quickfix, { desc = "Search QuickFix Buffer" })
+  vim.keymap.set("n", "<leader>qh", builtin.quickfixhistory, { desc = "Search QuickFix History" })
+  vim.keymap.set("n", "<leader>L", builtin.loclist, { desc = "Search Location List" })
+  vim.keymap.set("n", "<leader>j", builtin.jumplist, { desc = "Search Jump List" })
+  vim.keymap.set("n", "<leader>:", builtin.command_history, { desc = "Search Command History" })
   vim.keymap.set("n", "<leader>g", function()
     builtin.live_grep({ cwd = getWorkspacePath(), additional_args = ripgrep_extra_options() })
-  end, {})
-  vim.keymap.set("n", "<leader>h", builtin.search_history, {})
+  end, { desc = "Grep in Workspace" })
+  vim.keymap.set("n", "<leader>h", builtin.search_history, { desc = "Search History" })
   vim.keymap.set("n", "<leader>G", function()
     builtin.live_grep({ search_dirs = { githelpers.git_repo_toplevel() } })
-  end, {})
-  vim.keymap.set("n", "<leader>s", builtin.grep_string, {})
+  end, { desc = "Grep in Git Repo" })
+  vim.keymap.set("n", "<leader>s", builtin.grep_string, { desc = "Grep for current string" })
   vim.keymap.set("n", "<leader>S", function()
     builtin.grep_string({ search_dirs = { githelpers.git_repo_toplevel() } })
-  end, {})
+  end, { desc = "Grep for current string in Git Repo" })
   vim.keymap.set("n", "<leader>n", function()
     extensions.file_browser.file_browser({ cwd = require("telescope.utils").buffer_dir() })
-  end, {})
-  vim.keymap.set("n", "<leader>v", builtin.treesitter, {})
-  vim.keymap.set("n", "<leader>r", builtin.resume, {})
-  vim.keymap.set("n", "<leader>dl", ":Telescope coc document_diagnostics<cr>", { silent = true })
-  vim.keymap.set("n", "<leader>wl", ":Telescope coc workspace_diagnostics<cr>", { silent = true })
-  vim.keymap.set("n", "<leader>dr", ":Telescope coc references<cr>", { silent = true })
-  vim.keymap.set("n", "<leader>ds", ":Telescope coc document_symbols<cr>", { silent = true })
-  vim.keymap.set("n", "<leader>ws", ":Telescope coc workspace_symbols<cr>", { silent = true })
+  end, { desc = "File Browser" })
+  vim.keymap.set("n", "<leader>v", builtin.treesitter, { desc = "Show Treesitter Symbols" })
+  vim.keymap.set("n", "<leader>r", builtin.resume, { desc = "Restore last Telescope Picker" })
+  vim.keymap.set(
+    "n",
+    "<leader>dl",
+    ":Telescope coc document_diagnostics<cr>",
+    { silent = true, desc = "Show Document Diagnostics" }
+  )
+  vim.keymap.set(
+    "n",
+    "<leader>wl",
+    ":Telescope coc workspace_diagnostics<cr>",
+    { silent = true, desc = "Show Workspace Diagnostics" }
+  )
+  vim.keymap.set("n", "<leader>dr", ":Telescope coc references<cr>", { silent = true, desc = "Show References" })
+  vim.keymap.set(
+    "n",
+    "<leader>ds",
+    ":Telescope coc document_symbols<cr>",
+    { silent = true, desc = "Show Document Symbols" }
+  )
+  vim.keymap.set(
+    "n",
+    "<leader>ws",
+    ":Telescope coc workspace_symbols<cr>",
+    { silent = true, desc = "Show Workspace Symbols" }
+  )
   vim.keymap.set("n", "<leader>U", function()
     require("telescope").extensions.undo.undo()
   end, { silent = true, desc = "Show Undo History" })
-
-  vim.api.nvim_create_user_command("Debug", extensions.dap.commands, {})
 end
 
 return {

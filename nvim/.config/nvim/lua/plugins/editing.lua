@@ -5,6 +5,7 @@ return {
   -- Better increment/decrement
   {
     "monaqa/dial.nvim",
+    event = "VeryLazy",
     config = function()
       local dial = require("dial.map")
       vim.keymap.set("n", "<M-i>", dial.inc_normal(), { desc = "Increment number" })
@@ -62,7 +63,20 @@ return {
 
   -- Show popup with key combo info
   -- Disabled because it's causing problems
-  { "folke/which-key.nvim", opts = {} },
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts = {},
+    keys = {
+      {
+        "<leader>wk",
+        function()
+          require("which-key").show()
+        end,
+        desc = "Show Keymaps (which-key)",
+      },
+    },
+  },
 
   -- Comment toggling
   {

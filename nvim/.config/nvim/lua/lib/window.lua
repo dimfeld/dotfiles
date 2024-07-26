@@ -21,4 +21,26 @@ M.is_coc_diagnostic_window = function(win_id)
   return false
 end
 
+M.get_cursor_range = function()
+  local start_pos = vim.fn.getpos("v")
+  local end_pos = vim.fn.getpos(".")
+
+  local mode = vim.fn.mode()
+  local visual = mode == "v" or mode == "V" or mode == "<C-V>"
+
+  return {
+    visual = visual,
+    start = {
+      line = start_pos[2],
+      col = start_pos[3],
+      pos = start_pos,
+    },
+    stop = {
+      line = end_pos[2],
+      col = end_pos[3],
+      pos = end_pos,
+    },
+  }
+end
+
 return M

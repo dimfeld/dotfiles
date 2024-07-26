@@ -40,6 +40,7 @@ return {
 
   {
     "nvim-lualine/lualine.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {
       options = {
         icons_enabled = true,
@@ -65,9 +66,15 @@ return {
           },
         },
         lualine_c = { status_filename },
-        lualine_x = { "filetype" },
+        lualine_x = {
+          {
+            require("noice").api.status.message.get_hl,
+            cond = require("noice").api.status.message.has,
+          },
+          "filetype",
+        },
         lualine_y = { status_diagnostics, lualine_get_words },
-        lualine_z = { "progress", "location" },
+        lualine_z = { "searchcount", "progress", "location" },
       },
       inactive_sections = {
         lualine_a = {},
@@ -94,7 +101,8 @@ return {
     },
     opts = {
       stages = "static",
-      timeout = 3000,
+      top_down = false,
+      timeout = 5000,
       max_height = function()
         return math.floor(vim.o.lines * 0.75)
       end,
@@ -116,6 +124,26 @@ return {
     "folke/noice.nvim",
     event = "VeryLazy",
     opts = {
+      routes = {
+        -- Hide messages when search fails to find a result
+        {
+          opts = { skip = true },
+          filter = {
+            any = {
+              {
+                error = true,
+                find = "E486: Pattern not found",
+              },
+              {
+                event = "msg_show",
+                cond = function(msg)
+                  return msg:content():sub(1, 1) == "/"
+                end,
+              },
+            },
+          },
+        },
+      },
       lsp = {
         -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
         override = {
@@ -124,14 +152,39 @@ return {
           ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
         },
       },
+      messages = {
+        view_search = false,
+      },
       cmdline = {
-        view = "cmdline",
+        view = "cmdline_popup",
       },
       views = {
         cmdline = {
           win_options = {
             winblend = 0,
           },
+        },
+        cmdline_popup = {
+          position = {
+            row = "95%",
+            col = "50%",
+          },
+          size = {
+            width = "90%",
+          },
+          win_options = {
+            winblend = 0,
+          },
+        },
+        cmdline_popupmenu = {
+          position = {
+            row = "90%",
+            col = "50%",
+          },
+          size = {
+            width = "90%",
+          },
+          anchor = "NW",
         },
       },
       -- you can enable a preset for easier configuration

@@ -1,5 +1,6 @@
 local M = {}
 
+local window = require("lib.window")
 local telescope = require("telescope")
 local builtin = require("telescope.builtin")
 local pickers = require("telescope.pickers")
@@ -8,6 +9,10 @@ local conf = require("telescope.config").values
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 local entry_display = require("telescope.pickers.entry_display")
+
+-- Information about the current cursor position, useful when running a command that needs to access the visual
+-- selection since opening the picker will lose it.
+M.current_cursor = nil
 
 M.commands = {
   { name = "Organize imports", category = "LS", coc_cmd = "editor.action.organizeImport" },
@@ -42,7 +47,11 @@ M.commands = {
     category = "Editing",
     filetype = "rust",
     action = function()
-      vim.cmd([['<,'>s/^/pub/]])
+      local saved_hl = vim.fn.getreg("/")
+      local cmd = M.current_cursor.start.line .. "," .. M.current_cursor.stop.line .. [[s/\S/pub &/e]]
+      vim.cmd(cmd)
+      -- The `s` command updaes the highlight, so restore whatever was there before.
+      vim.fn.setreg("/", saved_hl)
     end,
   },
   {
@@ -108,6 +117,9 @@ vim.schedule(function()
 end)
 
 function showCommonCommandsPicker(opts)
+  -- Grab the current cursor here since we'll lose any visual selection once the picker opens.
+  M.current_cursor = window.get_cursor_range()
+
   opts = opts or {}
 
   local filetype = vim.bo.filetype
@@ -209,8 +221,8 @@ function showCommonCommandsPicker(opts)
 end
 
 M.setup = function()
-  vim.keymap.set("n", "<leader>k", showCommonCommandsPicker)
-  vim.keymap.set("v", "<leader>k", showCommonCommandsPicker)
+  vim.keymap.set("n", "<leader>k", showCommonCommandsPicker, { desc = "Open command bar" })
+  vim.keymap.set("v", "<leader>k", showCommonCommandsPicker, { desc = "Open command bar" })
 end
 
 return M

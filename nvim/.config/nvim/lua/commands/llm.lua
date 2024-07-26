@@ -1,4 +1,5 @@
 local spinner = require("lib.spinner")
+local window = require("lib.window")
 
 -- Configuration options
 local config = {
@@ -8,59 +9,23 @@ local config = {
 
 local M = {}
 
--- Function to save visible lines
-local function save_visible_lines(dest)
-  local visible_lines = {}
-  local lnum = 1
-  local last_line = vim.fn.line("$")
-
-  local cursor_pos = vim.api.nvim_win_get_cursor(0)
-  local cursor_row = cursor_pos[1]
-  local visible_cursor_row
-
-  while lnum <= last_line do
-    if vim.fn.foldclosed(lnum) == -1 then
-      table.insert(visible_lines, vim.fn.getline(lnum))
-      lnum = lnum + 1
-    else
-      table.insert(visible_lines, vim.fn.getline(vim.fn.foldclosed(lnum)))
-      table.insert(visible_lines, "...")
-      local end_line = vim.fn.foldclosedend(lnum)
-      table.insert(visible_lines, vim.fn.getline(end_line))
-      lnum = end_line + 1
-    end
-
-    if lnum == cursor_row then
-      visible_cursor_row = #visible_lines
-    end
-  end
-
-  local ok, err = pcall(vim.fn.writefile, visible_lines, dest)
-  if not ok then
-    error("Failed to write visible lines: " .. err)
-  end
-
-  return visible_cursor_row
-end
-
 M.setup = function(opts)
   config = vim.tbl_deep_extend("force", config, opts or {})
 end
 
--- Main function to fill holes
+-- fill a hole in a file
 M.fill_holes = function(opts)
   opts = opts or {}
   local model = opts.model or config.model
 
-  local tmp_file
-  local fill_tmp = vim.fn.tempname()
+  local tmp_file = nil
+  local spinner_idx = nil
 
-  local function cleanup(preserve)
+  local function cleanup(error)
     if tmp_file then
       os.remove(tmp_file)
     end
-    os.remove(fill_tmp)
-    spinner.stop(preserve)
+    spinner.stop(spinner_idx, error, vim.log.levels.ERROR)
   end
 
   local ok, err = pcall(function()
@@ -76,39 +41,41 @@ M.fill_holes = function(opts)
       source_file = vim.fn.expand("%:p")
     end
 
-    local visible_cursor_row = save_visible_lines(fill_tmp)
+    local cursor = window.get_cursor_range()
+    local cursor_line = cursor.start.line - 1
+    local cursor_col = cursor.start.col - 1
 
-    local cursor_pos = vim.api.nvim_win_get_cursor(0)
-    local cursor_line = cursor_pos[1] - 1
-    local cursor_col = cursor_pos[2]
+    spinner_idx = spinner.start("LLM", "Talking to model...")
 
-    spinner.start("Talking to LLM...")
-
-    -- Run holefill and replace buffer with the result
-    vim.system({
+    local cmd = {
       config.holefill_cmd,
       "--file",
       source_file,
-      "--mini",
-      fill_tmp,
       "--model",
       model,
-      "--mini-cursor",
-      tostring(visible_cursor_row),
       "--cursor",
-      tostring(cursor_line) .. ":" .. tostring(cursor_col),
-    }, {
+      tostring(cursor.start.line - 1) .. ":" .. tostring(cursor.start.col - 1),
+    }
+
+    if cursor.visual then
+      table.insert(cmd, "--cursor-end")
+      table.insert(cmd, tostring(cursor.stop.line - 1) .. ":" .. tostring(cursor.stop.col - 1))
+    end
+
+    -- Run holefill and replace buffer with the result
+    vim.system(cmd, {
       text = true,
     }, function(result)
       local error = result.code ~= 0 or result.signal ~= 0
-      cleanup(error)
       if error then
-        print("Error executing holefill. Exit code: " .. result.code or result.signal)
+        cleanup("Error executing holefill. Exit code: " .. result.code or result.signal)
         if result.stderr then
           print("Error output:")
           print(result.stderr)
         end
         return
+      else
+        cleanup()
       end
 
       vim.schedule(function()
@@ -119,7 +86,7 @@ M.fill_holes = function(opts)
   end)
 
   if not ok then
-    cleanup(true)
+    cleanup()
     print("An error occurred: " .. tostring(err))
   end
 end
