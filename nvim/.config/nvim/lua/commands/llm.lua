@@ -13,6 +13,10 @@ M.setup = function(opts)
   config = vim.tbl_deep_extend("force", config, opts or {})
 end
 
+M.set_default_model = function(model)
+  config.model = model
+end
+
 -- fill a hole in a file
 M.fill_holes = function(opts)
   opts = opts or {}
@@ -56,6 +60,11 @@ M.fill_holes = function(opts)
       "--cursor",
       tostring(cursor.start.line - 1) .. ":" .. tostring(cursor.start.col - 1),
     }
+
+    if opts.operation then
+      table.insert(cmd, "--operation")
+      table.insert(cmd, opts.operation)
+    end
 
     if cursor.visual then
       table.insert(cmd, "--cursor-end")

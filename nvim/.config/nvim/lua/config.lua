@@ -117,8 +117,8 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.wrap = true
     vim.opt_local.lbr = true
     vim.opt_local.foldlevel = 99
-    vim.keymap.set("n", "<Down>", "gj", { buffer = true })
-    vim.keymap.set("n", "<Up>", "gk", { buffer = true })
+    vim.keymap.set("n", "<Down>", "gj", { buffer = true, desc = "Next line with wrapping" })
+    vim.keymap.set("n", "<Up>", "gk", { buffer = true, desc = "Previous line with wrapping" })
   end,
 })
 
@@ -133,10 +133,18 @@ end, {
   desc = "LLM fill-in",
 })
 
-vim.keymap.set("n", "<leader>la", function()
-  -- TODO
-  -- require("commands.llm").ask()
-  vim.notify("Unimplemented")
+vim.keymap.set({ "n", "v" }, "<leader>la", function()
+  vim.ui.input({
+    prompt = "What operation should be done?",
+  }, function(operation)
+    if not operation then
+      return
+    end
+
+    require("commands.llm").fill_holes({
+      operation = operation,
+    })
+  end)
 end, {
   desc = "LLM ask",
 })

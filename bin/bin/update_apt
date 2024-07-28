@@ -21,4 +21,4 @@ elif [ -f "$(which apt)" ]; then
   sudo apt autoremove
 fi
 
-nvim "+lua require('lazy').sync()" +CocUpdate
+nvim +CocUpdate "+lua require('lazy').sync()"

@@ -96,6 +96,11 @@ function configure_telescope()
       return cwd
     end
 
+    -- Special case for config dir :)
+    if buffer_dir:find(".config/nvim") then
+      return "~/.config/nvim"
+    end
+
     -- Finally just fall back and use the buffer dir
     return buffer_dir
   end

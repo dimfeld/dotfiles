@@ -98,6 +98,22 @@ M.commands = {
       require("commands.llm").fill_holes()
     end,
   },
+
+  {
+    name = "Set Default Model",
+    category = "AI",
+    action = function()
+      vim.ui.input({
+        prompt = "Model: ",
+      }, function(model)
+        if not model then
+          return
+        end
+
+        require("commands.llm").set_default_model(model)
+      end)
+    end,
+  },
 }
 
 M.add_commands = function(commands)

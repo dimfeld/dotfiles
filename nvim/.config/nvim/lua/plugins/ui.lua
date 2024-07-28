@@ -66,13 +66,7 @@ return {
           },
         },
         lualine_c = { status_filename },
-        lualine_x = {
-          {
-            require("noice").api.status.message.get_hl,
-            cond = require("noice").api.status.message.has,
-          },
-          "filetype",
-        },
+        lualine_x = { "filetype" },
         lualine_y = { status_diagnostics, lualine_get_words },
         lualine_z = { "searchcount", "progress", "location" },
       },

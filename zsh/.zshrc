@@ -1,5 +1,5 @@
 #set -x
-#zmodload zsh/zprof
+zmodload zsh/zprof
 export NVM_LAZY_LOAD=true
 source ~/.zplug/init.zsh
 
@@ -244,3 +244,4 @@ setopt auto_pushd
 # Better autocompletion
 autoload -Uz compinit && compinit
 
+# zprof
