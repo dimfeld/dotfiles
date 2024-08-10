@@ -1,4 +1,4 @@
-alias vi='/opt/homebrew/bin/nvim'
+alias vi='nvim'
 alias mv='mv -iv'
 alias rm='rm -iv'
 alias cp='cp -iv'

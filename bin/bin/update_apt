@@ -14,9 +14,11 @@ if [ -f "$(which rye)" ]; then
   rye self update
 fi
 
-if [ "$(uname)" == "Darwin" ]; then
+if [ -f "$(which brew)" ]; then
   brew upgrade
-elif [ -f "$(which apt)" ]; then
+fi
+
+if [ -f "$(which apt)" ]; then
   sudo apt update && apt list --upgradable && sudo apt dist-upgrade
   sudo apt autoremove
 fi
