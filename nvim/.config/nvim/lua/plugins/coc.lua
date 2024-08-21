@@ -165,6 +165,7 @@ function setup_coc()
     "coc-go",
     "coc-html",
     "coc-json",
+    "coc-lua",
     "coc-pyright",
     "coc-rust-analyzer",
     "coc-svelte",

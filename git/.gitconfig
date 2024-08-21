@@ -47,3 +47,5 @@
 [diff "lockb"]
 	textconv = bun
 	binary = true
+[rebase]
+	updateRefs = true

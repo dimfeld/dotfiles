@@ -93,7 +93,8 @@
     ".git",
     ".hg",
     "package.json",
-    "Cargo.toml"
+    "Cargo.toml",
+    ".luarc.json"
   ],
   "workspace.ignoredFolders": [
     "$HOME",

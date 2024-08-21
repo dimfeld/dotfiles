@@ -28,6 +28,12 @@ M.get_cursor_range = function()
   local mode = vim.fn.mode()
   local visual = mode == "v" or mode == "V" or mode == "<C-V>"
 
+  -- In visual line mode, we don't care about which column the actual cursor is in
+  if mode == "V" then
+    start_pos[3] = 1
+    end_pos[3] = vim.v.maxcol
+  end
+
   return {
     visual = visual,
     start = {

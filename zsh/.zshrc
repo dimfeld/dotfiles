@@ -1,5 +1,5 @@
 #set -x
-zmodload zsh/zprof
+# zmodload zsh/zprof
 export NVM_LAZY_LOAD=true
 source ~/.zplug/init.zsh
 
@@ -124,6 +124,63 @@ inpane() {
 cdgr() {
   cd `gitroot`
 }
+
+function aws_login() {
+    local profile
+
+    if [[ $# -eq 1 ]]; then
+        profile="$1"
+    else
+        if ! command -v fzf &> /dev/null; then
+            echo "fzf is not installed. Please install it or provide a profile name as an argument."
+            return 1
+        fi
+
+        profiles=$(aws configure list-profiles)
+        if [[ -z "$profiles" ]]; then
+            echo "No AWS profiles found."
+            return 1
+        fi
+
+        profile=$(echo "$profiles" | fzf --prompt="Select AWS profile: ")
+        if [[ -z "$profile" ]]; then
+            echo "No profile selected."
+            return 1
+        fi
+    fi
+
+    echo "Logging in with profile: $profile"
+    aws sso login --profile "$profile"
+    export AWS_PROFILE="$profile"
+    echo "AWS_PROFILE has been set to $profile"
+}
+
+
+# Activate a virtualenv if one is present
+function activate_venv() {
+    local current_dir="$PWD"
+    local venv_dir=""
+
+    while [[ "$current_dir" != "/" ]]; do
+        if [[ -d "$current_dir/.venv" ]]; then
+            venv_dir="$current_dir/.venv"
+            break
+        fi
+        current_dir="$(dirname "$current_dir")"
+    done
+
+    if [[ -n "$venv_dir" ]]; then
+        if [[ -f "$venv_dir/bin/activate" ]]; then
+            echo "Activating virtual environment in $venv_dir"
+            source "$venv_dir/bin/activate"
+        else
+            echo "Found .venv directory, but activate script is missing."
+        fi
+    else
+        echo "No .venv directory found in current directory or its ancestors."
+    fi
+}
+
 
 function delete-branches() {
   git branch |

@@ -60,7 +60,7 @@ local command_history = function(opts)
     :find()
 end
 
-function configure_telescope()
+local configure_telescope = function()
   local telescope = require("telescope")
   local builtin = require("telescope.builtin")
   local extensions = telescope.extensions
@@ -110,12 +110,15 @@ function configure_telescope()
   end
 
   useGitIgnore = true
-  function ripgrep_extra_options()
-    local opts = {
-      "--hidden",
-      "--glob",
-      "!**/.git/*",
-    }
+  function ripgrep_extra_options(dir)
+    local opts = {}
+    if dir and dir:find(".config/nvim") then
+      opts = {
+        "--hidden",
+        "--glob",
+        "!**/.git/*",
+      }
+    end
 
     if not useGitIgnore then
       table.insert(opts, "-u")
@@ -124,14 +127,14 @@ function configure_telescope()
     return opts
   end
 
-  function ripgrep_find(opts)
+  function ripgrep_find(dir, opts)
     opts = opts or { "--files" }
 
     local rg_command = {
       "rg",
     }
 
-    hidden_opts = ripgrep_extra_options()
+    hidden_opts = ripgrep_extra_options(dir)
     for i = 1, #hidden_opts do
       table.insert(rg_command, hidden_opts[i])
     end
@@ -155,21 +158,24 @@ function configure_telescope()
     extensions.smart_open.smart_open({ filename_first = false })
   end, { desc = "Smart Open" })
   vim.keymap.set("n", "<leader>t", function()
+    local cwd = chooseSearchDir()
     builtin.find_files({
-      cwd = chooseSearchDir(),
-      find_command = ripgrep_find(),
+      cwd = cwd,
+      find_command = ripgrep_find(cwd),
     })
   end, { desc = "Find files from Workspace Root" })
   vim.keymap.set("n", "<leader>N", function()
+    local cwd = vim.fn.expand("%:p:h")
     builtin.find_files({
-      cwd = vim.fn.expand("%:p:h"),
-      find_command = ripgrep_find(),
+      cwd = cwd,
+      find_command = ripgrep_find(cwd),
     })
   end, { desc = "Find files from CWD" })
   vim.keymap.set("n", "<leader>T", function()
+    local cwd = githelpers.git_repo_toplevel()
     builtin.find_files({
-      cwd = githelpers.git_repo_toplevel(),
-      find_command = ripgrep_find(),
+      cwd = cwd,
+      find_command = ripgrep_find(cwd),
     })
   end, { desc = "Find files from Git Root" })
   vim.keymap.set("n", "<leader>qf", builtin.quickfix, { desc = "Search QuickFix Buffer" })
@@ -177,7 +183,8 @@ function configure_telescope()
   vim.keymap.set("n", "<leader>L", builtin.loclist, { desc = "Search Location List" })
   vim.keymap.set("n", "<leader>j", builtin.jumplist, { desc = "Search Jump List" })
   vim.keymap.set("n", "<leader>g", function()
-    builtin.live_grep({ cwd = chooseSearchDir(), additional_args = ripgrep_extra_options() })
+    local cwd = chooseSearchDir()
+    builtin.live_grep({ cwd = cwd, additional_args = ripgrep_extra_options(cwd) })
   end, { desc = "Grep in Workspace" })
   vim.keymap.set("n", "<leader>hs", builtin.search_history, { desc = "Search History" })
   vim.keymap.set("n", "<leader>G", function()

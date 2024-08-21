@@ -318,19 +318,19 @@ let completionMatch = answer.match(/<completion>([\s\S]*?)<\/completion>/);
 if (completionMatch) {
   let insertText = completionMatch[1];
 
-  let beforeLines = queryLines.slice(0, cursorLine);
-  let afterLines = queryLines.slice(cursorEndLine + 1);
+  let beforeLines = fileLines.slice(0, cursorLine);
+  let afterLines = fileLines.slice(cursorEndLine + 1);
 
   if(updateRegion) {
-    let beginLine = queryLines[cursorLine].slice(0, cursorCol);
-    let endLine = queryLines[cursorEndLine].slice(cursorEndCol);
+    let beginLine = fileLines[cursorLine].slice(0, cursorCol);
+    let endLine = fileLines[cursorEndLine].slice(cursorEndCol);
 
     // insert_text may be multiple lines but that's ok, we can just have the newlines on a single line.
     let outputLine = beginLine + insertText + endLine;
     let output = [...beforeLines, outputLine, ...afterLines].join('\n');
     console.log(output)
   } else {
-    let currentLine = queryLines[cursorLine];
+    let currentLine = fileLines[cursorLine];
     let outputLine = currentLine.slice(0, cursorCol) + insertText + currentLine.slice(cursorCol);
     let output = [...beforeLines, outputLine, ...afterLines].join('\n');
     console.log(output)

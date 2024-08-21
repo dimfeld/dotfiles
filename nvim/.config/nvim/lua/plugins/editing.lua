@@ -100,7 +100,10 @@ return {
     },
   },
   "tpope/vim-commentary",
-  "numToStr/Comment.nvim",
+  {
+    "numToStr/Comment.nvim",
+    opts = {},
+  },
 
   -- Extra commands for working with quickfix buffer entries.
   "romainl/vim-qf",

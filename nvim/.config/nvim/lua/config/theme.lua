@@ -58,9 +58,12 @@ vim.api.nvim_create_autocmd("BufEnter", {
 
 vim.api.nvim_create_autocmd("FileType", {
   group = highlightGroup,
-  pattern = { "vim", "lua" },
   callback = function()
-    vim.treesitter.start()
+    local ft = vim.bo.filetype
+    local lang = vim.treesitter.language.get_lang(ft)
+    if lang then
+      vim.treesitter.start()
+    end
   end,
 })
 

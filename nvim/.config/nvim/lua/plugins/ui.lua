@@ -94,9 +94,43 @@ return {
       },
     },
     opts = {
-      stages = "static",
+      -- This is the code for the "static" stage, modified to move the windows up a single row
+      -- to not cover the status line
+      stages = {
+        function(state)
+          local stages_util = require("notify.stages.util")
+          local next_height = state.message.height + 2
+          local next_row = stages_util.available_slot(state.open_windows, next_height, stages_util.DIRECTION.BOTTOM_UP)
+          if not next_row then
+            return nil
+          end
+
+          -- Modified to move windows up a row to not cover status line
+          if next_row + next_height >= vim.o.lines then
+            next_row = next_row - 1
+          end
+
+          return {
+            relative = "editor",
+            anchor = "NE",
+            width = state.message.width,
+            height = state.message.height,
+            col = vim.opt.columns:get(),
+            row = next_row,
+            border = "rounded",
+            style = "minimal",
+          }
+        end,
+        function()
+          return {
+            col = vim.opt.columns:get(),
+            time = true,
+          }
+        end,
+      },
       top_down = false,
       timeout = 5000,
+      render = "wrapped-compact",
       max_height = function()
         return math.floor(vim.o.lines * 0.75)
       end,

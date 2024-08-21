@@ -92,6 +92,14 @@ M.commands = {
   { name = "Aider Background", category = "AI", action = AiderBackground },
 
   {
+    name = "Codeium Chat",
+    category = "AI",
+    action = function()
+      vim.fn["codeium#Chat"]()
+    end,
+  },
+
+  {
     name = "Call LLM",
     category = "AI",
     action = function()

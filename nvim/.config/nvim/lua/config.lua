@@ -5,7 +5,7 @@ local format_util = require("formatter.util")
 
 vim.o.mousemodel = "extend"
 
-function reload_nvim_conf()
+local reload_nvim_conf = function()
   for name, _ in pairs(package.loaded) do
     if
       name:match("^core")
