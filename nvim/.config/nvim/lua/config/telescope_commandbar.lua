@@ -100,10 +100,22 @@ M.commands = {
   },
 
   {
-    name = "Call LLM",
+    name = "Call LLM without Operation",
     category = "AI",
     action = function()
-      require("commands.llm").fill_holes()
+      require("commands.llm").fill_holes({
+        cursor = M.current_cursor,
+      })
+    end,
+  },
+
+  {
+    name = "Ask LLM",
+    category = "AI",
+    action = function()
+      require("commands.llm").ask_and_fill_holes({
+        cursor = M.current_cursor,
+      })
     end,
   },
 

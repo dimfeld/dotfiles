@@ -1,3 +1,4 @@
+local buffer_manager = require("lib.buffer_manager")
 local spinner = require("lib.spinner")
 local window = require("lib.window")
 
@@ -5,12 +6,17 @@ local window = require("lib.window")
 local config = {
   holefill_cmd = "holefill.mjs",
   model = "anthropic/claude-3-5-sonnet-20240620",
+  autoattach = true,
 }
 
 local M = {}
 
 M.setup = function(opts)
   config = vim.tbl_deep_extend("force", config, opts or {})
+
+  M.context_buffers = buffer_manager.create_buffer_manager({
+    autoattach = config.autoattach,
+  })
 end
 
 M.set_default_model = function(model)
@@ -21,6 +27,7 @@ end
 M.fill_holes = function(opts)
   opts = opts or {}
   local model = opts.model or config.model
+  local cursor = opts.cursor
 
   local tmp_file = nil
   local spinner_idx = nil
@@ -45,9 +52,7 @@ M.fill_holes = function(opts)
       source_file = vim.fn.expand("%:p")
     end
 
-    local cursor = window.get_cursor_range()
-    local cursor_line = cursor.start.line - 1
-    local cursor_col = cursor.start.col - 1
+    cursor = cursor or window.get_cursor_range()
 
     spinner_idx = spinner.start("LLM", "Talking to model...")
 
@@ -69,6 +74,15 @@ M.fill_holes = function(opts)
     if cursor.visual then
       table.insert(cmd, "--cursor-end")
       table.insert(cmd, tostring(cursor.stop.line - 1) .. ":" .. tostring(cursor.stop.col - 1))
+    end
+
+    local current_workspace = vim.fn.CocAction("currentWorkspacePath") or vim.fn.getcwd()
+    for _, file in M.context_buffers.buffer_filenames() do
+      -- Only include the file if the path is inside current_workspace
+      if string.find(file, current_workspace) then
+        table.insert(cmd, "--context")
+        table.insert(cmd, file)
+      end
     end
 
     -- Run holefill and replace buffer with the result
@@ -98,6 +112,21 @@ M.fill_holes = function(opts)
     cleanup()
     print("An error occurred: " .. tostring(err))
   end
+end
+
+M.ask_and_fill_holes = function(cursor)
+  vim.ui.input({
+    prompt = "What operation should be done?",
+  }, function(operation)
+    if not operation then
+      return
+    end
+
+    require("commands.llm").fill_holes({
+      operation = operation,
+      cursor = cursor,
+    })
+  end)
 end
 
 return M

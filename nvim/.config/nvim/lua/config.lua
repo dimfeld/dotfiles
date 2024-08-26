@@ -134,17 +134,7 @@ end, {
 })
 
 vim.keymap.set({ "n", "v" }, "<leader>la", function()
-  vim.ui.input({
-    prompt = "What operation should be done?",
-  }, function(operation)
-    if not operation then
-      return
-    end
-
-    require("commands.llm").fill_holes({
-      operation = operation,
-    })
-  end)
+  require("commands.llm").ask_and_fill_holes()
 end, {
   desc = "LLM ask",
 })
