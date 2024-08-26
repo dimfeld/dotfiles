@@ -79,7 +79,7 @@ M.fill_holes = function(opts)
     local current_workspace = vim.fn.CocAction("currentWorkspacePath") or vim.fn.getcwd()
     for _, file in M.context_buffers.buffer_filenames() do
       -- Only include the file if the path is inside current_workspace
-      if string.find(file, current_workspace) then
+      if file ~= source_file and string.find(file, current_workspace) then
         table.insert(cmd, "--context")
         table.insert(cmd, file)
       end
@@ -127,6 +127,54 @@ M.ask_and_fill_holes = function(cursor)
       cursor = cursor,
     })
   end)
+end
+
+M.prepare_context = function()
+  -- Create a new buffer
+  local new_buf = vim.api.nvim_create_buf(false, true)
+
+  -- Table to store the lines we'll add to the new buffer
+  local lines = {}
+
+  local current_workspace = vim.fn.CocAction("currentWorkspacePath") or vim.fn.getcwd()
+
+  -- Iterate through the provided buffer numbers
+  for _, buf_num in ipairs(M.context_buffers.buffers) do
+    -- Get the buffer name (filename)
+    local buf_name = vim.api.nvim_buf_get_name(buf_num)
+
+    local start = string.find(buf_name, current_workspace, 1, true)
+    if start then
+      buf_name = string.sub(buf_name, #current_workspace + 2)
+
+      -- Add a header with the buffer name
+      table.insert(lines, string.rep("-", 10))
+      table.insert(lines, "File: " .. buf_name)
+      table.insert(lines, string.rep("-", 10))
+      table.insert(lines, "")
+
+      -- Get the buffer contents
+      local buf_lines = vim.api.nvim_buf_get_lines(buf_num, 0, -1, false)
+
+      -- Add the buffer contents to our lines table
+      for _, line in ipairs(buf_lines) do
+        table.insert(lines, line)
+      end
+
+      table.insert(lines, "")
+    end
+  end
+
+  -- Set the lines in the new buffer
+  vim.api.nvim_buf_set_lines(new_buf, 0, -1, false, lines)
+
+  -- Open the new buffer in a new window
+  local content = table.concat(lines, "\n")
+  vim.fn.setreg("+", content)
+  vim.api.nvim_win_set_buf(0, new_buf)
+
+  -- Return the new buffer number
+  return new_buf
 end
 
 return M

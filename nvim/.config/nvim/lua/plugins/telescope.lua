@@ -68,7 +68,7 @@ local configure_telescope = function()
   local githelpers = require("lib.git")
   local starts_with = require("lib.text").starts_with
 
-  function getWorkspacePath()
+  local getWorkspacePath = function()
     vim.wait(2000, function()
       return vim.g.coc_service_initialized == 1
     end, 50)
@@ -76,7 +76,7 @@ local configure_telescope = function()
   end
 
   -- Choose the search dir based on the workspace, Git root, and how the current buffer's location compares to it
-  function chooseSearchDir()
+  local chooseSearchDir = function()
     local workspace_dir = getWorkspacePath()
     local buffer_dir = require("telescope.utils").buffer_dir()
 
@@ -97,7 +97,7 @@ local configure_telescope = function()
     end
 
     -- Special case for config dir :)
-    if buffer_dir:find(".config/nvim") then
+    if string.find(buffer_dir, ".config/nvim") then
       return "~/.config/nvim"
     end
 
@@ -105,11 +105,7 @@ local configure_telescope = function()
     return buffer_dir
   end
 
-  function in_config_dir()
-    return vim.fn.getcwd():find(".config/nvim") ~= nil
-  end
-
-  useGitIgnore = true
+  local useGitIgnore = true
   function ripgrep_extra_options(dir)
     local opts = {}
     if dir and dir:find(".config/nvim") then

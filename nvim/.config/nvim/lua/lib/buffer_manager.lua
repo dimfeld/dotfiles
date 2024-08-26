@@ -11,12 +11,24 @@ M.get_eligible_buffer_list = function()
   local buffers = vim.api.nvim_list_bufs()
   local eligible_buffers = {}
   for _, buf in ipairs(buffers) do
-    local filename = vim.api.nvim_buf_get_name(buf)
-    if filename ~= "" then
+    if M.is_buffer_eligible(buf) then
       table.insert(eligible_buffers, buf)
     end
   end
   return eligible_buffers
+end
+
+M.is_buffer_eligible = function(bufnr)
+  local filename = vim.api.nvim_buf_get_name(bufnr)
+  return filename ~= ""
+end
+
+M.is_buffer_managed = function(buffer_list, bufnr)
+  for i, value in ipairs(buffer_list) do
+    if value == bufnr then
+      return i
+    end
+  end
 end
 
 M.show_buffer_selector = function(managed_buffers)
@@ -48,14 +60,7 @@ M.show_buffer_selector = function(managed_buffers)
           local selection = action_state.get_selected_entry()
 
           local buf = selection.value
-          local index = nil
-          for i, value in ipairs(managed_buffers) do
-            if value == buf then
-              index = i
-              break
-            end
-          end
-
+          local index = M.is_buffer_managed(managed_buffers, buf)
           if index then
             table.remove(managed_buffers, index)
           else
@@ -85,7 +90,9 @@ M.create_buffer_manager = function(opts)
     vim.api.nvim_create_autocmd("BufAdd", {
       group = augroup,
       callback = function(args)
-        table.insert(managed_buffers, args.buf)
+        if M.is_buffer_eligible(args.buf) and not M.is_buffer_managed(managed_buffers, args.buf) then
+          table.insert(managed_buffers, args.buf)
+        end
       end,
     })
 
@@ -108,15 +115,32 @@ M.create_buffer_manager = function(opts)
   end
 
   return {
+    -- Show the selector dialog
     select = function()
       M.show_buffer_selector(managed_buffers)
     end,
+    -- Destroy the buffer manager and release its autocommands
     destroy = function()
       if augroup then
         vim.api.nvim_del_augroup_by_id(augroup)
       end
     end,
+    -- add a buffer to the managed buffer list
+    add = function(buf)
+      if not M.is_buffer_managed(managed_buffers, buf) then
+        table.insert(managed_buffers, buf)
+      end
+    end,
+    -- remove a buffer from the managed buffer list
+    remove = function(buf)
+      local index = M.is_buffer_managed(managed_buffers, buf)
+      if index then
+        table.remove(managed_buffers, index)
+      end
+    end,
+    -- the list of managed buffers
     buffers = managed_buffers,
+    -- the list of managed buffer filenames
     buffer_filenames = function()
       return vim.tbl_map(function(buf)
         return vim.api.nvim_buf_get_name(buf)
