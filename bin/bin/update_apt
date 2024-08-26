@@ -19,7 +19,7 @@ if [ -f "$(which brew)" ]; then
   brew upgrade
 fi
 
-if [ -f "$(which apt)" ]; then
+if [ -f "$(which apt-get)" ]; then
   sudo apt update && apt list --upgradable && sudo apt dist-upgrade
   sudo apt autoremove
 fi

@@ -155,6 +155,63 @@ function aws_login() {
     echo "AWS_PROFILE has been set to $profile"
 }
 
+aws_assume_role() {
+    local role_arn
+
+    # Check if AWS CLI is configured
+    if ! aws sts get-caller-identity &> /dev/null; then
+        echo "AWS CLI is not configured. Please run 'aws configure' or log in first."
+        return 1
+    fi
+
+    if [[ $# -eq 1 ]]; then
+        role_arn="$1"
+    else
+        if ! command -v fzf &> /dev/null; then
+            echo "fzf is not installed. Please install it or provide a role ARN as an argument."
+            return 1
+        fi
+
+        # List available roles
+        roles=$(aws iam list-roles --query 'Roles[].Arn' | jq -r '.[]')
+        if [[ -z "$roles" ]]; then
+            echo "No roles found for the current AWS profile."
+            return 1
+        fi
+
+        role_arn=$(echo "$roles" | fzf --prompt="Select AWS role to assume: ")
+        if [[ -z "$role_arn" ]]; then
+            echo "No role selected."
+            return 1
+        fi
+    fi
+
+    echo "Assuming role: $role_arn"
+
+    # Assume the selected role with credentials for 6 hours
+    credentials=$(aws sts assume-role --role-arn "$role_arn" --role-session-name "AssumedRoleSession")
+
+    if [[ $? -ne 0 ]]; then
+        echo "Failed to assume role. Make sure you have permission to assume this role."
+        return 1
+    fi
+
+    # Extract and export the temporary credentials
+    export AWS_ACCESS_KEY_ID=$(echo "$credentials" | jq -r '.Credentials.AccessKeyId')
+    export AWS_SECRET_ACCESS_KEY=$(echo "$credentials" | jq -r '.Credentials.SecretAccessKey')
+    export AWS_SESSION_TOKEN=$(echo "$credentials" | jq -r '.Credentials.SessionToken')
+
+    echo "Temporary credentials for the assumed role have been set as environment variables."
+    echo "These credentials will expire in 1 hour by default."
+}
+
+aws_clear_tokens() {
+    unset AWS_ACCESS_KEY_ID
+    unset AWS_SECRET_ACCESS_KEY
+    unset AWS_SESSION_TOKEN
+}
+
+
 
 # Activate a virtualenv if one is present
 function activate_venv() {
