@@ -11,8 +11,8 @@ if [ -f "$(which pipx)" ]; then
   pipx upgrade-all
 fi
 
-if [ -f "$(which rye)" ]; then
-  rye self update
+if [ -f "$(which uv)" ]; then
+  uv tool update --all
 fi
 
 if [ -f "$(which brew)" ]; then
