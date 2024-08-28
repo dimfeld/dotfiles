@@ -9,6 +9,15 @@ return {
 
   -- File explorer
   { "tpope/vim-vinegar", event = "VeryLazy" },
+  {
+    "tpope/vim-dotenv",
+    config = function()
+      local path = vim.fn.expand("~/.config/nvim/.env")
+      if vim.fn.filereadable(path) == 1 then
+        vim.cmd("Dotenv " .. path)
+      end
+    end,
+  },
 
   {
     "junegunn/fzf",
