@@ -41,6 +41,8 @@ return {
       vim.keymap.set({ "x", "o" }, "x", "<Plug>(leap-forward-till)", { noremap = false })
       vim.keymap.set({ "x", "o" }, "X", "<Plug>(leap-backward-till)", { noremap = false })
       vim.keymap.set({ "n", "x", "o" }, "gs", "<Plug>(leap-from-window)", { noremap = false })
+
+      vim.api.nvim_set_hl(0, "LeapLabel", { fg = "red", bg = "#222222", bold = true, nocombine = true })
     end,
   },
 
@@ -62,9 +64,10 @@ return {
   },
 
   -- Show popup with key combo info
-  -- Disabled because it's causing problems
+  -- Disabled because it's causing problems: https://github.com/folke/which-key.nvim/issues/824
   {
     "folke/which-key.nvim",
+    enabled = false,
     event = "VeryLazy",
     opts = {},
     keys = {

@@ -37,10 +37,10 @@ return {
       enable_chat = true,
     },
     config = function(_, opts)
-      local acceptCmd = "codeium#Accept()"
       local acceptKeyOpts = { silent = true, expr = true, script = true, replace_keycodes = false }
-      vim.keymap.set("i", "<C-J>", acceptCmd, acceptKeyOpts)
-      vim.keymap.set("i", "<C-]>", acceptCmd, acceptKeyOpts)
+      vim.keymap.set("i", "<C-J>", "codeium#AcceptNextLine()", acceptKeyOpts)
+      vim.keymap.set("i", "<C-]>", "codeium#Accept()", acceptKeyOpts)
+      vim.keymap.set("i", "<C-p>", vim.fn["codeium#Complete"])
     end,
   },
   {
@@ -79,7 +79,6 @@ return {
       -- add any opts here
     },
     dependencies = {
-      "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
       "stevearc/dressing.nvim",
       "nvim-lua/plenary.nvim",
       "MunifTanjim/nui.nvim",
@@ -103,10 +102,24 @@ return {
       {
         "MeanderingProgrammer/render-markdown.nvim",
         opts = {
-          file_types = { "markdown", "Avante" },
+          file_types = { "Avante" },
         },
-        ft = { "markdown", "Avante" },
+        ft = { "Avante" },
       },
     },
+  },
+  {
+    "pieces-app/plugin_neovim",
+    dependencies = {
+      "kyazdani42/nvim-web-devicons",
+      "MunifTanjim/nui.nvim",
+      "hrsh7th/nvim-cmp",
+    },
+    opts = {
+      host = "http://localhost:1000",
+    },
+    config = function(_, opts)
+      require("pieces.config").host = opts.host
+    end,
   },
 }

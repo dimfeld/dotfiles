@@ -59,18 +59,6 @@ return {
   {
     "jvirtanen/vim-hcl",
     ft = { "hcl", "terraform" },
-    init = function()
-      -- Set .tf filetype to terraform
-      augroup = vim.api.nvim_create_augroup("HCL", { clear = true })
-
-      vim.api.nvim_create_autocmd({ "BufRead", "BufNew" }, {
-        group = augroup,
-        pattern = "*.tf",
-        callback = function()
-          vim.bo.filetype = "terraform"
-        end,
-      })
-    end,
   },
 
   -- Markdown

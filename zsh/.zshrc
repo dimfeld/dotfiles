@@ -125,32 +125,58 @@ cdgr() {
   cd `gitroot`
 }
 
+function choose_aws_profile() {
+    if ! command -v fzf &> /dev/null; then
+        echo "fzf is not installed. Please install it or provide a profile name as an argument." >&2
+        return 1
+    fi
+
+    local profiles=$(aws configure list-profiles)
+    if [[ -z "$profiles" ]]; then
+        echo "No AWS profiles found." >&2
+        return 1
+    fi
+
+    local profile=$(echo "$profiles" | fzf --prompt="Select AWS profile: ")
+    if [[ -z "$profile" ]]; then
+        echo "No profile selected." >&2
+        return 1
+    fi
+
+    echo "$profile"
+}
+
 function aws_login() {
     local profile
 
     if [[ $# -eq 1 ]]; then
         profile="$1"
     else
-        if ! command -v fzf &> /dev/null; then
-            echo "fzf is not installed. Please install it or provide a profile name as an argument."
-            return 1
-        fi
-
-        profiles=$(aws configure list-profiles)
-        if [[ -z "$profiles" ]]; then
-            echo "No AWS profiles found."
-            return 1
-        fi
-
-        profile=$(echo "$profiles" | fzf --prompt="Select AWS profile: ")
-        if [[ -z "$profile" ]]; then
-            echo "No profile selected."
+        profile=$(choose_aws_profile)
+        if [[ $? -ne 0 ]]; then
             return 1
         fi
     fi
 
     echo "Logging in with profile: $profile"
     aws sso login --profile "$profile"
+    export AWS_PROFILE="$profile"
+    echo "AWS_PROFILE has been set to $profile"
+}
+
+
+function aws_set_profile() {
+    local profile
+
+    if [[ $# -eq 1 ]]; then
+        profile="$1"
+    else
+        profile=$(choose_aws_profile)
+        if [[ $? -ne 0 ]]; then
+            return 1
+        fi
+    fi
+
     export AWS_PROFILE="$profile"
     echo "AWS_PROFILE has been set to $profile"
 }

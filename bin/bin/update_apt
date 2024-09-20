@@ -3,6 +3,7 @@ set -euxo pipefail
 # Sudo command at the start so I don't have to type the password halfway through
 # later.
 sudo echo
+deactivate &> /dev/null || true
 pnpm --global update -L
 rustup update stable
 cargo install-update --all
@@ -16,7 +17,8 @@ if [ -f "$(which uv)" ]; then
 fi
 
 if [ -f "$(which brew)" ]; then
-  brew upgrade
+  # Sometimes brew returns a failure exit code when nothing actually failed
+  brew upgrade || true
 fi
 
 if [ -f "$(which apt-get)" ]; then

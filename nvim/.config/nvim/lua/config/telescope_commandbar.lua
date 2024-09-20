@@ -134,6 +134,30 @@ M.commands = {
       end)
     end,
   },
+
+  {
+    name = "Pieces Copilot",
+    category = "AI",
+    action = function()
+      vim.fn["PiecesCopilot"]()
+    end,
+  },
+
+  {
+    name = "Pieces Conversations",
+    category = "AI",
+    action = function()
+      vim.fn["PiecesConversations"]()
+    end,
+  },
+
+  {
+    name = "Pieces Snippets",
+    category = "AI",
+    action = function()
+      vim.fn["PiecesSnippets"]()
+    end,
+  },
 }
 
 M.add_commands = function(commands)

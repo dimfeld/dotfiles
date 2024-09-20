@@ -52,7 +52,9 @@ vim.api.nvim_create_autocmd("BufEnter", {
   group = highlightGroup,
   pattern = "*",
   callback = function()
-    vim.cmd("syntax sync minlines=1000")
+    if vim.bo.filetype ~= "csv" then
+      vim.cmd("syntax sync minlines=1000")
+    end
   end,
 })
 
