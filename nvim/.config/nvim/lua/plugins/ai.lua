@@ -78,6 +78,10 @@ return {
     opts = {
       -- add any opts here
     },
+    config = function(_, opts)
+      require("avante").setup(opts)
+      require("avante_lib").load()
+    end,
     dependencies = {
       "stevearc/dressing.nvim",
       "nvim-lua/plenary.nvim",

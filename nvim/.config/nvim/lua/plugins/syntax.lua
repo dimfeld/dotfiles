@@ -36,6 +36,8 @@ return {
   -- Typescript syntax highlighting
   { "HerringtonDarkholme/yats.vim", ft = { "typescript", "svelte" } },
 
+  { "Vimjas/vim-python-pep8-indent", ft = { "python" } },
+
   {
     "leafOfTree/vim-svelte-plugin",
     ft = "svelte",

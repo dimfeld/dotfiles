@@ -1,8 +1,8 @@
-function setup_arctic()
+local function setup_arctic()
   local auGroup = vim.api.nvim_create_augroup("ArcticTheme", {})
 
   vim.api.nvim_create_autocmd("ColorScheme", {
-    group = highlightGroup,
+    group = auGroup,
     pattern = "arctic",
     callback = function()
       vim.cmd([[
