@@ -110,6 +110,7 @@ return {
   },
   {
     "pieces-app/plugin_neovim",
+    enabled = false,
     dependencies = {
       "kyazdani42/nvim-web-devicons",
       "MunifTanjim/nui.nvim",
@@ -120,6 +121,30 @@ return {
     },
     config = function(_, opts)
       require("pieces.config").host = opts.host
+
+      require("config.telescope_commandbar").add_commands({
+        {
+          name = "Pieces Copilot",
+          category = "AI",
+          action = function()
+            vim.fn["PiecesCopilot"]()
+          end,
+        },
+        {
+          name = "Pieces Conversations",
+          category = "AI",
+          action = function()
+            vim.fn["PiecesConversations"]()
+          end,
+        },
+        {
+          name = "Pieces Snippets",
+          category = "AI",
+          action = function()
+            vim.fn["PiecesSnippets"]()
+          end,
+        },
+      })
     end,
   },
 }
