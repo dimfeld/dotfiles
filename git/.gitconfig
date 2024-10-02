@@ -5,7 +5,6 @@
 
 # Include local file that shoudn't be replicated between servers
 [include]
-  path = ~/.gitconfig.local
   path = ~/themes.gitconfig
 
 [core]
@@ -41,7 +40,7 @@
 	process = git-lfs filter-process
 	required = true
 [init]
-	defaultBranch = master
+	defaultBranch = main
 [merge]
 	conflictStyle = zdiff3
 [diff "lockb"]
@@ -49,3 +48,6 @@
 	binary = true
 [rebase]
 	updateRefs = true
+
+[include]
+  path = ~/.gitconfig.local
