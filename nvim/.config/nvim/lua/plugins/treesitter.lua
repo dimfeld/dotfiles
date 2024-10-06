@@ -27,6 +27,15 @@ return {
       indent = {
         enable = true,
       },
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          init_selection = "<C-f>",
+          node_incremental = "<C-f>",
+          scope_incremental = "<C-g>",
+          node_decremental = "<C-d>",
+        },
+      },
       autopairs = { enable = true },
     },
     init = function()
@@ -34,6 +43,9 @@ return {
       vim.o.foldmethod = "expr"
       vim.o.foldexpr = "nvim_treesitter#foldexpr()"
       vim.o.foldenable = false
+    end,
+    config = function(_, opts)
+      require("nvim-treesitter.configs").setup(opts)
     end,
   },
 }
