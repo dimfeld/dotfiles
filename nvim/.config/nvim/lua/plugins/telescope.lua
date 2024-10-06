@@ -194,7 +194,7 @@ local configure_telescope = function()
     extensions.file_browser.file_browser({ cwd = require("telescope.utils").buffer_dir() })
   end, { desc = "File Browser" })
   vim.keymap.set("n", "<leader>v", builtin.treesitter, { desc = "Show Treesitter Symbols" })
-  vim.keymap.set("n", "<leader>r", builtin.resume, { desc = "Restore last Telescope Picker" })
+  vim.keymap.set("n", "<leader>R", builtin.resume, { desc = "Restore last Telescope Picker" })
   vim.keymap.set(
     "n",
     "<leader>dl",
