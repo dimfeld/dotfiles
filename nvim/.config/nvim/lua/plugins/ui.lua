@@ -34,6 +34,14 @@ local function lualine_get_words()
   end
 end
 
+local function isRecording()
+  local reg = vim.fn.reg_recording()
+  if reg == "" then
+    return ""
+  end -- not recording
+  return "recording " .. reg
+end
+
 return {
   -- Enable git changes to be shown in sign column
   { "airblade/vim-gitgutter", event = "VeryLazy" },
@@ -65,7 +73,7 @@ return {
             end,
           },
         },
-        lualine_c = { status_filename },
+        lualine_c = { status_filename, isRecording },
         lualine_x = { "filetype" },
         lualine_y = { status_diagnostics, lualine_get_words },
         lualine_z = { "searchcount", "progress", "location" },
