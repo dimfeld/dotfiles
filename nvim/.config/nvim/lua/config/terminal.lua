@@ -2,12 +2,15 @@ local cmdbar = require("config.telescope_commandbar")
 
 local toggleterm = require("toggleterm")
 local toggleterm_open_mapping = [[<C-\>]]
+
 toggleterm.setup({
-  size = 40,
+  size = vim.o.lines / 3,
   open_mapping = toggleterm_open_mapping,
   hide_numbers = true,
   start_in_insert = true,
   insert_mappings = false,
+  -- Always restart in insert mode
+  persist_mode = false,
   direction = "horizontal",
 })
 
@@ -37,6 +40,16 @@ function set_terminal_keymaps()
   vim.api.nvim_buf_set_keymap(0, "t", toggleterm_open_mapping, term_escape .. "<cmd>ToggleTerm<CR>", { noremap = true })
   vim.api.nvim_buf_set_keymap(0, "t", "<esc><esc>", term_escape, { noremap = true })
 end
+
+vim.keymap.set({ "n", "t" }, "<c-1>", function()
+  toggleterm.toggle(1)
+end)
+vim.keymap.set({ "n", "t" }, "<c-2>", function()
+  toggleterm.toggle(2)
+end)
+vim.keymap.set({ "n", "t" }, "<c-3>", function()
+  toggleterm.toggle(3)
+end)
 
 local auGroup = vim.api.nvim_create_augroup("TerminalKeymaps", {})
 vim.api.nvim_create_autocmd("TermOpen", {
