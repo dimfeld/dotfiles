@@ -92,6 +92,12 @@
     "inlayHint.position": "eol"
   },
 
+  "Lua.runtime.version": "LuaJIT",
+  "Lua.workspace.library": [
+    "$VIMRUNTIME/lua",
+    "$VIMRUNTIME/lua/vim/lsp",
+  ],
+
   "rust-analyzer.rustfmt.extraArgs": [
     "+nightly"
   ],

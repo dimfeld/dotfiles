@@ -42,6 +42,31 @@ local function isRecording()
   return "recording " .. reg
 end
 
+local function codeium_or_searchcount()
+  if vim.fn.mode() == "i" then
+    -- In insert mode, show Codeium status
+    local worked, virttext = pcall(require, "codeium.virtual_text")
+    if worked then
+      return virttext.status_string()
+    else
+      return ""
+    end
+  else
+    -- In other modes, show search count
+    if vim.v.hlsearch == 0 then
+      return ""
+    end
+
+    local ok, result = pcall(vim.fn.searchcount, { maxcount = 999, timeout = 500 })
+    if not ok or next(result) == nil then
+      return ""
+    end
+
+    local denominator = math.min(result.total, result.maxcount)
+    return string.format("[%d/%d]", result.current, denominator)
+  end
+end
+
 return {
   -- Enable git changes to be shown in sign column
   { "airblade/vim-gitgutter", event = "VeryLazy" },
@@ -76,7 +101,7 @@ return {
         lualine_c = { status_filename, isRecording },
         lualine_x = { "filetype" },
         lualine_y = { status_diagnostics, lualine_get_words },
-        lualine_z = { "searchcount", "progress", "location" },
+        lualine_z = { codeium_or_searchcount, "progress", "location" },
       },
       inactive_sections = {
         lualine_a = {},

@@ -1,5 +1,5 @@
 -- local completion_assistant = "copilot"
-local completion_assistant = "codeium"
+local completion_assistant = vim.env.COMPLETION_ASSISTANT or "codeium.nvim"
 -- local completion_assistant = "sourcegraph"
 -- local completion_assistant = "supermaven"
 
@@ -24,14 +24,17 @@ return {
     end,
   },
   {
-    "Exafunction/codeium.vim",
-    -- dir = "~/Documents/projects/codeium.vim",
+    -- "Exafunction/codeium.vim",
+    -- branch = "main",
+    "dimfeld/codeium.vim",
+    branch = "all-fixes",
+    dir = "~/Documents/projects/codeium.vim",
     name = "codeium.vim",
-    branch = "main",
-    cond = completion_assistant == "codeium",
+    cond = completion_assistant == "codeium.vim",
     init = function()
       vim.g.codeium_enabled = true
       vim.g.codeium_no_map_tab = true
+      vim.g.codeium_idle_delay = 200
     end,
     opts = {
       enable_chat = true,
@@ -41,6 +44,38 @@ return {
       vim.keymap.set("i", "<C-J>", "codeium#AcceptNextLine()", acceptKeyOpts)
       vim.keymap.set("i", "<C-]>", "codeium#Accept()", acceptKeyOpts)
       vim.keymap.set("i", "<C-p>", vim.fn["codeium#Complete"])
+    end,
+  },
+  {
+    "dimfeld/codeium.nvim",
+    name = "codeium.nvim",
+    branch = "all-fixes",
+    cond = completion_assistant == "codeium.nvim",
+    -- dir = "~/Documents/projects/codeium.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "hrsh7th/nvim-cmp",
+      "nvim-lualine/lualine.nvim",
+    },
+    opts = {
+      workspace_root = {
+        find_root = function()
+          return vim.fn.CocAction("currentWorkspacePath")
+        end,
+      },
+      virtual_text = {
+        enabled = true,
+        key_bindings = {
+          accept = "<C-]>",
+          accept_line = "<C-j>",
+          clear = "",
+        },
+      },
+      enable_cmp_source = false,
+    },
+    config = function(_, opts)
+      require("codeium").setup(opts)
+      require("codeium.virtual_text").set_statusbar_refresh(require("lualine").refresh)
     end,
   },
   {
@@ -61,15 +96,20 @@ return {
 
   {
     "dustinblackman/oatmeal.nvim",
+    enabled = false,
     opts = {
       backend = "ollama",
       model = "deepseek-coder-v2:16b-lite-instruct-fp16",
     },
   },
-  { "joshuavial/aider.nvim", opts = {
-    auto_manage_context = true,
-    default_keybindings = false,
-  } },
+  {
+    "joshuavial/aider.nvim",
+    enabled = false,
+    opts = {
+      auto_manage_context = true,
+      default_keybindings = false,
+    },
+  },
   {
     "yetone/avante.nvim",
     enabled = true,
@@ -81,6 +121,12 @@ return {
     config = function(_, opts)
       require("avante").setup(opts)
       require("avante_lib").load()
+
+      -- Map ,ae to start edit and then enter insert mode
+      vim.keymap.set("v", "<leader>ae", function()
+        require("avante.api").edit()
+        vim.cmd.startinsert()
+      end, { noremap = true })
     end,
     dependencies = {
       "stevearc/dressing.nvim",
@@ -105,6 +151,8 @@ return {
       },
       {
         "MeanderingProgrammer/render-markdown.nvim",
+        -- Temporarily pinned until "spaces" error is fixed
+        commit = "de6f057cf56cf920e9135c366fd3994536be43f4",
         opts = {
           file_types = { "Avante" },
         },

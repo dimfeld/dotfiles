@@ -46,6 +46,7 @@ alias pb='promptbox'
 
 alias gcm='git commit -m'
 alias gco-='git checkout -'
+alias grc='git rebase --continue'
 
 alias avpr='av pr create'
 alias avb='av stack branch'

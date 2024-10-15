@@ -32,6 +32,23 @@ return {
   -- Better text replacement for replacing multiple similar words (different cases, etc)
   "tpope/vim-abolish",
 
+  {
+    "sindrets/diffview.nvim",
+    config = function()
+      require("diffview").setup()
+
+      require("config.telescope_commandbar").add_commands({
+        {
+          name = "Diff View",
+          category = "Diff",
+          action = function()
+            require("diffview").open()
+          end,
+        },
+      })
+    end,
+  },
+
   -- Leap for quick navigation through the buffer
   {
     "ggandor/leap.nvim",

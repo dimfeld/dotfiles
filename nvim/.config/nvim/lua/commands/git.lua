@@ -18,6 +18,13 @@ cmdbar.add_commands({
   { name = "Stage Git chunk", category = "Git", coc_cmd = "git.chunkStage" },
   { name = "Git chunk Info", category = "Git", coc_cmd = "git.chunkInfo" },
   {
+    name = "Git commit current file",
+    category = "Git",
+    action = function()
+      vim.cmd("Git commit %")
+    end,
+  },
+  {
     name = "Git Difftool",
     category = "Git",
     action = function()
@@ -35,7 +42,7 @@ cmdbar.add_commands({
     name = "Git 3-way Diff",
     category = "Git",
     action = function()
-      vim.cmd("Gvdiffsplit")
+      vim.cmd("Gvdiffsplit!")
     end,
   },
   { name = "Git Status", category = "Git", action = builtin.git_status },

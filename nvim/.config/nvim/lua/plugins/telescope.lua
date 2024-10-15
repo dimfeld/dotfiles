@@ -106,9 +106,11 @@ local configure_telescope = function()
   end
 
   local useGitIgnore = true
-  function ripgrep_extra_options(dir)
+  --- @param dir string | nil The directory of the file
+  --- @return string[]
+  local function ripgrep_extra_options(dir)
     local opts = {}
-    if dir and dir:find(".config/nvim") then
+    if dir and (dir:find(".config/nvim") or dir:find("/dotfiles/")) then
       opts = {
         "--hidden",
         "--glob",
@@ -123,14 +125,17 @@ local configure_telescope = function()
     return opts
   end
 
-  function ripgrep_find(dir, opts)
+  --- @param dir string | nil The directory of the file
+  --- @param opts string[] | nil Extra ripgrep options
+  --- @return string[]
+  local function ripgrep_find(dir, opts)
     opts = opts or { "--files" }
 
     local rg_command = {
       "rg",
     }
 
-    hidden_opts = ripgrep_extra_options(dir)
+    local hidden_opts = ripgrep_extra_options(dir)
     for i = 1, #hidden_opts do
       table.insert(rg_command, hidden_opts[i])
     end

@@ -95,7 +95,8 @@ M.commands = {
     name = "Codeium Chat",
     category = "AI",
     action = function()
-      vim.fn["codeium#Chat"]()
+      vim.cmd("Codeium Chat")
+      -- vim.fn["codeium#Chat"]()
     end,
   },
 

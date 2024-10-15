@@ -372,7 +372,7 @@ source ~/.keybindings.zsh
 
 eval "$(zoxide init zsh)"
 eval "$(starship init zsh)"
-source <(av completion zsh)
+# source <(av completion zsh)
 
 # Use this if it's defined in the local file
 export DN_DISCORD_WEBHOOK=${DISCORD_WEBHOOK}
