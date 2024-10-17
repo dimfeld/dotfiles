@@ -60,11 +60,16 @@ return {
     opts = {
       workspace_root = {
         find_root = function()
-          return vim.fn.CocAction("currentWorkspacePath")
+          if vim.g.coc_service_initialized == 1 then
+            return vim.fn.CocAction("currentWorkspacePath")
+          end
         end,
       },
       virtual_text = {
         enabled = true,
+        filetypes = {
+          AvanteInput = false,
+        },
         key_bindings = {
           accept = "<C-]>",
           accept_line = "<C-j>",
