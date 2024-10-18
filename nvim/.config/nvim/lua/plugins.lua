@@ -5,7 +5,17 @@ return {
   "akinsho/toggleterm.nvim",
 
   -- === Git Plugins ===
-  "tpope/vim-fugitive",
+  {
+    "tpope/vim-fugitive",
+    dependencies = { "tpope/vim-rhubarb" },
+  },
+  {
+    "ruifm/gitlinker.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    opts = {
+      mappings = nil,
+    },
+  },
 
   -- File explorer
   { "tpope/vim-vinegar", event = "VeryLazy" },

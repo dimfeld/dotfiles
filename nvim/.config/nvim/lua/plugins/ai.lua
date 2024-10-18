@@ -58,13 +58,6 @@ return {
       "nvim-lualine/lualine.nvim",
     },
     opts = {
-      workspace_root = {
-        find_root = function()
-          if vim.g.coc_service_initialized == 1 then
-            return vim.fn.CocAction("currentWorkspacePath")
-          end
-        end,
-      },
       virtual_text = {
         enabled = true,
         filetypes = {

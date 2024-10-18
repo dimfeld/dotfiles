@@ -76,7 +76,7 @@ M.fill_holes = function(opts)
       table.insert(cmd, tostring(cursor.stop.line - 1) .. ":" .. tostring(cursor.stop.col - 1))
     end
 
-    local current_workspace = vim.fn.CocAction("currentWorkspacePath") or vim.fn.getcwd()
+    local current_workspace = vim.lsp.buf.list_workspace_folders()[1] or vim.fn.getcwd()
     for _, file in M.context_buffers.buffer_filenames() do
       -- Only include the file if the path is inside current_workspace
       if file ~= source_file and string.find(file, current_workspace) then
@@ -136,7 +136,7 @@ M.prepare_context = function()
   -- Table to store the lines we'll add to the new buffer
   local lines = {}
 
-  local current_workspace = vim.fn.CocAction("currentWorkspacePath") or vim.fn.getcwd()
+  local current_workspace = vim.lsp.buf.list_workspace_folders()[1] or vim.fn.getcwd()
 
   -- Iterate through the provided buffer numbers
   for _, buf_num in ipairs(M.context_buffers.buffers) do

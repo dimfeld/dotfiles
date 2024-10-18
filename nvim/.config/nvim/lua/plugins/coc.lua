@@ -122,6 +122,7 @@ function setup_coc()
     vim.fn["coc#start"]()
   end, { silent = true })
 
+  -- TODO need to port this one?
   -- Close preview window when completion is done.
   local auGroup = vim.api.nvim_create_augroup("completion", {})
   vim.api.nvim_create_autocmd("CompleteDone", {
@@ -184,5 +185,5 @@ function setup_coc()
 end
 
 return {
-  { "neoclide/coc.nvim", branch = "release", config = setup_coc },
+  { "neoclide/coc.nvim", enabled = false, branch = "release", config = setup_coc },
 }

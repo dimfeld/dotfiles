@@ -6,8 +6,6 @@ local function setup_arctic()
     pattern = "arctic",
     callback = function()
       vim.cmd([[
-      hi! CocMenuSel ctermbg=7 ctermfg=0 guifg=#111111 guibg=#aaaaff
-
       " Make background transparent for many things
       hi Normal ctermbg=NONE guibg=NONE
       " hi NonText ctermbg=NONE guibg=NONE
@@ -22,7 +20,7 @@ local function setup_arctic()
       hi clear WinSeparator
       hi link WinSeparator VertSplit
 
-      hi CocInlayHint ctermfg=73 ctermbg=235 guifg=#999999 guibg=#222222
+      hi InlayHint ctermfg=73 ctermbg=235 guifg=#999999 guibg=#222222
 
       hi Search guibg=#825335
       " Light pink for codeium/copilot. Easy to read but also clearly not part of the existing text

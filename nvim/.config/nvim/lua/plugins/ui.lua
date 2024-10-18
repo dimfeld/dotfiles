@@ -9,7 +9,7 @@ local status_filename = {
 
 local status_diagnostics = {
   "diagnostics",
-  sources = { "coc" },
+  sources = { "nvim_lsp" },
   sections = { "error", "warn" },
 }
 
@@ -212,6 +212,40 @@ return {
           ["vim.lsp.util.stylize_markdown"] = true,
           ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
         },
+        hover = {
+          enabled = true,
+          silent = true,
+        },
+        signature = {
+          enabled = true,
+          auto_open = {
+            enabled = true,
+            trigger = true, -- Automatically show signature help when typing a trigger character from the LSP
+            -- luasnip = true, -- Will open signature help when jumping to Luasnip insert nodes
+            throttle = 50, -- Debounce lsp signature help request by 50ms
+          },
+          view = nil, -- when nil, use defaults from documentation
+          ---@type NoiceViewOptions
+          opts = {}, -- merged with defaults from documentation
+        },
+        message = {
+          -- Messages shown by lsp servers
+          enabled = true,
+          view = "notify",
+          opts = {},
+        },
+        -- defaults for hover and signature help
+        documentation = {
+          view = "hover",
+          ---@type NoiceViewOptions
+          opts = {
+            lang = "markdown",
+            replace = true,
+            render = "plain",
+            format = { "{message}" },
+            win_options = { concealcursor = "n", conceallevel = 3 },
+          },
+        },
       },
       messages = {
         view_search = false,
@@ -267,9 +301,10 @@ return {
   {
     "stevearc/dressing.nvim",
     dependencies = { "nvim-telescope/telescope.nvim" },
-    -- Disabled in favor of noice
-    enabled = false,
     event = "VeryLazy",
-    opts = {},
+    opts = {
+      -- Using noice for input
+      input = { enabled = false },
+    },
   },
 }

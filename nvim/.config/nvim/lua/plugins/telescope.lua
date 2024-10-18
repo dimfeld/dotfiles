@@ -69,10 +69,7 @@ local configure_telescope = function()
   local starts_with = require("lib.text").starts_with
 
   local getWorkspacePath = function()
-    vim.wait(2000, function()
-      return vim.g.coc_service_initialized == 1
-    end, 50)
-    return vim.fn.CocAction("currentWorkspacePath")
+    return vim.lsp.buf.list_workspace_folders()[1]
   end
 
   -- Choose the search dir based on the workspace, Git root, and how the current buffer's location compares to it
@@ -90,15 +87,15 @@ local configure_telescope = function()
       return git_root
     end
 
+    -- Special case for config dir :)
+    if string.find(buffer_dir, ".config/nvim") then
+      return "~/.config/nvim"
+    end
+
     -- Use CWD if it contains the buffer dir
     local cwd = vim.fn.getcwd()
     if string.find(buffer_dir, cwd) then
       return cwd
-    end
-
-    -- Special case for config dir :)
-    if string.find(buffer_dir, ".config/nvim") then
-      return "~/.config/nvim"
     end
 
     -- Finally just fall back and use the buffer dir
@@ -200,31 +197,23 @@ local configure_telescope = function()
   end, { desc = "File Browser" })
   vim.keymap.set("n", "<leader>v", builtin.treesitter, { desc = "Show Treesitter Symbols" })
   vim.keymap.set("n", "<leader>R", builtin.resume, { desc = "Restore last Telescope Picker" })
-  vim.keymap.set(
-    "n",
-    "<leader>dl",
-    ":Telescope coc document_diagnostics<cr>",
-    { silent = true, desc = "Show Document Diagnostics" }
-  )
-  vim.keymap.set(
-    "n",
-    "<leader>wl",
-    ":Telescope coc workspace_diagnostics<cr>",
-    { silent = true, desc = "Show Workspace Diagnostics" }
-  )
-  vim.keymap.set("n", "<leader>dr", ":Telescope coc references<cr>", { silent = true, desc = "Show References" })
-  vim.keymap.set(
-    "n",
-    "<leader>ds",
-    ":Telescope coc document_symbols<cr>",
-    { silent = true, desc = "Show Document Symbols" }
-  )
-  vim.keymap.set(
-    "n",
-    "<leader>ws",
-    ":Telescope coc workspace_symbols<cr>",
-    { silent = true, desc = "Show Workspace Symbols" }
-  )
+
+  vim.keymap.set("n", "<leader>dl", function()
+    require("telescope.builtin").diagnostics({ bufnr = 0 })
+  end, { silent = true, desc = "Show Document Diagnostics" })
+  vim.keymap.set("n", "<leader>wl", function()
+    require("telescope.builtin").diagnostics()
+  end, { silent = true, desc = "Show Workspace Diagnostics" })
+  vim.keymap.set("n", "<leader>dr", function()
+    require("telescope.builtin").lsp_references()
+  end, { silent = true, desc = "Show References" })
+  vim.keymap.set("n", "<leader>ds", function()
+    require("telescope.builtin").lsp_document_symbols()
+  end, { silent = true, desc = "Show Document Symbols" })
+  vim.keymap.set("n", "<leader>ws", function()
+    require("telescope.builtin").lsp_workspacesymbols()
+  end, { silent = true, desc = "Show Workspace Symbols" })
+
   vim.keymap.set("n", "<leader>U", function()
     require("telescope").extensions.undo.undo()
   end, { silent = true, desc = "Show Undo History" })
@@ -328,14 +317,6 @@ return {
     },
     config = function()
       require("telescope").load_extension("smart_open")
-    end,
-  },
-
-  {
-    "fannheyward/telescope-coc.nvim",
-    dependencies = { "neoclide/coc.nvim", "nvim-telescope/telescope.nvim" },
-    config = function()
-      require("telescope").load_extension("coc")
     end,
   },
 }

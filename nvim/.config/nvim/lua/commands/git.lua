@@ -9,14 +9,27 @@ vim.keymap.set("n", "dgl", "&diff ? ':diffget //2<CR>' : ''", { expr = true, des
 vim.keymap.set("n", "dgr", "&diff ? ':diffget //3<CR>' : ''", { expr = true, desc = "Get diff from right side" })
 
 cmdbar.add_commands({
-  { name = "Git permalink", category = "Git", coc_cmd = "git.copyPermalink" },
-  { name = "Git blame popup", category = "Git", coc_cmd = "git.showBlameDoc" },
-  { name = "Open line in Github", category = "Git", coc_cmd = "git.browserOpen" },
-  { name = "Show last Git commit", category = "Git", coc_cmd = "git.showCommit" },
-  { name = "Undo Git chunk", category = "Git", coc_cmd = "git.chunkUndo" },
-  { name = "Unstage Git chunk", category = "Git", coc_cmd = "git.chunkUnstage" },
-  { name = "Stage Git chunk", category = "Git", coc_cmd = "git.chunkStage" },
-  { name = "Git chunk Info", category = "Git", coc_cmd = "git.chunkInfo" },
+  {
+    name = "Git permalink",
+    category = "Git",
+    action = function()
+      print("Opening permalink")
+      require("gitlinker").get_buf_range_url("n", {
+
+        action_callback = function(url)
+          -- Strip off the #L\d+ part of the URL
+          local new_url = vim.split(url, "#")[1]
+          new_url = new_url .. "#L" .. cmdbar.current_cursor.start.line
+
+          if cmdbar.current_cursor.stop.line > cmdbar.current_cursor.start.line then
+            new_url = new_url .. "-L" .. cmdbar.current_cursor.stop.line
+          end
+
+          require("gitlinker.actions").open_in_browser(new_url)
+        end,
+      })
+    end,
+  },
   {
     name = "Git commit current file",
     category = "Git",
