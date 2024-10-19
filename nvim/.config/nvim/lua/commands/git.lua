@@ -13,19 +13,19 @@ cmdbar.add_commands({
     name = "Git permalink",
     category = "Git",
     action = function()
-      print("Opening permalink")
       require("gitlinker").get_buf_range_url("n", {
 
         action_callback = function(url)
           -- Strip off the #L\d+ part of the URL
           local new_url = vim.split(url, "#")[1]
-          new_url = new_url .. "#L" .. cmdbar.current_cursor.start.line
 
+          -- Replace with the saved cursor position from before opening the cmdbar
+          new_url = new_url .. "#L" .. cmdbar.current_cursor.start.line
           if cmdbar.current_cursor.stop.line > cmdbar.current_cursor.start.line then
             new_url = new_url .. "-L" .. cmdbar.current_cursor.stop.line
           end
 
-          require("gitlinker.actions").open_in_browser(new_url)
+          require("gitlinker.actions").copy_to_clipboard({ type = "selection", action = "copy" })
         end,
       })
     end,

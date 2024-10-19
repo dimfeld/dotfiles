@@ -35,6 +35,7 @@ vim.o.directory = vim.fn.expand("~/tmp,.,~/") -- Where to keep swap files
 vim.o.backup = true
 vim.o.swapfile = false
 vim.o.scrolloff = 8
+vim.o.pumheight = 20
 
 ---- code language configs
 

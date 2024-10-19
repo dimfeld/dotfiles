@@ -82,11 +82,6 @@ local configure_telescope = function()
       return workspace_dir
     end
 
-    local git_root = githelpers.git_repo_toplevel()
-    if git_root and string.find(buffer_dir, git_root) then
-      return git_root
-    end
-
     -- Special case for config dir :)
     if string.find(buffer_dir, ".config/nvim") then
       return "~/.config/nvim"
@@ -96,6 +91,11 @@ local configure_telescope = function()
     local cwd = vim.fn.getcwd()
     if string.find(buffer_dir, cwd) then
       return cwd
+    end
+
+    local git_root = githelpers.git_repo_toplevel()
+    if git_root and string.find(buffer_dir, git_root) then
+      return git_root
     end
 
     -- Finally just fall back and use the buffer dir

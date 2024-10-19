@@ -13,7 +13,11 @@ return {
     "ruifm/gitlinker.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
     opts = {
-      mappings = nil,
+      -- Due to poor design we can't disable this so set it to something that doesn't conflict.
+      mappings = "<leader>123",
+      opts = {
+        print_url = false,
+      },
     },
   },
 
