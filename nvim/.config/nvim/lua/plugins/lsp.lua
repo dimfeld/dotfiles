@@ -343,6 +343,11 @@ return {
         sources = {
           { name = "buffer" },
         },
+        view = {
+          entries = {
+            selection_order = "near_cursor",
+          },
+        },
       })
 
       -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
@@ -353,6 +358,11 @@ return {
         }, {
           { name = "cmdline" },
         }),
+        view = {
+          entries = {
+            selection_order = "near_cursor",
+          },
+        },
         matching = { disallow_symbol_nonprefix_matching = false },
       })
     end,
