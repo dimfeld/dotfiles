@@ -187,57 +187,46 @@ local function showCommonCommandsPicker(opts)
   opts = opts or {}
 
   local filetype = vim.bo.filetype
-  -- TODO something like this instead
-  -- local clients = vim.lsp.get_clients({ bufnr = 0 })
-  -- local commands = {}
-  -- for client in pairs(clients) do
-  -- local this_commands = client.server_capabilities.executeCommandProvider.commands or {}
-  -- for _, command in ipairs(this_commands) do
-  --   table.insert(commands, {
-  --      id = command,
-  --      category = "LS",
-  --      action = function() vim.lsp.buf.execute_command({ command = command, arguments = { M.current_cursor } }) end
-  --    })
-  -- end
-  -- end
-  -- OLD local coc_commands = {} -- vim.fn.CocAction("commands")
+  local clients = vim.lsp.get_clients({ bufnr = 0 })
+  local lsp_commands = {}
+  for _, client in ipairs(clients) do
+    local command_provider = client.server_capabilities.executeCommandProvider or {}
+    local this_commands = command_provider.commands or {}
+    for _, command in ipairs(this_commands) do
+      table.insert(lsp_commands, {
+        name = command,
+        category = "LS",
+        action = function()
+          vim.lsp.buf.execute_command({ command = command, arguments = { M.current_cursor } })
+        end,
+      })
+    end
+  end
 
   local longest_command_name = 0
   local these_commands = {}
-  -- for i, command in ipairs(coc_commands) do
-  --   local id = command.id
-  --
-  --   if handled_coc_commands[id] == true then
-  --     goto continue
-  --   elseif id:find("rust-analyzer.", 1, true) == 1 and filetype ~= "rust" then
-  --     goto continue
-  --   elseif id:find("pyright.", 1, true) == 1 and filetype ~= "python" then
-  --     goto continue
-  --   elseif id:find("python.", 1, true) == 1 and filetype ~= "python" then
-  --     goto continue
-  --   elseif id:find("svelte.", 1, true) == 1 and filetype ~= "svelte" then
-  --     goto continue
-  --   elseif id:find("tsserver.", 1, true) == 1 and filetype ~= "typescript" then
-  --     goto continue
-  --   end
-  --
-  --   local title = command.title
-  --   if title == "" then
-  --     title = command.id
-  --   end
-  --   converted_command = {
-  --     name = title,
-  --     category = command.id,
-  --     coc_cmd = command.id,
-  --   }
-  --
-  --   these_commands[#these_commands + 1] = converted_command
-  --   if #converted_command.name > longest_command_name then
-  --     longest_command_name = #converted_command.name
-  --   end
-  --
-  --   ::continue::
-  -- end
+  for i, command in ipairs(lsp_commands) do
+    local id = command.name
+
+    if id:find("rust-analyzer.", 1, true) == 1 and filetype ~= "rust" then
+      goto continue
+    elseif id:find("pyright.", 1, true) == 1 and filetype ~= "python" then
+      goto continue
+    elseif id:find("python.", 1, true) == 1 and filetype ~= "python" then
+      goto continue
+    elseif id:find("svelte.", 1, true) == 1 and filetype ~= "svelte" then
+      goto continue
+    elseif id:find("tsserver.", 1, true) == 1 and filetype ~= "typescript" then
+      goto continue
+    end
+
+    these_commands[#these_commands + 1] = command
+    if #command.name > longest_command_name then
+      longest_command_name = #command.name
+    end
+
+    ::continue::
+  end
 
   for i, command in ipairs(M.commands) do
     if command.filetype ~= nil and filetype ~= command.filetype then
