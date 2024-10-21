@@ -60,16 +60,16 @@ end
 
 local function configure_lsp_servers()
   local ts_server_settings = {
-    inlayHints = {
-      includeInlayParameterNameHints = "all", -- 'none' | 'literals' | 'all'
-      includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-      includeInlayVariableTypeHints = false,
-      includeInlayFunctionParameterTypeHints = false,
-      includeInlayVariableTypeHintsWhenTypeMatchesName = false,
-      includeInlayPropertyDeclarationTypeHints = false,
-      includeInlayFunctionLikeReturnTypeHints = false,
-      includeInlayEnumMemberValueHints = true,
-    },
+    -- inlayHints = {
+    --   includeInlayParameterNameHints = "all", -- 'none' | 'literals' | 'all'
+    --   includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+    --   includeInlayVariableTypeHints = false,
+    --   includeInlayFunctionParameterTypeHints = false,
+    --   includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+    --   includeInlayPropertyDeclarationTypeHints = false,
+    --   includeInlayFunctionLikeReturnTypeHints = false,
+    --   includeInlayEnumMemberValueHints = true,
+    -- },
     preferences = {
       importModuleSpecifierEnding = "js",
       importModuleSpecifierPreference = "shortest",

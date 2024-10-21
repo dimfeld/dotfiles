@@ -211,7 +211,7 @@ local configure_telescope = function()
     require("telescope.builtin").lsp_document_symbols()
   end, { silent = true, desc = "Show Document Symbols" })
   vim.keymap.set("n", "<leader>ws", function()
-    require("telescope.builtin").lsp_workspacesymbols()
+    require("telescope.builtin").lsp_workspace_symbols()
   end, { silent = true, desc = "Show Workspace Symbols" })
 
   vim.keymap.set("n", "<leader>U", function()
