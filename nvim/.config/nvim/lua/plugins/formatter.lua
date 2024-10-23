@@ -8,7 +8,7 @@ local prettier_config_files = {
   "prettier.config.cjs",
 }
 
-local prettierd = function()
+local function prettierd()
   local format_util = require("formatter.util")
   local current_path = format_util.get_current_buffer_file_path()
   local current_dir = vim.fs.dirname(current_path)
@@ -32,10 +32,12 @@ local prettierd = function()
     args = { format_util.escape_path(current_path) },
     cwd = config_dirname,
     stdin = true,
+    no_append = true,
+    ignore_exitcode = false,
   }
 end
 
-local black = function()
+local function black()
   return {
     exe = "python3",
     args = { "-m", "black", "-q", "-" },
@@ -43,7 +45,7 @@ local black = function()
   }
 end
 
-local ruff = function()
+local function ruff()
   local format_util = require("formatter.util")
   local current_path = format_util.get_current_buffer_file_path()
   return {
@@ -54,7 +56,7 @@ local ruff = function()
 end
 
 -- Stylua Lua formatter
-function stylua()
+local function stylua()
   local format_util = require("formatter.util")
   return {
     exe = "stylua",
@@ -74,7 +76,7 @@ function stylua()
 end
 
 -- Sleek SQL formatter
-function sleek()
+local function sleek()
   local format_util = require("formatter.util")
   local current_path = format_util.get_current_buffer_file_path()
   return {
@@ -85,7 +87,7 @@ function sleek()
 end
 
 -- pg_format
-function pgformat()
+local function pgformat()
   local format_util = require("formatter.util")
   local current_path = format_util.get_current_buffer_file_path()
   if current_path:find(".sql.tera") then
@@ -99,7 +101,7 @@ function pgformat()
 end
 
 -- Format .sql.liquid files
-function liquid_sql()
+local function liquid_sql()
   local format_util = require("formatter.util")
   local current_path = format_util.get_current_buffer_file_path()
   if current_path:find(".sql.liquid") == nil then
@@ -117,6 +119,7 @@ return {
   {
 
     "mhartington/formatter.nvim",
+    -- dir = "~/Documents/projects/formatter.nvim",
     opts = {
       logging = true,
       -- log_level = vim.log.levels.TRACE,

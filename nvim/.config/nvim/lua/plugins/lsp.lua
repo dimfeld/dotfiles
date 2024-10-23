@@ -70,6 +70,10 @@ local function configure_lsp_servers()
     --   includeInlayFunctionLikeReturnTypeHints = false,
     --   includeInlayEnumMemberValueHints = true,
     -- },
+    updateImportsOnFileMove = { enabled = "always" },
+    suggest = {
+      completeFunctionCalls = true,
+    },
     preferences = {
       importModuleSpecifierEnding = "js",
       importModuleSpecifierPreference = "shortest",
@@ -123,28 +127,52 @@ local function configure_lsp_servers()
       },
     },
   })
+
+  local svelte_lsp_capabilities = vim.lsp.protocol.make_client_capabilities()
+  svelte_lsp_capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = true
   lspconfig.svelte.setup({
+    capabilities = svelte_lsp_capabilities,
     settings = {
       typescript = ts_server_settings,
       javascript = ts_server_settings,
     },
   })
+
   lspconfig.tailwindcss.setup({})
   lspconfig.terraformls.setup({})
-  lspconfig.ts_ls.setup({
+  lspconfig.vtsls.setup({
     settings = {
       typescript = ts_server_settings,
       javascript = ts_server_settings,
-    },
-    init_options = {
-      plugins = {
-        {
-          name = "typescript-svelte-plugin",
-          location = vim.fn.expand("$HOME/.pnpm/5/node_modules/typescript-svelte-plugin"),
-          languages = { "javascript", "typescript" },
+      complete_function_calls = true,
+      vtsls = {
+        enableMoveToFileCodeAction = true,
+        autoUseWorkspaceTsdk = true,
+        experimental = {
+          completion = {
+            enableServerSideFuzzyMatch = true,
+          },
+        },
+        tsserver = {
+          globalPlugins = {
+            {
+              name = "typescript-svelte-plugin",
+              location = vim.fn.expand("$HOME/.pnpm/5/node_modules/typescript-svelte-plugin"),
+              enableForWorkspaceTypeScriptVersions = true,
+            },
+          },
         },
       },
     },
+    -- init_options = {
+    --   plugins = {
+    --     {
+    --       name = "typescript-svelte-plugin",
+    --       location = vim.fn.expand("$HOME/.pnpm/5/node_modules/typescript-svelte-plugin"),
+    --       languages = { "javascript", "typescript" },
+    --     },
+    --   },
+    -- },
     filetypes = {
       "javascript",
       "typescript",
@@ -172,13 +200,27 @@ local function on_attach(buffer, client)
 
   vim.lsp.codelens.refresh()
 
-  local augroup = vim.api.nvim_create_augroup("MyLspAttached", {})
+  if not vim.b._first_lsp_attached then
+    vim.b._first_lsp_attached = true
 
-  vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
-    buffer = buffer,
-    group = augroup,
-    callback = vim.lsp.codelens.refresh,
-  })
+    vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+      buffer = buffer,
+      callback = vim.lsp.codelens.refresh,
+    })
+  end
+
+  if client.name == "svelte" then
+    -- Ensure that Svelte LSP updates on TS file changes
+    -- This isn't really the proper way to do this but the proper support doesn't seem to work.
+    local augroup = vim.api.nvim_create_augroup("SvelteLspAttached", {})
+    vim.api.nvim_create_autocmd("BufWritePost", {
+      group = augroup,
+      pattern = { "*.js", "*.ts", "*.mjs", "*.mts", "*.cjs", "*.cts" },
+      callback = function(ctx)
+        client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.match })
+      end,
+    })
+  end
 
   -- vim.api.nvim_create_autocmd("CursorHold", {
   --   buffer = buffer,
@@ -190,7 +232,7 @@ local function on_attach(buffer, client)
 end
 
 local function configure_lsp_attach()
-  local augroup = vim.api.nvim_create_augroup("MyLspAttach", { clear = true })
+  local augroup = vim.api.nvim_create_augroup("MyLspAttach", {})
 
   vim.api.nvim_create_autocmd("User", {
     pattern = "LspDynamicCapability",
@@ -231,6 +273,9 @@ return {
 
       vim.diagnostic.config({
         virtual_text = {
+          spacing = 4,
+          source = "if_many",
+          prefix = "●",
           severity = { vim.diagnostic.severity.ERROR, vim.diagnostic.severity.WARN },
         },
         signs = {
@@ -258,9 +303,14 @@ return {
     dependencies = {
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-path",
+      -- "hrsh7th/cmp-path",
       "hrsh7th/cmp-cmdline",
       "onsails/lspkind-nvim",
+      {
+        "cmp-async-path",
+        dir = "~/Documents/projects/cmp-async-path",
+        -- url = "https://codeberg.org/FelipeLema/cmp-async-path.git",
+      },
     },
     opts = {},
     config = function(_, opts)
@@ -269,6 +319,12 @@ return {
         snippet = {
           expand = function(args)
             vim.snippet.expand(args.body)
+          end,
+        },
+        confirmation = {
+          get_commit_characters = function(commit_characters)
+            -- Disable all commit characters
+            return {}
           end,
         },
         formatting = {
@@ -295,23 +351,29 @@ return {
           -- Open completion menu
           ["<C-Space>"] = cmp.mapping.complete(),
           -- Accept and perform an autoimport if one is available
-          ["<leader>c"] = cmp.mapping.confirm(),
+          [",c"] = cmp.mapping(function(fallback)
+            if cmp.visible() and cmp.get_active_entry() then
+              cmp.confirm()
+            else
+              fallback()
+            end
+          end, { "i" }),
           ["<C-e>"] = cmp.mapping.abort(),
           -- Close and perform the arrow movement
           ["<Up>"] = function(fallback)
-            cmp.abort()
+            cmp.close()
             fallback()
           end,
           ["<Down>"] = function(fallback)
-            cmp.abort()
+            cmp.close()
             fallback()
           end,
           ["<Left>"] = function(fallback)
-            cmp.abort()
+            cmp.close()
             fallback()
           end,
           ["<Right>"] = function(fallback)
-            cmp.abort()
+            cmp.close()
             fallback()
           end,
           ["<Tab>"] = cmp.mapping(function(fallback)
@@ -332,10 +394,18 @@ return {
         sources = cmp.config.sources({
           { name = "nvim_lsp" },
         }, {
-          { name = "path" },
+          { name = "async_path", option = { label_trailing_slash = true } },
           { name = "buffer" },
         }),
       })
+
+      -- vim.keymap.set("i", "<leader>c", function()
+      --   if cmp.visible() and cmp.get_active_entry() then
+      --     cmp.confirm()
+      --   else
+      --     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<leader>c", true, true, true), "n", false)
+      --   end
+      -- end, { desc = "Trigger code action" })
 
       -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
       cmp.setup.cmdline({ "/", "?" }, {
@@ -350,11 +420,20 @@ return {
         },
       })
 
-      -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+      -- Use cmdline & path source for ':'
       cmp.setup.cmdline(":", {
-        mapping = cmp.mapping.preset.cmdline(),
+        mapping = cmp.mapping.preset.cmdline({
+          -- ["<Tab>"] = { c = handle_tab_complete(cmp.select_next_item) },
+          -- ["<S-Tab>"] = { c = handle_tab_complete(cmp.select_prev_item) },
+        }),
+        window = {
+          documentation = {
+            border = "rounded",
+            zindex = 65535,
+          },
+        },
         sources = cmp.config.sources({
-          { name = "path" },
+          { name = "async_path", option = { label_trailing_slash = true } },
         }, {
           { name = "cmdline" },
         }),

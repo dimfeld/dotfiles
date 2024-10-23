@@ -60,6 +60,15 @@ local command_history = function(opts)
     :find()
 end
 
+local root_files = {
+  ".git",
+  "pyproject.toml",
+  "requirements.txt",
+  "package.json",
+}
+
+local root_cache = {}
+
 local configure_telescope = function()
   local telescope = require("telescope")
   local builtin = require("telescope.builtin")
@@ -68,14 +77,36 @@ local configure_telescope = function()
   local githelpers = require("lib.git")
   local starts_with = require("lib.text").starts_with
 
-  local getWorkspacePath = function()
-    return vim.lsp.buf.list_workspace_folders()[1]
+  --- @param buffer_dir string
+  --- @return string | nil
+  local getWorkspacePath = function(buffer_dir)
+    if root_cache[buffer_dir] then
+      return root_cache[buffer_dir]
+    end
+
+    local result = vim.fs.find(root_files, {
+      path = buffer_dir,
+      upward = true,
+      limit = 1,
+    })
+
+    if result[1] then
+      local dir = vim.fs.dirname(result[1])
+      root_cache[buffer_dir] = dir
+      return dir
+    end
+
+    local dir = vim.lsp.buf.list_workspace_folders()[1]
+    if dir then
+      root_cache[buffer_dir] = dir
+      return dir
+    end
   end
 
   -- Choose the search dir based on the workspace, Git root, and how the current buffer's location compares to it
   local chooseSearchDir = function()
-    local workspace_dir = getWorkspacePath()
     local buffer_dir = require("telescope.utils").buffer_dir()
+    local workspace_dir = getWorkspacePath(buffer_dir)
 
     -- Use workspace_dir if the buffer dir contains it
     if workspace_dir and starts_with(buffer_dir, workspace_dir) then

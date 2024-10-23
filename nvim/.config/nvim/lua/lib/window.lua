@@ -21,6 +21,12 @@ M.is_coc_diagnostic_window = function(win_id)
   return false
 end
 
+--- @class CursorRange
+--- @field visual boolean
+--- @field start { line: number, col: number, pos: number[] }
+--- @field stop { line: number, col: number, pos: number[] }
+
+--- @return CursorRange
 M.get_cursor_range = function()
   local start_pos = vim.fn.getpos("v")
   local end_pos = vim.fn.getpos(".")

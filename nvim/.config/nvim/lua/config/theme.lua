@@ -2,8 +2,6 @@ vim.o.number = true
 vim.o.termguicolors = true
 vim.o.guifont = "Inconsolata:h14"
 
-vim.g.signify_sign_delete = "-"
-
 -- Vertical split character is a space (hide it)
 vim.o.fillchars = "vert:."
 -- Set preview window to appear at bottom
@@ -31,6 +29,9 @@ vim.o.updatetime = 300
 -- Always show sign column so that it doesn't shift the buffer around when it
 -- shows up
 vim.o.signcolumn = "yes"
+
+-- Popup menu height (completion menu, etc.)
+vim.o.pumheight = 20
 
 -- Don't highlight current cursor line
 vim.o.cursorline = false

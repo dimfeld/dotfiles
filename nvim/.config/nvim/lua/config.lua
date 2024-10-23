@@ -35,7 +35,6 @@ vim.o.directory = vim.fn.expand("~/tmp,.,~/") -- Where to keep swap files
 vim.o.backup = true
 vim.o.swapfile = false
 vim.o.scrolloff = 8
-vim.o.pumheight = 20
 
 ---- code language configs
 
@@ -287,7 +286,7 @@ vim.keymap.set("x", "<Leader>.", "q:<UP>I'<,'><Esc>$", {})
 
 ---- Quickfix Buffer interaction
 
-function qf_keymaps()
+local function qf_keymaps()
   -- o key opens the line under the quickfix and returns focus to quickfix
   vim.api.nvim_buf_set_keymap(0, "n", "o", "<CR><C-w>p", { silent = true, noremap = true })
   -- Open the selected line in the qucikfix buffer, and close the quickfix pane.
@@ -324,3 +323,4 @@ require("config.terminal")
 ---- Other Commands
 require("commands.dash")
 require("commands.git")
+require("commands.quickfix").setup()

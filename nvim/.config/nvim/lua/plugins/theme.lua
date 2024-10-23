@@ -52,4 +52,61 @@ return {
     priority = 1000,
     config = setup_arctic,
   },
+
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000,
+    enabled = false,
+    -- cond = theme == "catppuccin",
+    -- config = setup_catppuccin,
+    opts = {
+      flavour = "mocha",
+      color_overrides = {
+        mocha = {
+          base = "#101010",
+          mantle = "#101010",
+          crust = "#101010",
+        },
+      },
+      integrations = {
+        cmp = true,
+        treesitter = true,
+        notify = true,
+        gitsigns = true,
+        leap = true,
+        markdown = true,
+        noice = true,
+        render_markdown = true,
+        telescope = {
+          enabled = true,
+        },
+        native_lsp = {
+          enabled = true,
+          virtual_text = {
+            errors = { "italic" },
+            hints = { "italic" },
+            warnings = { "italic" },
+            information = { "italic" },
+            ok = { "italic" },
+          },
+          underlines = {
+            errors = { "underline" },
+            hints = { "underline" },
+            warnings = { "underline" },
+            information = { "underline" },
+            ok = { "underline" },
+          },
+          inlay_hints = {
+            background = true,
+          },
+        },
+      },
+      custom_highlights = function(colors)
+        return {
+          CodeiumSuggestion = { fg = colors.pink },
+        }
+      end,
+    },
+  },
 }

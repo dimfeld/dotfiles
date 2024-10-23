@@ -25,6 +25,7 @@ return {
   { "tpope/vim-vinegar", event = "VeryLazy" },
   {
     "tpope/vim-dotenv",
+    priority = 1000,
     config = function()
       local path = vim.fn.expand("~/.config/nvim/.env")
       if vim.fn.filereadable(path) == 1 then

@@ -10,10 +10,21 @@ local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 local entry_display = require("telescope.pickers.entry_display")
 
+--- @class ActionOpts
+--- @field cursor CursorRange
+
+--- @class CommandBarAction
+--- @field name string
+--- @field category string
+--- @field filetype? string
+--- @field action fun(opts: ActionOpts)
+
 -- Information about the current cursor position, useful when running a command that needs to access the visual
 -- selection since opening the picker will lose it.
+--- @type CursorRange
 M.current_cursor = nil
 
+--- @type CommandBarAction[]
 M.commands = {
   {
     name = "Organize imports",
@@ -22,8 +33,8 @@ M.commands = {
       vim.lsp.buf.execute_command({ command = "_typescript.organizeImports", arguments = { vim.fn.expand("%:p") } })
     end,
   },
-  { name = "Format document", category = "LS", coc_cmd = "editor.action.formatDocument" },
-  { name = "Format selection", category = "LS", coc_cmd = "editor.action.formatSelection" },
+  -- { name = "Format document", category = "LS", coc_cmd = "editor.action.formatDocument" },
+  -- { name = "Format selection", category = "LS", coc_cmd = "editor.action.formatSelection" },
   {
     name = "Rename symbol",
     category = "LS",
@@ -38,10 +49,10 @@ M.commands = {
       vim.lsp.buf.definition()
     end,
   },
-  { name = "Go to Definition", category = "LS", coc_cmd = "editor.action.goToDeclaration" },
-  { name = "Go to Implementation", category = "LS", coc_cmd = "editor.action.goToImplementation" },
-  { name = "Go to Type Definition", category = "LS", coc_cmd = "editor.action.goToTypeDefinition" },
-  { name = "Go to References", category = "LS", coc_cmd = "editor.action.goToReferences" },
+  -- { name = "Go to Definition", category = "LS", coc_cmd = "editor.action.goToDeclaration" },
+  -- { name = "Go to Implementation", category = "LS", coc_cmd = "editor.action.goToImplementation" },
+  -- { name = "Go to Type Definition", category = "LS", coc_cmd = "editor.action.goToTypeDefinition" },
+  -- { name = "Go to References", category = "LS", coc_cmd = "editor.action.goToReferences" },
   {
     name = "Restart Svelte LS",
     category = "LS",
@@ -49,12 +60,12 @@ M.commands = {
       vim.cmd("LspRestart svelte")
     end,
   },
-  {
-    name = "Reload Rust Analyzer Workspace",
-    category = "LS",
-    filetype = "rust",
-    coc_cmd = "rust-analyzer.reloadWorkspace",
-  },
+  -- {
+  --   name = "Reload Rust Analyzer Workspace",
+  --   category = "LS",
+  --   filetype = "rust",
+  --   coc_cmd = "rust-analyzer.reloadWorkspace",
+  -- },
   {
     name = "Restart LS",
     category = "LS",
@@ -84,11 +95,11 @@ M.commands = {
     name = "Prefix with 'pub'",
     category = "Editing",
     filetype = "rust",
-    action = function()
+    action = function(opts)
       local saved_hl = vim.fn.getreg("/")
-      local cmd = M.current_cursor.start.line .. "," .. M.current_cursor.stop.line .. [[s/\S/pub &/e]]
+      local cmd = opts.cursor.start.line .. "," .. opts.cursor.stop.line .. [[s/\S/pub &/e]]
       vim.cmd(cmd)
-      -- The `s` command updaes the highlight, so restore whatever was there before.
+      -- The `s` command updates the highlight, so restore whatever was there before.
       vim.fn.setreg("/", saved_hl)
     end,
   },
@@ -114,26 +125,15 @@ M.commands = {
   {
     name = "Yank to Clipboard",
     category = "Clipboard",
-    action = function()
-      vim.cmd("'<,'>y*")
+    action = function(opts)
+      vim.cmd(M.build_range_prefix(opts.cursor) .. "y*")
     end,
   },
   {
     name = "Delete to Blackhole",
     category = "Clipboard",
-    action = function()
-      vim.cmd("'<,'>d_")
-    end,
-  },
-
-  -- { name = "Aider", category = "AI", action = AiderOpen },
-  -- { name = "Aider Background", category = "AI", action = AiderBackground },
-
-  {
-    name = "Codeium Chat",
-    category = "AI",
-    action = function()
-      vim.cmd("Codeium Chat")
+    action = function(opts)
+      vim.cmd(M.build_range_prefix(opts.cursor) .. "d_")
     end,
   },
 
@@ -174,6 +174,7 @@ M.commands = {
   },
 }
 
+--- @param commands CommandBarAction[]
 M.add_commands = function(commands)
   for _, command in ipairs(commands) do
     table.insert(M.commands, command)
@@ -208,15 +209,15 @@ local function showCommonCommandsPicker(opts)
   for i, command in ipairs(lsp_commands) do
     local id = command.name
 
-    if id:find("rust-analyzer.", 1, true) == 1 and filetype ~= "rust" then
+    if vim.startswith(id, "rust-analyzer.") == 1 and filetype ~= "rust" then
       goto continue
-    elseif id:find("pyright.", 1, true) == 1 and filetype ~= "python" then
+    elseif vim.startswith(id, "pyright.") and filetype ~= "python" then
       goto continue
-    elseif id:find("python.", 1, true) == 1 and filetype ~= "python" then
+    elseif vim.startswith(id, "python.") and filetype ~= "python" then
       goto continue
-    elseif id:find("svelte.", 1, true) == 1 and filetype ~= "svelte" then
+    elseif vim.startswith(id, "svelte.") and filetype ~= "svelte" then
       goto continue
-    elseif id:find("tsserver.", 1, true) == 1 and filetype ~= "typescript" then
+    elseif (vim.startswith(id, "tsserver.") or vim.startswith(id, "vtsls.")) and filetype ~= "typescript" then
       goto continue
     end
 
@@ -273,12 +274,22 @@ local function showCommonCommandsPicker(opts)
           actions.close(prompt_bufnr)
           local selection = action_state.get_selected_entry(prompt_bufnr)
 
-          selection.value.action()
+          selection.value.action({ cursor = M.current_cursor })
         end)
         return true
       end,
     })
     :find()
+end
+
+--- @param cursor CursorRange
+--- @return string
+M.build_range_prefix = function(cursor)
+  if cursor.visual then
+    return cursor.start.line .. "," .. cursor.stop.line
+  else
+    return tostring(cursor.start.line)
+  end
 end
 
 M.setup = function()

@@ -1,3 +1,5 @@
+local cmdbar = require("config.telescope_commandbar")
+
 -- local completion_assistant = "copilot"
 local completion_assistant = vim.env.COMPLETION_ASSISTANT or "codeium.nvim"
 -- local completion_assistant = "sourcegraph"
@@ -30,6 +32,7 @@ return {
     branch = "all-fixes",
     dir = "~/Documents/projects/codeium.vim",
     name = "codeium.vim",
+    enabled = false,
     cond = completion_assistant == "codeium.vim",
     init = function()
       vim.g.codeium_enabled = true
@@ -51,7 +54,7 @@ return {
     name = "codeium.nvim",
     branch = "all-fixes",
     cond = completion_assistant == "codeium.nvim",
-    -- dir = "~/Documents/projects/codeium.nvim",
+    dir = "~/Documents/projects/codeium.nvim",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "hrsh7th/nvim-cmp",
@@ -74,6 +77,16 @@ return {
     config = function(_, opts)
       require("codeium").setup(opts)
       require("codeium.virtual_text").set_statusbar_refresh(require("lualine").refresh)
+
+      cmdbar.add_commands({
+        {
+          name = "Codeium Chat",
+          category = "AI",
+          action = function()
+            vim.cmd("Codeium Chat")
+          end,
+        },
+      })
     end,
   },
   {
@@ -107,6 +120,25 @@ return {
       auto_manage_context = true,
       default_keybindings = false,
     },
+    config = function(_, opts)
+      require("aider").setup(opts)
+      cmdbar.add_commands({
+        {
+          name = "Aider",
+          category = "AI",
+          action = function()
+            vim.cmd("AiderOpen")
+          end,
+        },
+        {
+          name = "Aider Background",
+          category = "AI",
+          action = function()
+            vim.cmd("AiderBackground")
+          end,
+        },
+      })
+    end,
   },
   {
     "yetone/avante.nvim",
@@ -147,51 +179,37 @@ return {
           },
         },
       },
-      {
-        "MeanderingProgrammer/render-markdown.nvim",
-        -- Temporarily pinned until "spaces" error is fixed
-        commit = "de6f057cf56cf920e9135c366fd3994536be43f4",
-        opts = {
-          file_types = { "Avante" },
-        },
-        ft = { "Avante" },
-      },
+      "MeanderingProgrammer/render-markdown.nvim",
     },
   },
   {
-    "pieces-app/plugin_neovim",
-    enabled = false,
+    "olimorris/codecompanion.nvim",
     dependencies = {
-      "kyazdani42/nvim-web-devicons",
-      "MunifTanjim/nui.nvim",
-      "hrsh7th/nvim-cmp",
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      "hrsh7th/nvim-cmp", -- Optional: For using slash commands and variables in the chat buffer
+      "nvim-telescope/telescope.nvim", -- Optional: For using slash commands
+      { "stevearc/dressing.nvim", opts = {} }, -- Optional: Improves `vim.ui.select`
     },
     opts = {
-      host = "http://localhost:1000",
+      strategies = {
+        chat = {
+          adapter = "anthropic",
+        },
+        agent = {
+          adapter = "anthropic",
+        },
+      },
     },
     config = function(_, opts)
-      require("pieces.config").host = opts.host
-
-      require("config.telescope_commandbar").add_commands({
+      require("codecompanion").setup(opts)
+      vim.api.nvim_create_user_command("CC", "CodeCompanionChat", {})
+      cmdbar.add_commands({
         {
-          name = "Pieces Copilot",
+          name = "Code Companion",
           category = "AI",
           action = function()
-            vim.fn["PiecesCopilot"]()
-          end,
-        },
-        {
-          name = "Pieces Conversations",
-          category = "AI",
-          action = function()
-            vim.fn["PiecesConversations"]()
-          end,
-        },
-        {
-          name = "Pieces Snippets",
-          category = "AI",
-          action = function()
-            vim.fn["PiecesSnippets"]()
+            vim.cmd("CodeCompanionChat")
           end,
         },
       })
