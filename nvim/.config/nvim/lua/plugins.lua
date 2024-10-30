@@ -20,6 +20,7 @@ return {
       },
     },
   },
+  { "rhysd/conflict-marker.vim" },
 
   -- File explorer
   { "tpope/vim-vinegar", event = "VeryLazy" },

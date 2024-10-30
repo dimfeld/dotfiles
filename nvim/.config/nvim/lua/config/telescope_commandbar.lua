@@ -29,8 +29,17 @@ M.commands = {
   {
     name = "Organize imports",
     category = "LS",
+    filetype = "typescript",
     action = function()
-      vim.lsp.buf.execute_command({ command = "_typescript.organizeImports", arguments = { vim.fn.expand("%:p") } })
+      vim.lsp.buf.execute_command({ command = "typescript.organizeImports", arguments = { vim.fn.expand("%:p") } })
+    end,
+  },
+  {
+    name = "Remove Unused imports",
+    category = "LS",
+    filetype = "typescript",
+    action = function()
+      vim.lsp.buf.execute_command({ command = "typescript.removeUnusedImports", arguments = { vim.fn.expand("%:p") } })
     end,
   },
   -- { name = "Format document", category = "LS", coc_cmd = "editor.action.formatDocument" },

@@ -72,7 +72,6 @@ return {
           clear = "",
         },
       },
-      enable_cmp_source = false,
     },
     config = function(_, opts)
       require("codeium").setup(opts)
@@ -115,7 +114,7 @@ return {
   },
   {
     "joshuavial/aider.nvim",
-    enabled = false,
+    enabled = true,
     opts = {
       auto_manage_context = true,
       default_keybindings = false,
@@ -127,14 +126,14 @@ return {
           name = "Aider",
           category = "AI",
           action = function()
-            vim.cmd("AiderOpen")
+            AiderOpen()
           end,
         },
         {
           name = "Aider Background",
           category = "AI",
           action = function()
-            vim.cmd("AiderBackground")
+            AiderBackground()
           end,
         },
       })

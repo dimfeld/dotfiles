@@ -77,7 +77,7 @@ return {
     opts = {
       word_diff = false,
       signcolumn = false,
-      numhl = true,
+      numhl = false,
       current_line_blame_opts = {
         delay = 250,
       },
@@ -136,13 +136,13 @@ return {
             vim.cmd("Gitsigns toggle_word_diff")
           end,
         },
-        {
-          name = "Toggle Git Line Highlighting",
-          category = "Git",
-          action = function()
-            vim.cmd("Gitsigns toggle_linehl")
-          end,
-        },
+        -- {
+        --   name = "Toggle Git Line Highlighting",
+        --   category = "Git",
+        --   action = function()
+        --     vim.cmd("Gitsigns toggle_linehl")
+        --   end,
+        -- },
         {
           name = "Toggle Current Line Blame",
           category = "Git",
@@ -157,6 +157,9 @@ return {
     "echasnovski/mini.diff",
     version = "*",
     opts = {
+      view = {
+        style = "number",
+      },
       mappings = {
         -- Disable all mappings since we use other plugins for it
         apply = "",

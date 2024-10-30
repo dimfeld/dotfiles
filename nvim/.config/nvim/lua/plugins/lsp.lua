@@ -18,9 +18,6 @@ end
 local function configure_lsp_keymaps()
   vim.keymap.set("i", "<C-K>", toggle_signature_help, {})
 
-  -- Go to definition
-  vim.keymap.set("n", "<leader>dd", vim.lsp.buf.definition, { silent = true, desc = "Go to definition" })
-
   -- Go to implementation
   vim.keymap.set("n", "<leader>dj", vim.lsp.buf.implementation, { silent = true, desc = "Go to implementation" })
 
@@ -83,8 +80,49 @@ local function configure_lsp_servers()
   -- local capabilities = vim.lsp.protocol.make_client_capabilities()
   -- capabilities.textDocument.completion.completionItem.snippetSupport = true
   local lspconfig = require("lspconfig")
-  lspconfig.cssls.setup({})
-  lspconfig.eslint.setup({})
+
+  -- The order of initialization is important here because it determines the order in which code actions show up
+  -- when more than one LS has actions.
+
+  local svelte_lsp_capabilities = vim.lsp.protocol.make_client_capabilities()
+  svelte_lsp_capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = true
+  lspconfig.svelte.setup({
+    capabilities = svelte_lsp_capabilities,
+    settings = {
+      typescript = ts_server_settings,
+      javascript = ts_server_settings,
+    },
+  })
+  lspconfig.vtsls.setup({
+    settings = {
+      typescript = ts_server_settings,
+      javascript = ts_server_settings,
+      complete_function_calls = true,
+      vtsls = {
+        enableMoveToFileCodeAction = true,
+        autoUseWorkspaceTsdk = true,
+        experimental = {
+          completion = {
+            enableServerSideFuzzyMatch = true,
+          },
+        },
+        tsserver = {
+          globalPlugins = {
+            {
+              name = "typescript-svelte-plugin",
+              location = vim.fn.expand("$HOME/.pnpm/5/node_modules/typescript-svelte-plugin"),
+              enableForWorkspaceTypeScriptVersions = true,
+            },
+          },
+        },
+      },
+    },
+    filetypes = {
+      "javascript",
+      "typescript",
+    },
+  })
+
   lspconfig.gopls.setup({})
   lspconfig.html.setup({})
   lspconfig.jsonls.setup({})
@@ -128,57 +166,30 @@ local function configure_lsp_servers()
     },
   })
 
-  local svelte_lsp_capabilities = vim.lsp.protocol.make_client_capabilities()
-  svelte_lsp_capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = true
-  lspconfig.svelte.setup({
-    capabilities = svelte_lsp_capabilities,
-    settings = {
-      typescript = ts_server_settings,
-      javascript = ts_server_settings,
-    },
-  })
-
   lspconfig.tailwindcss.setup({})
   lspconfig.terraformls.setup({})
-  lspconfig.vtsls.setup({
+  lspconfig.yamlls.setup({
     settings = {
-      typescript = ts_server_settings,
-      javascript = ts_server_settings,
-      complete_function_calls = true,
-      vtsls = {
-        enableMoveToFileCodeAction = true,
-        autoUseWorkspaceTsdk = true,
-        experimental = {
-          completion = {
-            enableServerSideFuzzyMatch = true,
-          },
-        },
-        tsserver = {
-          globalPlugins = {
-            {
-              name = "typescript-svelte-plugin",
-              location = vim.fn.expand("$HOME/.pnpm/5/node_modules/typescript-svelte-plugin"),
-              enableForWorkspaceTypeScriptVersions = true,
-            },
-          },
+      yaml = {
+        schemaStore = {
+          enable = true,
+          -- The standard file minus some overlay aggressive matching rules for a few schemas
+          url = "https://raw.githubusercontent.com/dimfeld/schemastore/refs/heads/master/src/api/json/catalog.json",
         },
       },
     },
-    -- init_options = {
-    --   plugins = {
-    --     {
-    --       name = "typescript-svelte-plugin",
-    --       location = vim.fn.expand("$HOME/.pnpm/5/node_modules/typescript-svelte-plugin"),
-    --       languages = { "javascript", "typescript" },
-    --     },
-    --   },
-    -- },
-    filetypes = {
-      "javascript",
-      "typescript",
+  })
+
+  lspconfig.cssls.setup({})
+  lspconfig.eslint.setup({
+    settings = {
+      eslint = {
+        workingDirectories = {
+          mode = "auto",
+        },
+      },
     },
   })
-  lspconfig.yamlls.setup({})
 end
 
 local function on_attach(buffer, client)
@@ -392,20 +403,13 @@ return {
           end, { "i", "s" }),
         },
         sources = cmp.config.sources({
+          -- { name = "codeium" },
           { name = "nvim_lsp" },
         }, {
           { name = "async_path", option = { label_trailing_slash = true } },
           { name = "buffer" },
         }),
       })
-
-      -- vim.keymap.set("i", "<leader>c", function()
-      --   if cmp.visible() and cmp.get_active_entry() then
-      --     cmp.confirm()
-      --   else
-      --     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<leader>c", true, true, true), "n", false)
-      --   end
-      -- end, { desc = "Trigger code action" })
 
       -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
       cmp.setup.cmdline({ "/", "?" }, {
