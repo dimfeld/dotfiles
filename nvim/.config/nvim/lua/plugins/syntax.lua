@@ -1,3 +1,5 @@
+local cmdbar = require("config.telescope_commandbar")
+
 return {
   {
     "habamax/vim-asciidoctor",
@@ -68,9 +70,22 @@ return {
   { "plasticboy/vim-markdown", ft = { "markdown" } },
   {
     "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
     ft = { "markdown" },
     build = function()
       vim.fn["mkdp#util#install"]()
+    end,
+    config = function(_, opts)
+      cmdbar.add_commands({
+        {
+          name = "Markdown Preview",
+          category = "Markdown",
+          filetype = "markdown",
+          action = function()
+            vim.cmd("MarkdownPreviewToggle")
+          end,
+        },
+      })
     end,
   },
   {
@@ -84,8 +99,9 @@ return {
         icons = {},
       },
 
-      file_types = { "Avante", "markdown", "codecompanion" },
+      -- I actually don't like this for editing markdown but it's nice for LLM chats
+      file_types = { "Avante", "codecompanion" },
     },
-    ft = { "Avante", "markdown", "codecompanion" },
+    ft = { "Avante", "codecompanion" },
   },
 }

@@ -32,6 +32,10 @@ M.qf_keymaps = function()
 end
 
 M.setup = function()
+  if vim.g.vscode then
+    return
+  end
+
   local augroup = vim.api.nvim_create_augroup("QuickfixKeymap", {})
   vim.api.nvim_create_autocmd("FileType", {
     group = augroup,

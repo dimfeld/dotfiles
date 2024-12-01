@@ -108,14 +108,14 @@ local configure_telescope = function()
     local buffer_dir = require("telescope.utils").buffer_dir()
     local workspace_dir = getWorkspacePath(buffer_dir)
 
-    -- Use workspace_dir if the buffer dir contains it
-    if workspace_dir and starts_with(buffer_dir, workspace_dir) then
-      return workspace_dir
-    end
-
     -- Special case for config dir :)
     if string.find(buffer_dir, ".config/nvim") then
       return "~/.config/nvim"
+    end
+
+    -- Use workspace_dir if the buffer dir contains it
+    if workspace_dir and starts_with(buffer_dir, workspace_dir) then
+      return workspace_dir
     end
 
     -- Use CWD if it contains the buffer dir
@@ -283,6 +283,7 @@ return {
 
   {
     "nvim-telescope/telescope.nvim",
+    cond = not vim.g.vscode,
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-lua/popup.nvim",
@@ -306,6 +307,7 @@ return {
 
   {
     "nvim-telescope/telescope-file-browser.nvim",
+    cond = not vim.g.vscode,
     dependencies = { "nvim-telescope/telescope.nvim" },
     config = function()
       require("telescope").load_extension("file_browser")
@@ -314,6 +316,7 @@ return {
 
   {
     "nvim-telescope/telescope-fzy-native.nvim",
+    cond = not vim.g.vscode,
     dependencies = { "nvim-telescope/telescope.nvim" },
     config = function()
       require("telescope").load_extension("fzy_native")
@@ -322,6 +325,7 @@ return {
 
   {
     "debugloop/telescope-undo.nvim",
+    cond = not vim.g.vscode,
     dependencies = { "nvim-telescope/telescope.nvim" },
     opts = {
       layout_strategy = "vertical",
@@ -346,6 +350,7 @@ return {
 
   {
     "danielfalk/smart-open.nvim",
+    cond = not vim.g.vscode,
     dependencies = {
       "nvim-telescope/telescope.nvim",
       "kkharji/sqlite.lua",

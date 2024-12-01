@@ -1,7 +1,11 @@
 return {
-  "nvim-treesitter/nvim-treesitter-textobjects",
+  {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    cond = not vim.g.vscode,
+  },
   {
     "nvim-treesitter/nvim-treesitter",
+    cond = not vim.g.vscode,
     build = ":TSUpdate",
     opts = {
       ensure_installed = {

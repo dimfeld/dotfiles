@@ -323,4 +323,6 @@ require("config.terminal")
 ---- Other Commands
 require("commands.dash")
 require("commands.git")
+require("commands.editing")
+require("commands.lsp").setup()
 require("commands.quickfix").setup()

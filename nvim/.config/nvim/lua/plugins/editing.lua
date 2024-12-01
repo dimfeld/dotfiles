@@ -65,6 +65,7 @@ return {
 
   {
     "andymass/vim-matchup",
+    cond = not vim.g.vscode,
     init = function()
       -- The plugin works around matchit by default but this keeps it from needing to do so.
       vim.g.loaded_matchit = 1
@@ -85,6 +86,7 @@ return {
   {
     "folke/which-key.nvim",
     enabled = false,
+    cond = not vim.g.vscode,
     event = "VeryLazy",
     opts = {},
     keys = {
@@ -127,14 +129,6 @@ return {
 
   -- Extra commands for working with quickfix buffer entries.
   "romainl/vim-qf",
-
-  -- Close buffers without closing split
-  {
-    "qpkorr/vim-bufkill",
-    init = function()
-      vim.g.BufKillCreateMappings = 0
-    end,
-  },
 
   -- When saving a file, create the directories if needed.
   "jghauser/mkdir.nvim",

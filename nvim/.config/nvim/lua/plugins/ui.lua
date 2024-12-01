@@ -73,6 +73,7 @@ return {
   { "airblade/vim-gitgutter", cond = false, event = "VeryLazy" },
   {
     "lewis6991/gitsigns.nvim",
+    cond = not vim.g.vscode,
     event = "VeryLazy",
     opts = {
       word_diff = false,
@@ -187,6 +188,7 @@ return {
 
   {
     "nvim-lualine/lualine.nvim",
+    cond = not vim.g.vscode,
     dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {
       options = {
@@ -228,76 +230,21 @@ return {
     },
   },
 
-  -- Better `vim.notify()`
-  {
-    "rcarriga/nvim-notify",
-    keys = {
-      {
-        "<leader>un",
-        function()
-          require("notify").dismiss({ silent = true, pending = true })
-        end,
-        desc = "Dismiss All Notifications",
-      },
-    },
-    opts = {
-      -- This is the code for the "static" stage, modified to move the windows up a single row
-      -- to not cover the status line
-      stages = {
-        function(state)
-          local stages_util = require("notify.stages.util")
-          local next_height = state.message.height + 2
-          local next_row = stages_util.available_slot(state.open_windows, next_height, stages_util.DIRECTION.BOTTOM_UP)
-          if not next_row then
-            return nil
-          end
-
-          -- Modified to move windows up a row to not cover status line
-          if next_row + next_height >= vim.o.lines then
-            next_row = next_row - 1
-          end
-
-          return {
-            relative = "editor",
-            anchor = "NE",
-            width = state.message.width,
-            height = state.message.height,
-            col = vim.opt.columns:get(),
-            row = next_row,
-            border = "rounded",
-            style = "minimal",
-          }
-        end,
-        function()
-          return {
-            col = vim.opt.columns:get(),
-            time = true,
-          }
-        end,
-      },
-      top_down = false,
-      timeout = 5000,
-      render = "wrapped-compact",
-      max_height = function()
-        return math.floor(vim.o.lines * 0.75)
-      end,
-      max_width = function()
-        return math.floor(vim.o.columns * 0.75)
-      end,
-      on_open = function(win)
-        vim.api.nvim_win_set_config(win, { zindex = 100 })
-      end,
-    },
-    init = function()
-      -- Skip this since we're using noice on top of nvim-notify
-      -- vim.notify = require("notify")
-    end,
-  },
-
   -- Nicer notifications
   {
     "folke/noice.nvim",
+    cond = not vim.g.vscode,
     event = "VeryLazy",
+    -- stylua: ignore
+    keys = {
+      { "<leader>sn", "", desc = "+noice"},
+      { "<S-Enter>", function() require("noice").redirect(vim.fn.getcmdline()) end, mode = "c", desc = "Redirect Cmdline" },
+      { "<leader>snl", function() require("noice").cmd("last") end, desc = "Noice Last Message" },
+      { "<leader>snh", function() require("noice").cmd("history") end, desc = "Noice History" },
+      { "<leader>sna", function() require("noice").cmd("all") end, desc = "Noice All" },
+      { "<leader>snd", function() require("noice").cmd("dismiss") end, desc = "Dismiss All" },
+      { "<leader>snt", function() require("noice").cmd("pick") end, desc = "Noice Picker (Telescope/FzfLua)" },
+    },
     opts = {
       routes = {
         -- Hide messages when search fails to find a result
@@ -316,6 +263,32 @@ return {
                 end,
               },
             },
+          },
+        },
+        {
+          view = "mini",
+          filter = {
+            event = "msg_show",
+            any = {
+              { find = "%d+L, %d+B" },
+              { find = "; after #%d+" },
+              { find = "; before #%d+" },
+              { find = "No more valid diagnostics" },
+              { find = "[nvim-treesitter]" },
+            },
+          },
+        },
+        {
+          view = "mini",
+          filter = {
+            error = true,
+            find = "completion request failed",
+          },
+        },
+        {
+          opts = { skip = true },
+          filter = {
+            kind = { "debug" },
           },
         },
       },
@@ -407,13 +380,13 @@ return {
     },
     dependencies = {
       "MunifTanjim/nui.nvim",
-      "rcarriga/nvim-notify",
     },
   },
 
   -- Nicer replacement for builtin input and select
   {
     "stevearc/dressing.nvim",
+    cond = not vim.g.vscode,
     dependencies = { "nvim-telescope/telescope.nvim" },
     event = "VeryLazy",
     opts = {

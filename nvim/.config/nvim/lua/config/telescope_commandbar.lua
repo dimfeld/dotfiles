@@ -16,7 +16,7 @@ local entry_display = require("telescope.pickers.entry_display")
 --- @class CommandBarAction
 --- @field name string
 --- @field category string
---- @field filetype? string
+--- @field filetype? string | string[]
 --- @field action fun(opts: ActionOpts)
 
 -- Information about the current cursor position, useful when running a command that needs to access the visual
@@ -31,7 +31,11 @@ M.commands = {
     category = "LS",
     filetype = "typescript",
     action = function()
-      vim.lsp.buf.execute_command({ command = "typescript.organizeImports", arguments = { vim.fn.expand("%:p") } })
+      vim.lsp.buf.execute_command({
+        command = "typescript.organizeImports",
+        arguments = { vim.fn.expand("%:p") },
+        id = "vtsls",
+      })
     end,
   },
   {
@@ -226,7 +230,11 @@ local function showCommonCommandsPicker(opts)
       goto continue
     elseif vim.startswith(id, "svelte.") and filetype ~= "svelte" then
       goto continue
-    elseif (vim.startswith(id, "tsserver.") or vim.startswith(id, "vtsls.")) and filetype ~= "typescript" then
+    elseif
+      (vim.startswith(id, "tsserver.") or vim.startswith(id, "vtsls."))
+      and filetype ~= "typescript"
+      and filetype ~= "svelte"
+    then
       goto continue
     end
 
@@ -240,7 +248,11 @@ local function showCommonCommandsPicker(opts)
 
   for i, command in ipairs(M.commands) do
     if command.filetype ~= nil and filetype ~= command.filetype then
-      goto continue_2
+      if filetype == "svelte" and command.filetype == "typescript" then
+        -- allow this
+      else
+        goto continue_2
+      end
     end
 
     these_commands[#these_commands + 1] = command
@@ -298,6 +310,14 @@ M.build_range_prefix = function(cursor)
     return cursor.start.line .. "," .. cursor.stop.line
   else
     return tostring(cursor.start.line)
+  end
+end
+
+--- @param cursor CursorRange
+M.restore_selection = function(cursor)
+  if cursor and cursor.visual then
+    vim.api.nvim_buf_set_mark(0, "<", cursor.start.line, cursor.start.col, {})
+    vim.api.nvim_buf_set_mark(0, ">", cursor.stop.line, cursor.stop.col, {})
   end
 end
 

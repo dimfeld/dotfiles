@@ -61,4 +61,4 @@ bindkey '^E' end-of-line
 bindkey "${key[End]}" end-of-line
 bindkey '^[[F' end-of-line
 
-bindkey '^ ' autosuggest-accept
+bindkey '^]' autosuggest-accept

@@ -1,6 +1,7 @@
 return {
   {
     "mfussenegger/nvim-dap",
+    cond = not vim.g.vscode,
     ft = { "c", "cpp", "rust" },
     config = function()
       local dap = require("dap")
@@ -53,6 +54,7 @@ return {
 
   {
     "nvim-telescope/telescope-dap.nvim",
+    cond = not vim.g.vscode,
     ft = { "c", "cpp", "rust" },
     dependencies = { "mfussenegger/nvim-dap", "nvim-telescope/telescope.nvim" },
     config = function()
@@ -66,6 +68,7 @@ return {
 
   {
     "rcarriga/nvim-dap-ui",
+    cond = not vim.g.vscode,
     ft = { "c", "cpp", "rust" },
     dependencies = { "mfussenegger/nvim-dap" },
     config = function()

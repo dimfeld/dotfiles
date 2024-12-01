@@ -41,7 +41,6 @@ function mcd() {
 
 export NVM_DIR=~/.nvm
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
-alias py3env='source ~/py3env/bin/activate'
 alias pb='promptbox'
 
 alias gcm='git commit -m'
@@ -54,8 +53,13 @@ alias avbc='av stack branch-commit'
 alias avc='av commit'
 alias avs='av stack'
 alias avco='av stack switch'
-alias avsync='av stack sync --prune'
+alias avsw='av stack switch'
+alias avsync='av stack sync --prune --rebase-to-trunk'
 alias avsub='av stack submit'
+
+alias cps="gh copilot suggest -t shell"
+
+alias wind="windsurf"
 
 # AWS
 

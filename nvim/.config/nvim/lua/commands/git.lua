@@ -25,7 +25,7 @@ cmdbar.add_commands({
             new_url = new_url .. "-L" .. cmdbar.current_cursor.stop.line
           end
 
-          require("gitlinker.actions").copy_to_clipboard({ type = "selection", action = "copy" })
+          require("gitlinker.actions").copy_to_clipboard(new_url)
         end,
       })
     end,
