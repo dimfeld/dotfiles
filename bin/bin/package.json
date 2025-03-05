@@ -1,0 +1,14 @@
+{
+  "name": "bin",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "change-case": "^5.4.4",
+    "package-up": "^5.0.0"
+  }
+}
