@@ -1,11 +1,13 @@
 #!/usr/bin/env bun
 /// <reference types="bun-types" />
 import { $ } from 'bun';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { packageUp } from 'package-up';
 import { chdir } from 'process';
 import { parseArgs } from 'util';
 import * as changeCase from 'change-case';
+import os from 'node:os';
 
 let { values, positionals } = parseArgs({
   options: {
@@ -55,6 +57,14 @@ let { values, positionals } = parseArgs({
       type: 'boolean',
       short: 'a',
     },
+    output: {
+      type: 'string',
+      short: 'o',
+    },
+    copy: {
+      type: 'boolean',
+      short: 'c',
+    },
     help: {
       type: 'boolean',
       short: 'h',
@@ -84,6 +94,8 @@ if (values.help) {
   console.log('  -w, --whole-word            Match whole words only');
   console.log('  -a, --architect             Enable architect mode (removes empty lines)');
   console.log('  -i, --instructions          Add instructions to the prompt, prefix with @ to indicate a file.');
+  console.log('  -o, --output <file>         Specify the output file');
+  console.log('  -c, --copy                  Copy the output file to the clipboard');
   console.log('  -h, --help                  Show this help message and exit');
   process.exit(0);
 }
@@ -218,10 +230,105 @@ let allPaths = Array.from(pathsSet).join(',');
 // Add architect mode arguments if enabled
 const architectArgs = values.architect ? ['--remove-empty-lines'] : [];
 
-await Bun.spawn(
-  ['repomix', '--ignore', '*.sql', '--include', allPaths, ...architectArgs, ...positionals],
+// Capture repomix output
+const tempFile = path.join(tmpdir(), `repomix-${Math.random().toString(36).slice(2)}.txt`);
+let proc = Bun.spawn(
+  ['repomix', '--ignore', '*.sql', '--include', allPaths, ...architectArgs, ...positionals, '-o', tempFile],
   {
     stdout: 'inherit',
     stderr: 'inherit',
   }
-).exited;
+);
+const exitCode = await proc.exited;
+if (exitCode !== 0) {
+  console.error(`repomix exited with code ${exitCode}`);
+  process.exit(exitCode);
+}
+
+// Read the temporary file contents
+const repomixOutput = await Bun.file(tempFile).text();
+await Bun.file(tempFile).unlink();
+
+// Handle instructions
+let instructionsTag = '';
+if (values.instructions) {
+  let instructionsContent;
+  if (values.instructions.startsWith('@')) {
+    const instructionFile = values.instructions.slice(1);
+    try {
+      instructionsContent = await Bun.file(instructionFile).text();
+    } catch (error) {
+      console.error(`Error reading instructions file: ${instructionFile}`);
+      process.exit(1);
+    }
+  } else {
+    instructionsContent = values.instructions;
+  }
+  instructionsTag = `\n<instructions>\n${instructionsContent}\n</instructions>`;
+}
+
+async function copyToClipboard(text: string) {
+  let command: string[];
+  if (process.platform === 'darwin') {
+    // macOS
+    command = ['pbcopy'];
+  } else if (process.platform === 'win32') {
+    // Windows
+    command = ['clip'];
+  } else {
+    // Linux: try wl-copy (Wayland) or xclip (X11)
+    const hasWlCopy = await $`command -v wl-copy`.quiet().then(() => true).catch(() => false);
+    if (hasWlCopy) {
+      command = ['wl-copy'];
+    } else {
+      const hasXclip = await $`command -v xclip`.quiet().then(() => true).catch(() => false);
+      if (hasXclip) {
+        command = ['xclip', '-selection', 'clipboard'];
+      } else {
+        console.warn('No clipboard utility found (install wl-copy or xclip on Linux)');
+        return;
+      }
+    }
+  }
+  const proc = Bun.spawn(command, {
+    stdin: 'pipe',
+    stdout: 'inherit',
+    stderr: 'inherit',
+  });
+  proc.stdin!.write(text);
+  await proc.stdin!.end();
+  const exitCode = await proc.exited;
+  if (exitCode === 0) {
+    console.log('Output copied to clipboard');
+  } else {
+    console.warn(`Failed to copy to clipboard (exit code: ${exitCode})`);
+  }
+}
+
+// Determine output file
+let outputFile;
+if (values.output) {
+  outputFile = values.output;
+} else {
+  const configPath = path.join(os.homedir(), '.config', 'repomix', 'repomix.config.json');
+  if (await Bun.file(configPath).exists()) {
+    try {
+      const config = await Bun.file(configPath).json();
+      outputFile = config.output?.filePath;
+    } catch (error) {
+      console.error(`Error reading config file: ${configPath}`);
+    }
+  }
+  if (!outputFile) {
+    outputFile = './repomix_output.txt';
+  }
+}
+
+// Write final output
+const finalOutput = repomixOutput + instructionsTag;
+await Bun.write(outputFile, finalOutput);
+console.log(`Output written to ${outputFile}`);
+
+if(values.copy) {
+  await copyToClipboard(finalOutput);
+}
