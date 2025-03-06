@@ -7,7 +7,7 @@ import { chdir } from 'process';
 import { parseArgs } from 'util';
 import * as changeCase from 'change-case';
 
-let { values, positionals } = await parseArgs({
+let { values, positionals } = parseArgs({
   options: {
     packages: {
       type: 'string',
@@ -39,12 +39,21 @@ let { values, positionals } = await parseArgs({
       short: 'G',
       multiple: true,
     },
+    'whole-word': {
+      type: 'boolean',
+      short: 'w',
+    },
+    instructions: {
+      type: 'string',
+      short: 'i',
+    },
     expand: {
       type: 'boolean',
       short: 'e',
     },
-    'no-compress': {
+    architect: {
       type: 'boolean',
+      short: 'a',
     },
     help: {
       type: 'boolean',
@@ -56,7 +65,7 @@ let { values, positionals } = await parseArgs({
 });
 
 if (values.help) {
-  console.log('usage: repomix-package.ts <packages>');
+  console.log('usage: rmfilter.ts <packages>');
   console.log();
   console.log('Options:');
   console.log('  -p, --packages <packages>   Include the contents of these packages');
@@ -72,7 +81,9 @@ if (values.help) {
   console.log(
     '  -e, --expand                Expand search terms to include snake case, camel case, etc.'
   );
-  console.log('  --no-compress              Tell repomix to compress the output');
+  console.log('  -w, --whole-word            Match whole words only');
+  console.log('  -a, --architect             Enable architect mode (removes empty lines)');
+  console.log('  -i, --instructions          Add instructions to the prompt, prefix with @ to indicate a file.');
   console.log('  -h, --help                  Show this help message and exit');
   process.exit(0);
 }
@@ -84,6 +95,8 @@ async function getDeps(packages: string[] | undefined, mode: 'upstream' | 'downs
   if (!packages?.length) {
     return [];
   }
+
+  packages = packages.flatMap((p) => p.split(','));
 
   let args = packages.flatMap((pkg) => {
     let filter: string;
@@ -97,10 +110,8 @@ async function getDeps(packages: string[] | undefined, mode: 'upstream' | 'downs
     return ['-F', filter];
   });
 
-  // console.log('running turbo ls', args);
   let proc = Bun.spawn(['turbo', 'ls', '--output', 'json', ...args]);
   let output = await new Response(proc.stdout).json();
-  // console.log(args, output);
 
   return output.packages.items.map((p) => p.path);
 }
@@ -109,16 +120,32 @@ function expandPattern(pattern: string) {
   return [changeCase.snakeCase(pattern), changeCase.camelCase(pattern)];
 }
 
+let repomixIgnoreExistsPromise: Promise<boolean> | undefined;
+async function useRepomixIgnore() {
+  repomixIgnoreExistsPromise ??= Bun.file(path.join(gitRoot, '.repomixignore')).exists();
+  return repomixIgnoreExistsPromise;
+}
+
 async function grepFor(patterns: string[] | undefined, mode: 'file' | 'package') {
   if (!patterns?.length) {
     return [];
   }
+
+  patterns = patterns.flatMap((p) => p.split(','));
 
   if (values.expand) {
     patterns = patterns.flatMap(expandPattern);
   }
 
   let args = patterns.flatMap((pattern) => ['-e', pattern]);
+  if (await useRepomixIgnore()) {
+    args.push('--ignore-file=.repomixignore');
+  }
+
+  if (values['whole-word']) {
+    args.push('--word-regexp');
+  }
+
   let proc = Bun.spawn(['rg', '-i', '--files-with-matches', ...args]);
   let results = await new Response(proc.stdout).text();
 
@@ -163,7 +190,13 @@ async function grepFor(patterns: string[] | undefined, mode: 'file' | 'package')
 let upstream = [...(values.upstream ?? []), ...(values.both ?? [])];
 let downstream = [...(values.downstream ?? []), ...(values.both ?? [])];
 
-if (!upstream.length && !downstream.length && !values.packages?.length && !values.grep?.length) {
+if (
+  !upstream.length &&
+  !downstream.length &&
+  !values.packages?.length &&
+  !values.grep?.length &&
+  !values['grep-package']?.length
+) {
   console.log('no packages or grep strings specified');
   process.exit(0);
 }
@@ -181,9 +214,14 @@ let pathsSet = new Set(
 );
 
 let allPaths = Array.from(pathsSet).join(',');
-console.log(allPaths);
-// console.log('repomix', allPaths, ...positionals);
-await Bun.spawn(['repomix', '--ignore', '*.sql', '--include', allPaths, ...positionals], {
-  stdout: 'inherit',
-  stderr: 'inherit',
-}).exited;
+
+// Add architect mode arguments if enabled
+const architectArgs = values.architect ? ['--remove-empty-lines'] : [];
+
+await Bun.spawn(
+  ['repomix', '--ignore', '*.sql', '--include', allPaths, ...architectArgs, ...positionals],
+  {
+    stdout: 'inherit',
+    stderr: 'inherit',
+  }
+).exited;
