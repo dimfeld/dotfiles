@@ -4,7 +4,6 @@ import { $ } from 'bun';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { packageUp } from 'package-up';
-import { chdir } from 'process';
 import { parseArgs } from 'util';
 import * as changeCase from 'change-case';
 import os from 'node:os';
@@ -36,6 +35,10 @@ let { values, positionals } = parseArgs({
       short: 'g',
       multiple: true,
     },
+    'grep-in': {  // Added new option
+      type: 'string',
+      multiple: true,
+    },
     'grep-package': {
       type: 'string',
       short: 'G',
@@ -48,6 +51,7 @@ let { values, positionals } = parseArgs({
     instructions: {
       type: 'string',
       short: 'i',
+      array: true,
     },
     expand: {
       type: 'boolean',
@@ -65,6 +69,9 @@ let { values, positionals } = parseArgs({
       type: 'boolean',
       short: 'c',
     },
+    cwd: {
+      type: 'string',
+    },
     help: {
       type: 'boolean',
       short: 'h',
@@ -74,8 +81,9 @@ let { values, positionals } = parseArgs({
   allowNegative: true,
 });
 
+// Update help message
 if (values.help) {
-  console.log('usage: rmfilter.ts <packages>');
+  console.log('usage: rmfilter <packages>');
   console.log();
   console.log('Options:');
   console.log('  -p, --packages <packages>   Include the contents of these packages');
@@ -85,8 +93,9 @@ if (values.help) {
     '  -b, --both <packages>       Include the package and its upstream and downstream dependencies'
   );
   console.log('  -g, --grep <patterns>       Include files that match this pattern');
+  console.log('  --grep-in <base_dirs>:<patterns>  Include files that match these patterns in specified directories');
   console.log(
-    '  -G, --grep-package <pkg>    Include all packages with a file that matches ths pattern'
+    '  -G, --grep-package <pkg>    Include all packages with a file whose contents matches ths pattern'
   );
   console.log(
     '  -e, --expand                Expand search terms to include snake case, camel case, etc.'
@@ -100,8 +109,8 @@ if (values.help) {
   process.exit(0);
 }
 
-const gitRoot = (await $`git rev-parse --show-toplevel`.text()).trim();
-chdir(gitRoot);
+let gitRoot = values.cwd || (await $`git rev-parse --show-toplevel`.text()).trim();
+gitRoot = path.resolve(gitRoot);
 
 async function getDeps(packages: string[] | undefined, mode: 'upstream' | 'downstream' | 'only') {
   if (!packages?.length) {
@@ -122,7 +131,7 @@ async function getDeps(packages: string[] | undefined, mode: 'upstream' | 'downs
     return ['-F', filter];
   });
 
-  let proc = Bun.spawn(['turbo', 'ls', '--output', 'json', ...args]);
+  let proc = Bun.spawn(['turbo', 'ls', '--output', 'json', ...args], { cwd: gitRoot });
   let output = await new Response(proc.stdout).json();
 
   return output.packages.items.map((p) => p.path);
@@ -138,7 +147,11 @@ async function useRepomixIgnore() {
   return repomixIgnoreExistsPromise;
 }
 
-async function grepFor(patterns: string[] | undefined, mode: 'file' | 'package') {
+async function grepFor(
+  patterns: string[] | undefined,
+  mode: 'file' | 'package',
+  baseDirs?: string[]
+): Promise<string[]> {
   if (!patterns?.length) {
     return [];
   }
@@ -151,20 +164,33 @@ async function grepFor(patterns: string[] | undefined, mode: 'file' | 'package')
 
   let args = patterns.flatMap((pattern) => ['-e', pattern]);
   if (await useRepomixIgnore()) {
-    args.push('--ignore-file=.repomixignore');
+    const ignorePath = path.join(gitRoot, '.repomixignore');
+    args.push(`--ignore-file=${ignorePath}`);
   }
 
   if (values['whole-word']) {
     args.push('--word-regexp');
   }
 
-  let proc = Bun.spawn(['rg', '-i', '--files-with-matches', ...args]);
-  let results = await new Response(proc.stdout).text();
+  // Use specified base directories or fall back to gitRoot
+  const searchDirs = baseDirs?.length
+    ? baseDirs.map(dir => path.resolve(gitRoot, dir))
+    : [gitRoot];
+
+  // Run grep for each directory and combine results
+  const resultsPromises = searchDirs.map(async (dir) => {
+    let proc = Bun.spawn(['rg', '-i', '--files-with-matches', ...args], { cwd: dir });
+    return await new Response(proc.stdout).text();
+  });
+
+  const results = await Promise.all(resultsPromises);
 
   let files = results
-    .split('\n')
+    .flatMap(result => result.split('\n'))
     .map((line) => line.trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    // Convert to relative paths from gitRoot
+    .map(file => path.relative(gitRoot, path.resolve(file)));
 
   if (mode === 'file') {
     return files;
@@ -173,7 +199,7 @@ async function grepFor(patterns: string[] | undefined, mode: 'file' | 'package')
   let packagePaths = await Promise.all(
     files.map((file) =>
       packageUp({
-        cwd: path.dirname(file),
+        cwd: path.dirname(path.resolve(gitRoot, file)),
       })
     )
   );
@@ -199,6 +225,35 @@ async function grepFor(patterns: string[] | undefined, mode: 'file' | 'package')
   return [...packageDirs];
 }
 
+// Process grep-in arguments
+async function processGrepIn(grepInArgs: string[] | undefined): Promise<string[]> {
+  if (!grepInArgs?.length) {
+    return [];
+  }
+
+  // Parse all arguments first and prepare grepFor calls
+  const grepCalls = grepInArgs.map(arg => {
+    const [dirsStr, patternsStr] = arg.split(':');
+    if (!dirsStr || !patternsStr) {
+      console.error(`Invalid --grep-in format: ${arg}. Expected format: <dirs>:<patterns>`);
+      return null; // Return null for invalid formats
+    }
+
+    const dirs = dirsStr.split(',');
+    const patterns = patternsStr.split(',');
+
+    return { dirs, patterns }; // Return config for each grep call
+  }).filter((call) => call !== null); // Filter out invalid entries
+
+  // Run all valid grepFor calls concurrently
+  const results = await Promise.all(grepCalls.map(({ dirs, patterns }) =>
+    grepFor(patterns, 'file', dirs)
+  ));
+
+
+  return results.flat();
+}
+
 let upstream = [...(values.upstream ?? []), ...(values.both ?? [])];
 let downstream = [...(values.downstream ?? []), ...(values.both ?? [])];
 
@@ -207,7 +262,8 @@ if (
   !downstream.length &&
   !values.packages?.length &&
   !values.grep?.length &&
-  !values['grep-package']?.length
+  !values['grep-package']?.length &&
+  !values['grep-in']?.length
 ) {
   console.log('no packages or grep strings specified');
   process.exit(0);
@@ -221,10 +277,12 @@ let pathsSet = new Set(
       getDeps(values.packages, 'only'),
       grepFor(values.grep, 'file'),
       grepFor(values['grep-package'], 'package'),
+      processGrepIn(values['grep-in']), // Added grep-in processing
     ])
   ).flat()
 );
 
+// Rest of the code remains the same...
 let allPaths = Array.from(pathsSet).join(',');
 
 // Add architect mode arguments if enabled
@@ -235,6 +293,7 @@ const tempFile = path.join(tmpdir(), `repomix-${Math.random().toString(36).slice
 let proc = Bun.spawn(
   ['repomix', '--ignore', '*.sql', '--include', allPaths, ...architectArgs, ...positionals, '-o', tempFile],
   {
+    cwd: gitRoot,
     stdout: 'inherit',
     stderr: 'inherit',
   }
@@ -252,19 +311,24 @@ await Bun.file(tempFile).unlink();
 // Handle instructions
 let instructionsTag = '';
 if (values.instructions) {
-  let instructionsContent;
-  if (values.instructions.startsWith('@')) {
-    const instructionFile = values.instructions.slice(1);
-    try {
-      instructionsContent = await Bun.file(instructionFile).text();
-    } catch (error) {
-      console.error(`Error reading instructions file: ${instructionFile}`);
-      process.exit(1);
+  let instructionsContent: string[] = [];
+
+  for(let instruction of values.instructions) {
+    if (instruction.startsWith('@')) {  // Fixed: Check individual instruction
+      const instructionFile = instruction.slice(1);
+      try {
+        instructionsContent.push(await Bun.file(instructionFile).text());
+      } catch (error) {
+        console.error(`Error reading instructions file: ${instructionFile}`);
+        process.exit(1);
+      }
+    } else {
+      instructionsContent.push(instruction);
     }
-  } else {
-    instructionsContent = values.instructions;
   }
-  instructionsTag = `\n<instructions>\n${instructionsContent}\n</instructions>`;
+
+  let output = instructionsContent.map((s) => s.trim()).join('\n\n');
+  instructionsTag = `\n<instructions>\n${output}\n</instructions>`;
 }
 
 async function copyToClipboard(text: string) {
