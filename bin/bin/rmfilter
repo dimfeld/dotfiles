@@ -30,12 +30,16 @@ let { values, positionals } = parseArgs({
       short: 'b',
       multiple: true,
     },
+    path: {
+      type: 'string',
+      multiple: true,
+    },
     grep: {
       type: 'string',
       short: 'g',
       multiple: true,
     },
-    'grep-in': {  // Added new option
+    'grep-in': {
       type: 'string',
       multiple: true,
     },
@@ -76,10 +80,24 @@ let { values, positionals } = parseArgs({
       type: 'boolean',
       short: 'h',
     },
+    debug: {
+      type: 'boolean',
+    },
   },
   allowPositionals: true,
   allowNegative: true,
 });
+
+// Helper function to log and execute commands
+function logSpawn<T extends Parameters<typeof Bun.spawn>[1] | undefined>(cmd: string[], options: T) {
+  if (values.debug) {
+    console.log(`[DEBUG] Executing: ${cmd.join(' ')}`);
+    if (options?.cwd) {
+      console.log(`[DEBUG] cwd: ${options.cwd}`);
+    }
+  }
+  return Bun.spawn(cmd, options);
+}
 
 // Update help message
 if (values.help) {
@@ -106,6 +124,7 @@ if (values.help) {
   console.log('  -o, --output <file>         Specify the output file');
   console.log('  -c, --copy                  Copy the output file to the clipboard');
   console.log('  -h, --help                  Show this help message and exit');
+  console.log('  -D, --debug                 Print all executed commands');
   process.exit(0);
 }
 
@@ -131,7 +150,7 @@ async function getDeps(packages: string[] | undefined, mode: 'upstream' | 'downs
     return ['-F', filter];
   });
 
-  let proc = Bun.spawn(['turbo', 'ls', '--output', 'json', ...args], { cwd: gitRoot });
+  let proc = logSpawn(['turbo', 'ls', '--output', 'json', ...args], { cwd: gitRoot });
   let output = await new Response(proc.stdout).json();
 
   return output.packages.items.map((p) => p.path);
@@ -172,14 +191,12 @@ async function grepFor(
     args.push('--word-regexp');
   }
 
-  // Use specified base directories or fall back to gitRoot
   const searchDirs = baseDirs?.length
     ? baseDirs.map(dir => path.resolve(gitRoot, dir))
     : [gitRoot];
 
-  // Run grep for each directory and combine results
   const resultsPromises = searchDirs.map(async (dir) => {
-    let proc = Bun.spawn(['rg', '-i', '--files-with-matches', ...args], { cwd: dir });
+    let proc = logSpawn(['rg', '-i', '--files-with-matches', ...args, dir]);
     return await new Response(proc.stdout).text();
   });
 
@@ -189,7 +206,6 @@ async function grepFor(
     .flatMap(result => result.split('\n'))
     .map((line) => line.trim())
     .filter(Boolean)
-    // Convert to relative paths from gitRoot
     .map(file => path.relative(gitRoot, path.resolve(file)));
 
   if (mode === 'file') {
@@ -225,31 +241,27 @@ async function grepFor(
   return [...packageDirs];
 }
 
-// Process grep-in arguments
 async function processGrepIn(grepInArgs: string[] | undefined): Promise<string[]> {
   if (!grepInArgs?.length) {
     return [];
   }
 
-  // Parse all arguments first and prepare grepFor calls
   const grepCalls = grepInArgs.map(arg => {
     const [dirsStr, patternsStr] = arg.split(':');
     if (!dirsStr || !patternsStr) {
       console.error(`Invalid --grep-in format: ${arg}. Expected format: <dirs>:<patterns>`);
-      return null; // Return null for invalid formats
+      return null;
     }
 
     const dirs = dirsStr.split(',');
     const patterns = patternsStr.split(',');
 
-    return { dirs, patterns }; // Return config for each grep call
-  }).filter((call) => call !== null); // Filter out invalid entries
+    return { dirs, patterns };
+  }).filter((call) => call !== null);
 
-  // Run all valid grepFor calls concurrently
   const results = await Promise.all(grepCalls.map(({ dirs, patterns }) =>
     grepFor(patterns, 'file', dirs)
   ));
-
 
   return results.flat();
 }
@@ -263,7 +275,8 @@ if (
   !values.packages?.length &&
   !values.grep?.length &&
   !values['grep-package']?.length &&
-  !values['grep-in']?.length
+  !values['grep-in']?.length &&
+  !values.path?.length
 ) {
   console.log('no packages or grep strings specified');
   process.exit(0);
@@ -277,20 +290,17 @@ let pathsSet = new Set(
       getDeps(values.packages, 'only'),
       grepFor(values.grep, 'file'),
       grepFor(values['grep-package'], 'package'),
-      processGrepIn(values['grep-in']), // Added grep-in processing
+      processGrepIn(values['grep-in']),
     ])
-  ).flat()
+  ).flat().concat(values.path ?? [])
 );
 
-// Rest of the code remains the same...
 let allPaths = Array.from(pathsSet).join(',');
 
-// Add architect mode arguments if enabled
 const architectArgs = values.architect ? ['--remove-empty-lines'] : [];
 
-// Capture repomix output
 const tempFile = path.join(tmpdir(), `repomix-${Math.random().toString(36).slice(2)}.txt`);
-let proc = Bun.spawn(
+let proc = logSpawn(
   ['repomix', '--ignore', '*.sql', '--include', allPaths, ...architectArgs, ...positionals, '-o', tempFile],
   {
     cwd: gitRoot,
@@ -304,17 +314,15 @@ if (exitCode !== 0) {
   process.exit(exitCode);
 }
 
-// Read the temporary file contents
 const repomixOutput = await Bun.file(tempFile).text();
 await Bun.file(tempFile).unlink();
 
-// Handle instructions
 let instructionsTag = '';
 if (values.instructions) {
   let instructionsContent: string[] = [];
 
   for(let instruction of values.instructions) {
-    if (instruction.startsWith('@')) {  // Fixed: Check individual instruction
+    if (instruction.startsWith('@')) {
       const instructionFile = instruction.slice(1);
       try {
         instructionsContent.push(await Bun.file(instructionFile).text());
@@ -334,13 +342,10 @@ if (values.instructions) {
 async function copyToClipboard(text: string) {
   let command: string[];
   if (process.platform === 'darwin') {
-    // macOS
     command = ['pbcopy'];
   } else if (process.platform === 'win32') {
-    // Windows
     command = ['clip'];
   } else {
-    // Linux: try wl-copy (Wayland) or xclip (X11)
     const hasWlCopy = await $`command -v wl-copy`.quiet().then(() => true).catch(() => false);
     if (hasWlCopy) {
       command = ['wl-copy'];
@@ -354,7 +359,7 @@ async function copyToClipboard(text: string) {
       }
     }
   }
-  const proc = Bun.spawn(command, {
+  const proc = logSpawn(command, {
     stdin: 'pipe',
     stdout: 'inherit',
     stderr: 'inherit',
@@ -369,7 +374,6 @@ async function copyToClipboard(text: string) {
   }
 }
 
-// Determine output file
 let outputFile;
 if (values.output) {
   outputFile = values.output;
@@ -388,7 +392,6 @@ if (values.output) {
   }
 }
 
-// Write final output
 const finalOutput = repomixOutput + instructionsTag;
 await Bun.write(outputFile, finalOutput);
 console.log(`Output written to ${outputFile}`);
