@@ -2,27 +2,41 @@
 /// <reference types="bun-types" />
 
 /* Apply LLM whole-file blocks from copied LLM output.
- * This looks for blocks that start with a comment that looks like a filename,
- * and writes the contents to the path given in the comment, relative to the Git root.
+ * This looks for blocks with filenames either in a comment at the start of the block
+ * or on the last non-blank line before the block (as a markdown header or raw filename),
+ * and writes the contents to the path given, relative to the Git root.
  **/
 
 import { $ } from 'bun';
 import clipboard from 'clipboardy';
 import * as path from 'path';
 
-async function processFile(content: string) {
+async function processFile(content: string, writeToGitroot: boolean) {
   // Split content into lines
   const lines = content.split('\n');
-  let state: 'searching' | 'startCodeBlock' | 'trimmingPostCommentLines' | 'ignoring' | 'copying' =
-    'searching';
+  let state:
+    | 'searching'
+    | 'startCodeBlock'
+    | 'skippingLanguageSpecifier'
+    | 'trimmingLeadingLines'
+    | 'trimmingPostCommentLines'
+    | 'ignoring'
+    | 'copying' = 'searching';
   let currentBlock = [];
   let filename = null;
   const filesToWrite = new Map();
-  const gitRoot = (await $`git rev-parse --show-toplevel`.text()).trim();
+  const writeRoot = writeToGitroot
+    ? (await $`git rev-parse --show-toplevel`.text()).trim()
+    : process.cwd();
+  let preBlockLines = [];
 
   // Process line by line
   for (const line of lines) {
-    // Check for code block start/end
+    if (state === 'searching' && !line.startsWith('```')) {
+      preBlockLines.push(line);
+      continue;
+    }
+
     if (line.startsWith('```')) {
       if (state === 'searching') {
         state = 'startCodeBlock';
@@ -34,35 +48,54 @@ async function processFile(content: string) {
         state = 'searching';
         currentBlock = [];
         filename = null;
+        preBlockLines = []; // Reset for the next code block
       }
       continue;
     }
 
     if (state === 'startCodeBlock') {
-      // Check if first line is a filename comment
-      if (
-        currentBlock.length === 0 &&
-        (line.trim().startsWith('//') || line.trim().startsWith('#')) &&
-        line.includes('src/')
-      ) {
+      // Check preBlockLines for filename
+      const reversedLines = [...preBlockLines].reverse();
+      const lastNonEmptyLine = reversedLines.find((l) => l.trim() !== '');
+      if (lastNonEmptyLine) {
+        // Check for markdown header (e.g., **`filename`**)
+        const markdownMatch =
+          lastNonEmptyLine.match(/\*\*`(.+?)`\*\*/) || lastNonEmptyLine.match(/^`(.+?)`$/);
+        if (markdownMatch) {
+          filename = markdownMatch[1].trim();
+          state = 'skippingLanguageSpecifier';
+          continue;
+        }
+        // Check for raw filename (e.g., src/some/file.js)
+        else if (lastNonEmptyLine.trim().includes('/')) {
+          filename = lastNonEmptyLine.trim();
+          state = 'skippingLanguageSpecifier';
+          continue;
+        }
+      }
+      // Fallback to checking first line inside the code block
+      if ((line.trim().startsWith('//') || line.trim().startsWith('#')) && line.includes('.')) {
         const commentMatch = line.match(/\/\/\s*(\S+)/);
         if (commentMatch) {
           filename = commentMatch[1].trim();
           state = 'trimmingPostCommentLines';
-          continue; // Skip adding this line to content
+          continue;
         }
       }
-
-      // We didn't find a filename comment, so ignore the rest of the block
       state = 'ignoring';
     }
 
-    if (state === 'trimmingPostCommentLines') {
-      // Skip empty lines after the first comment
+    if (state === 'skippingLanguageSpecifier') {
+      state = 'trimmingLeadingLines';
+      continue; // Skip the language specifier line
+    }
+
+    if (state === 'trimmingLeadingLines' || state === 'trimmingPostCommentLines') {
       if (line.trim() === '') {
-        continue;
+        continue; // Skip empty lines
       } else {
         state = 'copying';
+        currentBlock.push(line);
       }
     }
 
@@ -71,9 +104,14 @@ async function processFile(content: string) {
     }
   }
 
-  // Write files
+  // Handle any remaining block
+  if (filename && state !== 'ignoring' && currentBlock.length > 0) {
+    filesToWrite.set(filename, currentBlock);
+  }
+
+  // Write files to disk
   for (const [filePath, content] of filesToWrite) {
-    const fullPath = path.resolve(gitRoot, filePath);
+    const fullPath = path.resolve(writeRoot, filePath);
     try {
       await Bun.write(fullPath, content.join('\n'));
       console.log(`Wrote ${content.length} lines to file: ${filePath}`);
@@ -83,13 +121,14 @@ async function processFile(content: string) {
   }
 }
 
-const args = process.argv.slice(2); // Skip node and script path
+const args = process.argv.slice(2);
 const useStdin = args.includes('--stdin');
+const writeToGitroot = args.includes('--gitroot');
 
 const contents = useStdin ? await Bun.stdin.text() : await clipboard.read();
 
 // Run the processing
-processFile(contents).catch((err) => {
-  console.error('Error processing stdin:', err);
+processFile(contents, writeToGitroot).catch((err) => {
+  console.error('Error processing input:', err);
   process.exit(1);
 });
