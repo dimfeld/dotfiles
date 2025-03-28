@@ -35,15 +35,19 @@ local function configure_lsp_keymaps()
     vim.keymap.set("n", "<leader>dg", vim.diagnostic.open_float, { silent = true, desc = "Show diagnostic info" })
 
     -- Navigate diagnostics
-    vim.keymap.set("n", "[G", vim.diagnostic.goto_prev, { silent = true, desc = "Previous diagnostic" })
-    vim.keymap.set("n", "]G", vim.diagnostic.goto_next, { silent = true, desc = "Next diagnostic" })
+    vim.keymap.set("n", "[G", function()
+      vim.diagnostic.jump({ count = -1, float = false })
+    end, { silent = true, desc = "Previous diagnostic" })
+    vim.keymap.set("n", "]G", function()
+      vim.diagnostic.jump({ count = 1, float = false })
+    end, { silent = true, desc = "Next diagnostic" })
 
     -- Navigate errors
     vim.keymap.set("n", "[g", function()
-      vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })
+      vim.diagnostic.jump({ severity = vim.diagnostic.severity.ERROR, count = -1, float = false })
     end, { silent = true, desc = "Previous error" })
     vim.keymap.set("n", "]g", function()
-      vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })
+      vim.diagnostic.jump({ severity = vim.diagnostic.severity.ERROR, count = 1, float = false })
     end, { silent = true, desc = "Next error" })
 
     -- Code actions

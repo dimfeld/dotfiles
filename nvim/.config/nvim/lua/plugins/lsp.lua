@@ -226,12 +226,16 @@ return {
       configure_lsp_servers()
 
       vim.diagnostic.config({
-        virtual_text = {
-          spacing = 4,
-          source = "if_many",
-          prefix = "●",
-          severity = { vim.diagnostic.severity.ERROR, vim.diagnostic.severity.WARN },
+        virtual_lines = {
+          current_line = true,
         },
+        -- virtual_text = {
+        --   spacing = 4,
+        --   current_line = true,
+        --   source = "if_many",
+        --   prefix = "●",
+        --   severity = { vim.diagnostic.severity.ERROR, vim.diagnostic.severity.WARN },
+        -- },
         signs = {
           text = {
             [vim.diagnostic.severity.ERROR] = "•",
@@ -240,12 +244,13 @@ return {
             [vim.diagnostic.severity.HINT] = "•",
           },
         },
-        float = {
-          severity_sort = true,
-          source = true,
-        },
+        -- float = {
+        --   severity_sort = true,
+        --   source = true,
+        -- },
+        -- No need for this now that we have virtual_lines
         jump = {
-          float = true,
+          float = false,
         },
         severity_sort = true,
       })

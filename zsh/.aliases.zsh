@@ -43,23 +43,56 @@ export NVM_DIR=~/.nvm
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 alias pb='promptbox'
 
+alias gp='git pull'
 alias gcm='git commit -m'
 alias gco-='git checkout -'
 alias grc='git rebase --continue'
 
+alias jc='jj commit'
+alias jjc='jj commit'
+alias jd='jj diff'
+alias jjd='jj diff'
+alias js='jj status'
+alias jjs='jj status'
+alias jjsh='jj show'
+alias jje='jj edit'
+alias jjpush='jj git push'
+alias jjpb="jj log -r 'latest(heads(ancestors(@) & bookmarks()), 1)' --limit 1 --no-graph --ignore-working-copy -T bookmarks | tr -d '*'"
+
+alias copydiff="jj diff --from main | pbcopy"
+
+function jj-update-branch() {
+  REV=${1:-@-}
+  if [ $# -gt 0 ]; then
+    shift
+  fi
+  jj bookmark move $(jjpb) --to "$REV" "$@"
+}
+
+alias jjub=jj-update-branch
+
+function jjbm() {
+  BOOKMARK=$1
+  REV=${2:-@}
+  shift 2
+
+  jj bookmark move "$BOOKMARK" --to "$REV" "$@"
+}
+
 alias avpr='av pr create'
-alias avb='av stack branch'
-alias avbc='av stack branch-commit'
+alias avb='av branch'
+alias avbc='av commit -b'
 alias avc='av commit'
 alias avs='av stack'
-alias avco='av stack switch'
-alias avsw='av stack switch'
-alias avsync='av stack sync --prune --rebase-to-trunk'
-alias avsub='av stack submit'
+alias avco='av switch'
+alias avsw='av switch'
+alias avsync='av sync --prune --rebase-to-trunk'
+alias avpush='av sync'
+alias avsub='av pr --all'
 
 alias cps="gh copilot suggest -t shell"
 
-alias wind="windsurf"
+alias wind="/Users/dimfeld/.codeium/windsurf/bin/windsurf-next"
 
 # AWS
 

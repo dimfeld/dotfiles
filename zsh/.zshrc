@@ -313,6 +313,8 @@ setopt APPEND_HISTORY        # append to history file (Default)
 setopt HIST_NO_STORE         # Don't store history commands
 setopt HIST_REDUCE_BLANKS    # Remove superfluous blanks from each command line being added to the history.
 
+setopt +o nomatch
+
 if (( $+commands[tag] )); then
   tag() { command tag "$@"; source ${TAG_ALIAS_FILE:-/tmp/tag_aliases} 2>/dev/null }
   alias ag=tag
@@ -372,6 +374,7 @@ setopt auto_pushd
 
 # Better autocompletion
 autoload -Uz compinit && compinit
+source <(COMPLETE=zsh jj)
 
 # zprof
 
@@ -403,3 +406,9 @@ zi snippet OMZP::ssh-agent
 zi light Aloxaf/fzf-tab
 zinit ice wait lucid atload'_zsh_autosuggest_start'
 zinit light zsh-users/zsh-autosuggestions
+
+# Added by Windsurf - Next
+export PATH="/Users/dimfeld/.codeium/windsurf/bin:$PATH"
+
+# Added by Windsurf - Next
+export PATH="/Users/dimfeld/.codeium/windsurf/bin:$PATH"

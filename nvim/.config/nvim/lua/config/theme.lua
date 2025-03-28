@@ -65,7 +65,11 @@ vim.api.nvim_create_autocmd("FileType", {
     local ft = vim.bo.filetype
     local lang = vim.treesitter.language.get_lang(ft)
     if lang then
-      vim.treesitter.start()
+      local ts = vim.treesitter.language.add(lang)
+      if ts then
+        print("Setting treesitter for " .. ft)
+        vim.treesitter.start()
+      end
     end
   end,
 })

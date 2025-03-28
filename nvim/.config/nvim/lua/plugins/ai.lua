@@ -64,6 +64,7 @@ return {
       "nvim-lualine/lualine.nvim",
     },
     opts = {
+      enable_cmp_source = false,
       virtual_text = {
         enabled = true,
         filetypes = {
@@ -71,8 +72,8 @@ return {
         },
         key_bindings = {
           accept = "<C-]>",
-          accept_line = "<C-j>",
-          clear = "",
+          -- accept_line = "<C-j>",
+          -- clear = "",
         },
       },
     },
@@ -163,7 +164,7 @@ return {
   },
   {
     "CopilotC-Nvim/CopilotChat.nvim",
-    branch = "canary",
+    branch = "main",
     cond = not vim.g.vscode,
     dependencies = {
       { "zbirenbaum/copilot.lua" }, -- or github/copilot.vim
@@ -313,10 +314,42 @@ return {
     event = "VeryLazy",
     build = "make", -- This is Optional, only if you want to use tiktoken_core to calculate tokens count
     opts = {
-      provider = "copilot",
+      -- provider = "copilot",
+      provider = "deepseek",
+      deepseek = {
+        model = "deepseek-chat",
+      },
       copilot = {
         model = "claude-3.5-sonnet",
         -- max_tokens = 4096,
+      },
+      vendors = {
+        ---@type AvanteProvider
+        deepseek = {
+          endpoint = "https://api.deepseek.com/",
+          model = "deepseek-chat",
+          api_key_name = "DEEPSEEK_API_KEY",
+          parse_curl_args = function(opts, code_opts)
+            return {
+              url = opts.endpoint,
+              headers = {
+                ["Accept"] = "application/json",
+                ["Content-Type"] = "application/json",
+                ["Authorization"] = "Bearer " .. os.getenv(opts.api_key_name),
+              },
+              body = {
+                model = opts.model,
+                messages = require("avante.providers").openai.parse_message(code_opts), -- you can make your own message, but this is very advanced
+                temperature = 0,
+                max_tokens = 4096,
+                stream = true, -- this will be set by default.
+              },
+            }
+          end,
+          parse_response_data = function(data_stream, event_state, opts)
+            require("avante.providers").openai.parse_response(data_stream, event_state, opts)
+          end,
+        },
       },
     },
     config = function(_, opts)

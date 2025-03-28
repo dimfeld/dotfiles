@@ -41,6 +41,11 @@ end
 
 return {
   {
+    "f-person/auto-dark-mode.nvim",
+    enabled = false,
+    opts = {},
+  },
+  {
     "kyazdani42/nvim-web-devicons",
     event = "VeryLazy",
   },
