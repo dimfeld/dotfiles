@@ -11,7 +11,15 @@ M.git_repo_toplevel = function()
     return cached
   end
 
-  local top_level = vim.fn.trim(vim.fn.system("git rev-parse --show-toplevel"))
+  local top_level = vim.fn.trim(vim.system({ "git", "rev-parse", "--show-toplevel" }, { text = true }):wait().stdout)
+
+  if top_level == "" then
+    local jjDir = vim.fn.finddir(".jj", ".;")
+    if jjDir ~= "" then
+      top_level = vim.fn.fnamemodify(jjDir, ":h")
+    end
+  end
+
   git_repo_cache[cwd] = top_level
   return top_level
 end

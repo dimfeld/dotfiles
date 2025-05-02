@@ -50,6 +50,7 @@ alias grc='git rebase --continue'
 
 alias jc='jj commit'
 alias jjc='jj commit'
+alias jjcm='jj commit -m'
 alias jd='jj diff'
 alias jjd='jj diff'
 alias js='jj status'

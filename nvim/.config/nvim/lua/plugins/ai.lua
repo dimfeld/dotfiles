@@ -65,6 +65,7 @@ return {
     },
     opts = {
       enable_cmp_source = false,
+      quiet = true,
       virtual_text = {
         enabled = true,
         filetypes = {
@@ -312,18 +313,30 @@ return {
     enabled = true,
     cond = not vim.g.vscode,
     event = "VeryLazy",
-    build = "make", -- This is Optional, only if you want to use tiktoken_core to calculate tokens count
+    version = false,
+    build = "make",
     opts = {
       -- provider = "copilot",
-      provider = "deepseek",
+      provider = "gemini",
       deepseek = {
         model = "deepseek-chat",
       },
-      copilot = {
-        model = "claude-3.5-sonnet",
+      claude = {
+        model = "claude-3-7-sonnet-latest",
         -- max_tokens = 4096,
       },
+      gemini = {
+        model = "gemini-2.5-flash-preview-04-17",
+      },
       vendors = {
+        claude_sonnet_35 = {
+          __inherits_from = "claude",
+          model = "claude-3-5-sonnet-latest",
+        },
+        gemini_pro = {
+          __inherits_from = "gemini",
+          model = "gemini-2.5-pro-exp-03-25",
+        },
         ---@type AvanteProvider
         deepseek = {
           endpoint = "https://api.deepseek.com/",
@@ -373,7 +386,15 @@ return {
             embed_image_as_base64 = false,
             prompt_for_file_name = false,
             drag_and_drop = {
-              insert_mode = true,
+              insert_mode = false,
+            },
+          },
+
+          filetypes = {
+            AvanteInput = {
+              drag_and_drop = {
+                insert_mode = true,
+              },
             },
           },
         },

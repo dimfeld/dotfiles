@@ -31,11 +31,27 @@ M.commands = {
     category = "LS",
     filetype = "typescript",
     action = function()
-      vim.lsp.buf.execute_command({
-        command = "typescript.organizeImports",
-        arguments = { vim.fn.expand("%:p") },
-        id = "vtsls",
-      })
+      for _, client in ipairs(vim.lsp.get_clients()) do
+        -- local ac = client.capabilities.textDocument.codeAction.codeActionLiteralSupport.codeActionKind.valueSet
+        local ac = client.server_capabilities
+            and client.server_capabilities.codeActionProvider
+            and client.server_capabilities.codeActionProvider.codeActionKinds
+          or {}
+
+        for _, action in ipairs(ac) do
+          if action == "source.organizeImports" then
+            vim.lsp.buf.code_action({
+              context = {
+                only = { "source.organizeImports" },
+              },
+              apply = true,
+            })
+
+            -- client:exec_cmd({ command = "source.organizeImports", arguments = { vim.uri_from_bufnr(0) } })
+            return
+          end
+        end
+      end
     end,
   },
   {
@@ -43,7 +59,10 @@ M.commands = {
     category = "LS",
     filetype = "typescript",
     action = function()
-      vim.lsp.buf.execute_command({ command = "typescript.removeUnusedImports", arguments = { vim.fn.expand("%:p") } })
+      vim.lsp.buf.execute_command({
+        command = "typescript.removeUnusedImports",
+        arguments = { vim.fn.expand("%:p") },
+      })
     end,
   },
   -- { name = "Format document", category = "LS", coc_cmd = "editor.action.formatDocument" },
@@ -185,6 +204,29 @@ M.commands = {
       end)
     end,
   },
+
+  {
+    name = "Set Avante Model",
+    category = "AI",
+    action = function()
+      vim.cmd("AvanteModels")
+    end,
+  },
+
+  {
+    name = "rmfilter on current buffer",
+    category = "AI",
+    action = function()
+      require("commands.rmfilter").ask_rmfilter()
+    end,
+  },
+  {
+    name = "Apply rmfilter edits",
+    category = "AI",
+    action = function()
+      require("commands.rmfilter").apply_edits()
+    end,
+  },
 }
 
 --- @param commands CommandBarAction[]
@@ -204,23 +246,44 @@ local function showCommonCommandsPicker(opts)
   local clients = vim.lsp.get_clients({ bufnr = 0 })
   local lsp_commands = {}
   for _, client in ipairs(clients) do
+    local client_seen_cmds = {}
+    for command, _ in pairs(client.commands) do
+      if not client_seen_cmds[command] then
+        client_seen_cmds[command] = true
+
+        local name = "[" .. client.name .. "] " .. command
+        table.insert(lsp_commands, {
+          name = name,
+          id = command,
+          category = "LS",
+          action = function()
+            client:exec_cmd({ command = command, title = name, arguments = { M.current_cursor } }, { bufnr = 0 })
+          end,
+        })
+      end
+    end
+
     local command_provider = client.server_capabilities.executeCommandProvider or {}
     local this_commands = command_provider.commands or {}
     for _, command in ipairs(this_commands) do
-      table.insert(lsp_commands, {
-        name = command,
-        category = "LS",
-        action = function()
-          vim.lsp.buf.execute_command({ command = command, arguments = { M.current_cursor } })
-        end,
-      })
+      if not client_seen_cmds[command] then
+        local name = "[" .. client.name .. "] " .. command
+        table.insert(lsp_commands, {
+          name = name,
+          id = command,
+          category = "LS",
+          action = function()
+            client:exec_cmd({ command = command, title = name, arguments = { M.current_cursor } }, { bufnr = 0 })
+          end,
+        })
+      end
     end
   end
 
   local longest_command_name = 0
   local these_commands = {}
   for i, command in ipairs(lsp_commands) do
-    local id = command.name
+    local id = command.id
 
     if vim.startswith(id, "rust-analyzer.") == 1 and filetype ~= "rust" then
       goto continue
@@ -230,12 +293,20 @@ local function showCommonCommandsPicker(opts)
       goto continue
     elseif vim.startswith(id, "svelte.") and filetype ~= "svelte" then
       goto continue
-    elseif
-      (vim.startswith(id, "tsserver.") or vim.startswith(id, "vtsls."))
-      and filetype ~= "typescript"
-      and filetype ~= "svelte"
-    then
+    elseif vim.startswith(id, "_typescript.") then
+      -- Internal commands for code actions
       goto continue
+    elseif vim.startswith(id, "typescript.") or vim.startswith(id, "javascript.") then
+      if filetype ~= "typescript" and filetype ~= "javascript" and filetype ~= "svelte" then
+        goto continue
+      end
+
+      if
+        ((filetype == "typescript" or filetype == "svelte") and vim.startswith(id, "javascript"))
+        or (filetype == "javascript" and vim.startswith(id, "typescript"))
+      then
+        goto continue
+      end
     end
 
     these_commands[#these_commands + 1] = command
@@ -249,7 +320,7 @@ local function showCommonCommandsPicker(opts)
   for i, command in ipairs(M.commands) do
     if command.filetype ~= nil and filetype ~= command.filetype then
       if filetype == "svelte" and command.filetype == "typescript" then
-        -- allow this
+      -- allow this
       else
         goto continue_2
       end

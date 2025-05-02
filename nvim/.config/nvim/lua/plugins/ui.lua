@@ -230,6 +230,9 @@ return {
     },
   },
 
+  -- UI toolkit
+  "MunifTanjim/nui.nvim",
+
   -- Nicer notifications
   {
     "folke/noice.nvim",
