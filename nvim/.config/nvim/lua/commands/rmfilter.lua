@@ -9,10 +9,6 @@ local function show_rmfilter_dialog(submit)
   local Input = require("nui.input")
   local Layout = require("nui.layout")
 
-  local function exec_in_window(winid, command)
-    vim.schedule(function() end)
-  end
-
   -- Create input fields
   local args_input = Input({
     position = "50%",
@@ -20,7 +16,7 @@ local function show_rmfilter_dialog(submit)
     border = { style = "rounded", text = { top = "Arguments" } },
     win_options = { winhighlight = "Normal:Normal,FloatBorder:Normal" },
   }, {
-    prompt = "> ",
+    prompt = "",
     default_value = last_args,
     on_submit = function() end, -- Will be overridden
   })
@@ -77,9 +73,25 @@ local function show_rmfilter_dialog(submit)
   set_cancel_keymaps(args_input)
   set_cancel_keymaps(instructions_input)
 
+  -- Helper function to get input value from a nui.input buffer
+  local function get_input_value(input, prompt)
+    local lines = vim.api.nvim_buf_get_lines(input.bufnr, 0, -1, false)
+    if prompt and #lines > 0 then
+      -- Remove prompt from single-line input
+      return lines[1]:gsub("^" .. vim.pesc(prompt), ""):match("^%s*(.-)%s*$") or ""
+    else
+      print("lines " .. vim.inspect(lines))
+      dd(lines)
+      return table.concat(lines, "\n")
+    end
+  end
+
   local function call_submit()
-    local args = args_input:get_value() or ""
-    local instructions = instructions_input:get_value() or ""
+    print("call_submit")
+    local args = get_input_value(args_input)
+    local instructions = get_input_value(instructions_input)
+
+    print("args " .. args .. " instructions" .. instructions)
 
     -- Store inputs for next time
     last_args = args
@@ -87,19 +99,25 @@ local function show_rmfilter_dialog(submit)
 
     layout:unmount()
 
-    submit(args_input:get_value(), instructions_input:get_value())
+    submit(args, instructions)
   end
 
   -- Set submit keymaps
   args_input:map("i", "<CR>", call_submit, { noremap = true, silent = true })
-  instructions_input:map("i", "<CR>", call_submit, { noremap = true, silent = true })
+  args_input:map("n", "<CR>", call_submit, { noremap = true, silent = true })
+  instructions_input:map("i", "<c-s>", call_submit, { noremap = true, silent = true })
+  instructions_input:map("n", "<CR>", call_submit, { noremap = true, silent = true })
 
   -- Mount the layout
   layout:mount()
 
   vim.defer_fn(function()
+    -- remove default submit on enter for instructions
+    vim.fn.prompt_setcallback(instructions_input.bufnr, "")
+
     vim.api.nvim_set_current_win(instructions_input.winid)
     vim.api.nvim_command("noautocmd startinsert!")
+    vim.api.nvim_command("set wrap")
     vim.api.nvim_set_current_win(args_input.winid)
     vim.api.nvim_command("noautocmd startinsert!")
   end, 25)
@@ -138,8 +156,8 @@ function M.ask_rmfilter()
     vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
     vim.api.nvim_buf_set_name(buf, "rmfilter output")
 
-    -- Set keymap to close buffer with 'q'
-    vim.api.nvim_buf_set_keymap(buf, "n", "q", ":bdelete<CR>", { noremap = true, silent = true })
+    -- Set keymap to close buffer with '<Esc><Esc>'
+    vim.api.nvim_buf_set_keymap(buf, "n", "<Esc><Esc>", ":bdelete<CR>", { noremap = true, silent = true })
 
     -- Open the buffer in a new window
     vim.api.nvim_command("vsplit | buffer " .. buf)
