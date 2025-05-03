@@ -3,75 +3,89 @@ local M = {}
 -- Store last used arguments
 local last_args = ""
 local last_instructions = ""
+local last_model = "grok"
 
 local function show_rmfilter_dialog(submit)
   -- Require nui.nvim components
   local Input = require("nui.input")
+  local Popup = require("nui.popup")
   local Layout = require("nui.layout")
 
+  local win_width = vim.api.nvim_win_get_width(0)
+  local win_height = vim.api.nvim_win_get_height(0)
+
+  local width = 120
+  local max_width = math.floor(win_width * 0.8)
+
+  if width > max_width then
+    width = max_width
+  end
+
   -- Create input fields
-  local args_input = Input({
+  local args_input = Popup({
     position = "50%",
-    size = { width = 60 },
+    size = { width = width, height = 1 },
     border = { style = "rounded", text = { top = "Arguments" } },
     win_options = { winhighlight = "Normal:Normal,FloatBorder:Normal" },
-  }, {
-    prompt = "",
-    default_value = last_args,
-    on_submit = function() end, -- Will be overridden
   })
 
-  local instructions_input = Input({
+  local instructions_input = Popup({
     position = "50%",
-    size = { width = 60, height = 10 },
+    size = { width = width, height = 20 },
     border = { style = "rounded", text = { top = "Instructions" } },
+    win_options = { winhighlight = "Normal:Normal,FloatBorder:Normal", wrap = true },
+    buf_options = {
+      filetype = "markdown",
+    },
+  })
+
+  local model_input = Popup({
+    position = "50%",
+    size = { width = width, height = 1 },
+    border = { style = "rounded", text = { top = "Model" } },
     win_options = { winhighlight = "Normal:Normal,FloatBorder:Normal" },
-  }, {
-    prompt = "",
-    default_value = last_instructions,
-    on_submit = function() end, -- Will be overridden
   })
 
   -- Create layout to stack inputs vertically
+  local layout_height = 29
   local layout = Layout(
     {
-      position = "50%",
-      size = { width = 60, height = 16 },
+      position = {
+        col = win_width - width,
+        row = win_height - layout_height,
+      },
+      size = { width = width, height = layout_height },
     },
     Layout.Box({
       Layout.Box(args_input, { size = 3 }),
-      Layout.Box(instructions_input, { size = 13 }),
+      Layout.Box(instructions_input, { size = 23 }),
+      Layout.Box(model_input, { size = 3 }),
     }, { dir = "col" })
   )
+
+  local function focus_and_insert(winid)
+    vim.api.nvim_set_current_win(winid)
+    vim.schedule(function()
+      -- TODO record the previous state and of the buffer before leaving and restore to that when returning.
+      vim.api.nvim_command("noautocmd startinsert")
+    end)
+  end
 
   -- Keymaps for navigation
   local function set_navigation_keymaps(input, next_input)
     input:map("i", "<Tab>", function()
-      vim.api.nvim_set_current_win(next_input.winid)
+      focus_and_insert(next_input.winid)
     end, { noremap = true, silent = true })
     input:map("i", "<S-Tab>", function()
-      vim.api.nvim_set_current_win(next_input.winid)
+      focus_and_insert(next_input.winid)
     end, { noremap = true, silent = true })
     input:map("n", "<Tab>", function()
-      vim.api.nvim_set_current_win(next_input.winid)
+      focus_and_insert(next_input.winid)
     end, { noremap = true, silent = true })
     input:map("n", "<S-Tab>", function()
-      vim.api.nvim_set_current_win(next_input.winid)
+      focus_and_insert(next_input.winid)
     end, { noremap = true, silent = true })
   end
-
-  set_navigation_keymaps(args_input, instructions_input)
-  set_navigation_keymaps(instructions_input, args_input)
-
-  -- Keymaps for cancel
-  local function set_cancel_keymaps(input)
-    input:map("n", "<Esc>", function()
-      layout:unmount()
-    end, { noremap = true, silent = true })
-  end
-
-  set_cancel_keymaps(args_input)
-  set_cancel_keymaps(instructions_input)
 
   -- Helper function to get input value from a nui.input buffer
   local function get_input_value(input, prompt)
@@ -80,44 +94,56 @@ local function show_rmfilter_dialog(submit)
       -- Remove prompt from single-line input
       return lines[1]:gsub("^" .. vim.pesc(prompt), ""):match("^%s*(.-)%s*$") or ""
     else
-      print("lines " .. vim.inspect(lines))
-      dd(lines)
       return table.concat(lines, "\n")
     end
   end
 
+  -- Keymaps for cancel
+  local function set_cancel_keymaps(input)
+    input:map("n", "<Esc>", function()
+      -- Store inputs for next time, event when cancelling
+      local args = get_input_value(args_input)
+      local instructions = get_input_value(instructions_input)
+      last_args = args
+      last_instructions = instructions
+      last_model = get_input_value(model_input)
+
+      layout:unmount()
+    end, { noremap = true, silent = true })
+  end
+
   local function call_submit()
-    print("call_submit")
+    -- Store inputs for next time
     local args = get_input_value(args_input)
     local instructions = get_input_value(instructions_input)
-
-    print("args " .. args .. " instructions" .. instructions)
-
-    -- Store inputs for next time
+    local model = get_input_value(model_input)
     last_args = args
     last_instructions = instructions
+    last_model = model
 
     layout:unmount()
 
-    submit(args, instructions)
+    submit(args, instructions, model)
   end
 
-  -- Set submit keymaps
-  args_input:map("i", "<CR>", call_submit, { noremap = true, silent = true })
-  args_input:map("n", "<CR>", call_submit, { noremap = true, silent = true })
-  instructions_input:map("i", "<c-s>", call_submit, { noremap = true, silent = true })
-  instructions_input:map("n", "<CR>", call_submit, { noremap = true, silent = true })
+  local function configure_input(this_input, initial_value, next_input, submit_key)
+    set_navigation_keymaps(this_input, next_input)
+    set_cancel_keymaps(this_input)
+    args_input:map("n", "<CR>", call_submit, { noremap = true, silent = true })
+    args_input:map("i", submit_key, call_submit, { noremap = true, silent = true })
+
+    local lines = vim.split(initial_value, "\n")
+    vim.api.nvim_buf_set_lines(this_input.bufnr, 0, -1, false, lines)
+  end
+
+  configure_input(args_input, last_args, instructions_input, "<CR>")
+  configure_input(instructions_input, last_instructions, model_input, "<c-s>")
+  configure_input(model_input, last_model, args_input, "<CR>")
 
   -- Mount the layout
   layout:mount()
 
   vim.defer_fn(function()
-    -- remove default submit on enter for instructions
-    vim.fn.prompt_setcallback(instructions_input.bufnr, "")
-
-    vim.api.nvim_set_current_win(instructions_input.winid)
-    vim.api.nvim_command("noautocmd startinsert!")
-    vim.api.nvim_command("set wrap")
     vim.api.nvim_set_current_win(args_input.winid)
     vim.api.nvim_command("noautocmd startinsert!")
   end, 25)
@@ -136,7 +162,7 @@ function M.ask_rmfilter()
   local relative_path = vim.fn.fnamemodify(bufname, ":p")
   relative_path = relative_path:sub(#repo_root + 2) -- Remove repo_root path + leading slash
 
-  show_rmfilter_dialog(function(args, instructions)
+  show_rmfilter_dialog(function(args, instructions, model)
     if args == "" and instructions == "" then
       return
     end
@@ -147,20 +173,36 @@ function M.ask_rmfilter()
       cmd = cmd .. " --instructions " .. vim.fn.shellescape(instructions)
     end
 
-    local output = vim.fn.system(cmd)
+    if model ~= "" then
+      cmd = cmd .. " --model " .. vim.fn.shellescape(model)
+    end
 
-    -- Create a new buffer for output
-    local buf = vim.api.nvim_create_buf(false, true)
-    vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(output, "\n"))
+    -- See if any buffer has the name 'rmfilter output'
+    local buf = vim.fn.bufnr("rmfilter output")
+    if buf == -1 then
+      -- Create a new buffer for output
+      buf = vim.api.nvim_create_buf(false, true)
+      vim.api.nvim_buf_set_name(buf, "rmfilter output")
+    end
+
     vim.api.nvim_set_option_value("filetype", "text", { buf = buf })
     vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
-    vim.api.nvim_buf_set_name(buf, "rmfilter output")
-
-    -- Set keymap to close buffer with '<Esc><Esc>'
-    vim.api.nvim_buf_set_keymap(buf, "n", "<Esc><Esc>", ":bdelete<CR>", { noremap = true, silent = true })
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "Running rmfilter..." })
 
     -- Open the buffer in a new window
     vim.api.nvim_command("vsplit | buffer " .. buf)
+
+    -- TODO Use plenary or open or something and stream the output to the buffer
+    local output = vim.fn.system(cmd)
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(output, "\n"))
+
+    -- Set keymap to close buffer with '<Esc><Esc>'
+    vim.keymap.set(
+      "n",
+      "<Esc><Esc>",
+      ":bdelete<CR>",
+      { noremap = true, silent = true, buffer = buf, desc = "Close buffer" }
+    )
 
     -- Check for errors
     if vim.v.shell_error ~= 0 then
@@ -181,7 +223,7 @@ function M.apply_edits()
   vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
   vim.api.nvim_buf_set_name(buf, "apply-llm-edits output")
 
-  -- Set keymap to close buffer with 'q'
+  -- Set keymap to close buffer
   vim.api.nvim_buf_set_keymap(buf, "n", "<Esc><Esc>", ":bdelete<CR>", { noremap = true, silent = true })
 
   -- Open the buffer in a new window

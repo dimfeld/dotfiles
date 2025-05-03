@@ -216,16 +216,16 @@ M.commands = {
   {
     name = "rmfilter on current buffer",
     category = "AI",
-    action = function()
+    action = vim.schedule_wrap(function()
       require("commands.rmfilter").ask_rmfilter()
-    end,
+    end),
   },
   {
     name = "Apply rmfilter edits",
     category = "AI",
-    action = function()
+    action = vim.schedule_wrap(function()
       require("commands.rmfilter").apply_edits()
-    end,
+    end),
   },
 }
 
