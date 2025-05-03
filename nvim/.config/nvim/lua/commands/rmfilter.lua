@@ -176,8 +176,8 @@ function M.ask_rmfilter()
   -- Get current buffer's filename relative to repo root
   local bufname = vim.api.nvim_buf_get_name(0)
   local absolute_path = vim.fn.resolve(vim.fn.fnamemodify(bufname, ":p"))
-  local buffer_dir = vim.fn.fnamemodify(absolute_path, ":h")
-  local filename = vim.fn.fnamemodify(bufname, ":t")
+  local buffer_dir = bufname ~= "" and vim.fn.fnamemodify(absolute_path, ":h")
+  local filename = bufname ~= "" and vim.fn.fnamemodify(bufname, ":t") or ""
 
   show_rmfilter_dialog(function(args, instructions, model)
     if args == "" and instructions == "" then
@@ -188,7 +188,7 @@ function M.ask_rmfilter()
     local original_cwd = vim.fn.getcwd()
 
     -- Construct command
-    local cmd = string.format("rmfilter --copy %s %s", vim.fn.shellescape(filename), args)
+    local cmd = string.format("rmfilter --copy %s %s", filename ~= "" and vim.fn.shellescape(filename) or "", args)
     if instructions ~= "" then
       cmd = cmd .. " --instructions " .. vim.fn.shellescape(instructions)
     end
@@ -233,7 +233,10 @@ function M.ask_rmfilter()
 
     -- Execute command with error handling
     local success, error_msg
-    vim.fn.chdir(buffer_dir) -- Change to buffer's directory
+    if buffer_dir ~= "" then
+      -- Change to buffer's directory
+      vim.fn.chdir(buffer_dir)
+    end
     success, error_msg = pcall(function()
       chan = vim.fn.jobstart(cmd, {
         on_stdout = function(_, data)
@@ -263,7 +266,10 @@ function M.ask_rmfilter()
 
       M.terminal_channels[buf] = chan
     end)
-    vim.fn.chdir(original_cwd) -- Always restore original working directory
+    if buffer_dir ~= "" then
+      -- restore original working directory
+      vim.fn.chdir(original_cwd)
+    end
 
     if not success then
       vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "Error running rmfilter: " .. error_msg })
