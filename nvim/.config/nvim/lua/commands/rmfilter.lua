@@ -1,5 +1,21 @@
 local M = {}
 
+M.terminal_channels = {}
+
+local ns_id = vim.api.nvim_create_namespace("rmfilter_terminal")
+vim.api.nvim_create_autocmd("BufDelete", {
+  group = vim.api.nvim_create_augroup("RmfilterTerminalCleanup", { clear = true }),
+  callback = function(args)
+    local buf = args.buf
+    local chan = M.terminal_channels[buf]
+    if chan then
+      pcall(vim.fn.jobstop, chan) -- Stop the job if running
+      M.terminal_channels[buf] = nil
+    end
+  end,
+  desc = "Clean up terminal channel on buffer delete",
+})
+
 -- Store last used arguments
 local last_args = ""
 local last_instructions = ""
@@ -186,37 +202,66 @@ function M.ask_rmfilter()
       -- Create a new buffer for output
       buf = vim.api.nvim_create_buf(false, true)
       vim.api.nvim_buf_set_name(buf, "rmfilter output")
+      vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
+    end
 
-      -- Open the buffer in a new window
+    -- Open the buffer in a new window
+    if vim.fn.bufwinid(buf) == -1 then
       vim.api.nvim_command("vsplit | buffer " .. buf)
     end
 
-    vim.api.nvim_set_option_value("filetype", "markdown", { buf = buf })
-    vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
-    vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "Running rmfilter..." })
+    vim.api.nvim_set_current_win(vim.fn.bufwinid(buf))
+    -- Exit "termainal" mode, back to normal mode
+    vim.api.nvim_command("stopinsert")
+
+    -- Set keymap to close buffer with '<Esc><Esc>'
+    vim.keymap.set(
+      { "n", "t" },
+      "<Esc><Esc>",
+      ":bdelete!<CR>",
+      { noremap = true, silent = true, buffer = buf, desc = "Close buffer" }
+    )
+
+    local chan = M.terminal_channels[buf]
+    if chan then
+      pcall(vim.fn.jobstop, chan) -- Stop any existing job
+      M.terminal_channels[buf] = nil
+    end
+
+    local term_chan = vim.api.nvim_open_term(buf, {})
+    vim.api.nvim_set_option_value("filetype", "terminal", { buf = buf })
 
     -- Execute command with error handling
     local success, error_msg
     vim.fn.chdir(buffer_dir) -- Change to buffer's directory
     success, error_msg = pcall(function()
-      -- TODO Use plenary or open or something and stream the output to the buffer
-      local output = vim.fn.system(cmd)
-      vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(output, "\n"))
+      chan = vim.fn.jobstart(cmd, {
+        on_stdout = function(_, data)
+          if data then
+            vim.api.nvim_chan_send(term_chan, table.concat(data, "\n") .. "\n")
+          end
+        end,
+        on_stderr = function(_, data)
+          if data then
+            vim.api.nvim_chan_send(term_chan, table.concat(data, "\n") .. "\n")
+          end
+        end,
+        on_exit = function(_, code)
+          M.terminal_channels[buf] = nil -- Clean up on exit
+          vim.api.nvim_chan_send(term_chan, code == 0 and "rmfilter executed\n" or "rmfilter failed\n")
+          vim.notify(
+            code == 0 and "rmfilter executed: " .. cmd or "rmfilter failed: " .. cmd,
+            code == 0 and vim.log.levels.INFO or vim.log.levels.ERROR
+          )
+        end,
+        pty = true, -- Enable ANSI code processing
+      })
 
-      -- Set keymap to close buffer with '<Esc><Esc>'
-      vim.keymap.set(
-        "n",
-        "<Esc><Esc>",
-        ":bdelete<CR>",
-        { noremap = true, silent = true, buffer = buf, desc = "Close buffer" }
-      )
-
-      -- Check for shell errors
-      if vim.v.shell_error ~= 0 then
-        vim.notify("rmfilter failed: " .. cmd, vim.log.levels.ERROR)
-      else
-        vim.notify("rmfilter executed: " .. cmd, vim.log.levels.INFO)
+      if chan <= 0 then
+        error("Failed to start job for command: " .. cmd)
       end
+
+      M.terminal_channels[buf] = chan
     end)
     vim.fn.chdir(original_cwd) -- Always restore original working directory
 
