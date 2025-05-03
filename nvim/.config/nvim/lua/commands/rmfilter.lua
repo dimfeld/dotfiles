@@ -129,8 +129,8 @@ local function show_rmfilter_dialog(submit)
   local function configure_input(this_input, initial_value, next_input, submit_key)
     set_navigation_keymaps(this_input, next_input)
     set_cancel_keymaps(this_input)
-    args_input:map("n", "<CR>", call_submit, { noremap = true, silent = true })
-    args_input:map("i", submit_key, call_submit, { noremap = true, silent = true })
+    this_input:map("n", "<CR>", call_submit, { noremap = true, silent = true })
+    this_input:map("i", submit_key, call_submit, { noremap = true, silent = true })
 
     local lines = vim.split(initial_value, "\n")
     vim.api.nvim_buf_set_lines(this_input.bufnr, 0, -1, false, lines)
@@ -159,20 +159,23 @@ function M.ask_rmfilter()
 
   -- Get current buffer's filename relative to repo root
   local bufname = vim.api.nvim_buf_get_name(0)
-  local relative_path = vim.fn.fnamemodify(bufname, ":p")
-  relative_path = relative_path:sub(#repo_root + 2) -- Remove repo_root path + leading slash
+  local absolute_path = vim.fn.resolve(vim.fn.fnamemodify(bufname, ":p"))
+  local buffer_dir = vim.fn.fnamemodify(absolute_path, ":h")
+  local filename = vim.fn.fnamemodify(bufname, ":t")
 
   show_rmfilter_dialog(function(args, instructions, model)
     if args == "" and instructions == "" then
       return
     end
 
-    -- Construct and execute command
-    local cmd = string.format("rmfilter --copy %s %s", vim.fn.shellescape(relative_path), args)
+    -- Store current working directory
+    local original_cwd = vim.fn.getcwd()
+
+    -- Construct command
+    local cmd = string.format("rmfilter --copy %s %s", vim.fn.shellescape(filename), args)
     if instructions ~= "" then
       cmd = cmd .. " --instructions " .. vim.fn.shellescape(instructions)
     end
-
     if model ~= "" then
       cmd = cmd .. " --model " .. vim.fn.shellescape(model)
     end
@@ -183,42 +186,58 @@ function M.ask_rmfilter()
       -- Create a new buffer for output
       buf = vim.api.nvim_create_buf(false, true)
       vim.api.nvim_buf_set_name(buf, "rmfilter output")
+
+      -- Open the buffer in a new window
+      vim.api.nvim_command("vsplit | buffer " .. buf)
     end
 
-    vim.api.nvim_set_option_value("filetype", "text", { buf = buf })
+    vim.api.nvim_set_option_value("filetype", "markdown", { buf = buf })
     vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "Running rmfilter..." })
 
-    -- Open the buffer in a new window
-    vim.api.nvim_command("vsplit | buffer " .. buf)
+    -- Execute command with error handling
+    local success, error_msg
+    vim.fn.chdir(buffer_dir) -- Change to buffer's directory
+    success, error_msg = pcall(function()
+      -- TODO Use plenary or open or something and stream the output to the buffer
+      local output = vim.fn.system(cmd)
+      vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(output, "\n"))
 
-    -- TODO Use plenary or open or something and stream the output to the buffer
-    local output = vim.fn.system(cmd)
-    vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(output, "\n"))
+      -- Set keymap to close buffer with '<Esc><Esc>'
+      vim.keymap.set(
+        "n",
+        "<Esc><Esc>",
+        ":bdelete<CR>",
+        { noremap = true, silent = true, buffer = buf, desc = "Close buffer" }
+      )
 
-    -- Set keymap to close buffer with '<Esc><Esc>'
-    vim.keymap.set(
-      "n",
-      "<Esc><Esc>",
-      ":bdelete<CR>",
-      { noremap = true, silent = true, buffer = buf, desc = "Close buffer" }
-    )
+      -- Check for shell errors
+      if vim.v.shell_error ~= 0 then
+        vim.notify("rmfilter failed: " .. cmd, vim.log.levels.ERROR)
+      else
+        vim.notify("rmfilter executed: " .. cmd, vim.log.levels.INFO)
+      end
+    end)
+    vim.fn.chdir(original_cwd) -- Always restore original working directory
 
-    -- Check for errors
-    if vim.v.shell_error ~= 0 then
-      vim.notify("rmfilter failed: " .. cmd, vim.log.levels.ERROR)
-    else
-      vim.notify("rmfilter executed: " .. cmd, vim.log.levels.INFO)
+    if not success then
+      vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "Error running rmfilter: " .. error_msg })
+      vim.notify("rmfilter error: " .. error_msg, vim.log.levels.ERROR)
     end
   end)
 end
 
 function M.apply_edits()
-  local output = vim.fn.system("apply-llm-edits")
+  -- Get current buffer's directory
+  local bufname = vim.api.nvim_buf_get_name(0)
+  local absolute_path = vim.fn.resolve(vim.fn.fnamemodify(bufname, ":p"))
+  local buffer_dir = vim.fn.fnamemodify(absolute_path, ":h")
+
+  -- Store current working directory
+  local original_cwd = vim.fn.getcwd()
 
   -- Create a new buffer for output
   local buf = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(output, "\n"))
   vim.api.nvim_set_option_value("filetype", "text", { buf = buf })
   vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
   vim.api.nvim_buf_set_name(buf, "apply-llm-edits output")
@@ -228,44 +247,59 @@ function M.apply_edits()
 
   -- Open the buffer in a new window
   vim.api.nvim_command("vsplit | buffer " .. buf)
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "Running apply-llm-edits..." })
 
-  if vim.v.shell_error ~= 0 then
-    vim.notify("apply failed!", vim.log.levels.ERROR)
-  else
-    vim.notify("apply succeeded!", vim.log.levels.INFO)
+  -- Execute command with error handling
+  local success, error_msg
+  vim.fn.chdir(buffer_dir) -- Change to buffer's directory
+  success, error_msg = pcall(function()
+    local output = vim.fn.system("apply-llm-edits")
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(output, "\n"))
 
-    -- Get repository root
-    local repo_root = require("lib.git").git_repo_toplevel()
-    if repo_root then
-      -- Parse output for unique filenames (format: "Applying diff to ${filename} ...")
-      local seen_filenames = {}
-      local unique_filenames = {}
-      for _, line in ipairs(vim.split(output, "\n")) do
-        local filename = line:match("^Applying diff to ([^%s]+)")
-        if filename and not seen_filenames[filename] then
-          seen_filenames[filename] = true
-          table.insert(unique_filenames, filename)
+    if vim.v.shell_error ~= 0 then
+      vim.notify("apply failed!", vim.log.levels.ERROR)
+    else
+      vim.notify("apply succeeded!", vim.log.levels.INFO)
+
+      -- Get repository root
+      local repo_root = require("lib.git").git_repo_toplevel()
+      if repo_root then
+        -- Parse output for unique filenames (format: "Applying diff to ${filename} ...")
+        local seen_filenames = {}
+        local unique_filenames = {}
+        for _, line in ipairs(vim.split(output, "\n")) do
+          local filename = line:match("^Applying diff to ([^%s]+)")
+          if filename and not seen_filenames[filename] then
+            seen_filenames[filename] = true
+            table.insert(unique_filenames, filename)
+          end
         end
-      end
 
-      -- Process each unique filename
-      for _, filename in ipairs(unique_filenames) do
-        -- Convert relative path to absolute
-        local absolute_path = repo_root .. "/" .. filename
-        -- Check all active buffers
-        for _, buf_id in ipairs(vim.api.nvim_list_bufs()) do
-          if vim.api.nvim_buf_is_loaded(buf_id) then
-            local buf_name = vim.api.nvim_buf_get_name(buf_id)
-            if buf_name == absolute_path then
-              -- Reload the buffer
-              vim.api.nvim_buf_call(buf_id, function()
-                vim.cmd("edit!")
-              end)
+        -- Process each unique filename
+        for _, filename in ipairs(unique_filenames) do
+          -- Convert relative path to absolute
+          local absolute_path = repo_root .. "/" .. filename
+          -- Check all active buffers
+          for _, buf_id in ipairs(vim.api.nvim_list_bufs()) do
+            if vim.api.nvim_buf_is_loaded(buf_id) then
+              local buf_name = vim.api.nvim_buf_get_name(buf_id)
+              if buf_name == absolute_path then
+                -- Reload the buffer
+                vim.api.nvim_buf_call(buf_id, function()
+                  vim.cmd("edit!")
+                end)
+              end
             end
           end
         end
       end
     end
+  end)
+  vim.fn.chdir(original_cwd) -- Always restore original working directory
+
+  if not success then
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "Error running apply-llm-edits: " .. error_msg })
+    vim.notify("apply-llm-edits error: " .. error_msg, vim.log.levels.ERROR)
   end
 end
 
