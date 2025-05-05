@@ -55,4 +55,20 @@ M.get_cursor_range = function()
   }
 end
 
+M.get_repo_buffer_path = function()
+  local buf_path = vim.api.nvim_buf_get_name(0)
+  if buf_path == "" then
+    return
+  end
+
+  local git_root = require("lib.git").git_repo_toplevel()
+  if git_root ~= "" and buf_path:find(git_root, 1, true) == 1 then
+    -- Get relative path if buffer is inside git repo
+    return buf_path:sub(#git_root + 2)
+  else
+    -- Use absolute path if not in a git repo
+    return buf_path
+  end
+end
+
 return M

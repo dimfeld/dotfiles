@@ -1,3 +1,5 @@
+local win_util = require("lib.window")
+
 --- @param fname string
 --- @param args string
 --- @param projectwide boolean
@@ -81,4 +83,34 @@ end, {
     return {}
   end,
   desc = "Perform project-wide find and replace using /pattern/replacement/[flags] format",
+})
+
+-- Copy the current buffer's path to the yank register
+vim.api.nvim_create_user_command("CopyBufferPath", function()
+  local buf_path = win_util.get_repo_buffer_path()
+  if not buf_path then
+    vim.notify("No file associated with current buffer", vim.log.levels.WARN)
+    return
+  end
+
+  vim.fn.setreg('"', buf_path)
+  vim.notify("Copied path: " .. buf_path, vim.log.levels.INFO)
+end, {
+  desc = "Copy the current buffer's path (relative to git root if possible) to the yank register",
+})
+
+vim.api.nvim_create_user_command("RmCopyBufferPath", function()
+  local buf_path = win_util.get_repo_buffer_path()
+  if not buf_path then
+    vim.notify("No file associated with current buffer", vim.log.levels.WARN)
+    return
+  end
+
+  if not vim.startswith(buf_path, "/") then
+    buf_path = "repo:" .. buf_path
+  end
+  vim.fn.setreg('"', buf_path)
+  vim.notify("Copied path: " .. buf_path, vim.log.levels.INFO)
+end, {
+  desc = "Copy the current buffer's path with repo: prefix to the yank register",
 })

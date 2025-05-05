@@ -58,6 +58,8 @@ alias jjs='jj status'
 alias jjsh='jj show'
 alias jje='jj edit'
 alias jjpush='jj git push'
+alias jjgp='jj git push'
+alias jjgf='jj git fetch'
 alias jjpb="jj log -r 'latest(heads(ancestors(@) & bookmarks()), 1)' --limit 1 --no-graph --ignore-working-copy -T bookmarks | tr -d '*'"
 
 alias copydiff="jj diff --from main | pbcopy"

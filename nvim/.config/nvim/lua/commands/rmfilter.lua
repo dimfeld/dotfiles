@@ -21,6 +21,42 @@ local last_args = ""
 local last_instructions = ""
 local last_model = "grok"
 
+-- Helper function to setup terminal buffer and window
+local function setup_terminal_buffer()
+  -- See if any buffer has the name 'rmfilter'
+  local buf = vim.fn.bufnr("rmfilter")
+  if buf == -1 then
+    -- Create a new buffer for output
+    buf = vim.api.nvim_create_buf(false, true)
+    vim.api.nvim_buf_set_name(buf, "rmfilter")
+    vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
+  end
+
+  -- Open the buffer in a new window, if it's not currently visible
+  if vim.fn.bufwinid(buf) == -1 then
+    vim.api.nvim_command("vsplit | buffer " .. buf)
+  end
+
+  vim.api.nvim_set_current_win(vim.fn.bufwinid(buf))
+  vim.api.nvim_command("stopinsert")
+
+  -- Set keymap to close buffer with '<Esc><Esc>'
+  vim.keymap.set(
+    { "n", "t" },
+    "<Esc><Esc>",
+    ":bdelete!<CR>",
+    { noremap = true, silent = true, buffer = buf, desc = "Close buffer" }
+  )
+
+  local chan = M.terminal_channels[buf]
+  if chan then
+    pcall(vim.fn.jobstop, chan) -- Stop any existing job
+    M.terminal_channels[buf] = nil
+  end
+
+  return buf
+end
+
 local function show_rmfilter_dialog(submit)
   -- Require nui.nvim components
   local Input = require("nui.input")
@@ -92,14 +128,16 @@ local function show_rmfilter_dialog(submit)
     input:map("i", "<Tab>", function()
       focus_and_insert(next_input.winid)
     end, { noremap = true, silent = true })
-    input:map("i", "<S-Tab>", function()
-      focus_and_insert(next_input.winid)
-    end, { noremap = true, silent = true })
     input:map("n", "<Tab>", function()
       focus_and_insert(next_input.winid)
     end, { noremap = true, silent = true })
-    input:map("n", "<S-Tab>", function()
-      focus_and_insert(next_input.winid)
+
+    -- Reverse mappings, set S-Tab on next_input to go to this input
+    next_input:map("i", "<S-Tab>", function()
+      focus_and_insert(input.winid)
+    end, { noremap = true, silent = true })
+    next_input:map("n", "<S-Tab>", function()
+      focus_and_insert(input.winid)
     end, { noremap = true, silent = true })
   end
 
@@ -196,40 +234,9 @@ function M.ask_rmfilter()
       cmd = cmd .. " --model " .. vim.fn.shellescape(model)
     end
 
-    -- See if any buffer has the name 'rmfilter output'
-    local buf = vim.fn.bufnr("rmfilter output")
-    if buf == -1 then
-      -- Create a new buffer for output
-      buf = vim.api.nvim_create_buf(false, true)
-      vim.api.nvim_buf_set_name(buf, "rmfilter output")
-      vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
-    end
-
-    -- Open the buffer in a new window
-    if vim.fn.bufwinid(buf) == -1 then
-      vim.api.nvim_command("vsplit | buffer " .. buf)
-    end
-
-    vim.api.nvim_set_current_win(vim.fn.bufwinid(buf))
-    -- Exit "termainal" mode, back to normal mode
-    vim.api.nvim_command("stopinsert")
-
-    -- Set keymap to close buffer with '<Esc><Esc>'
-    vim.keymap.set(
-      { "n", "t" },
-      "<Esc><Esc>",
-      ":bdelete!<CR>",
-      { noremap = true, silent = true, buffer = buf, desc = "Close buffer" }
-    )
-
-    local chan = M.terminal_channels[buf]
-    if chan then
-      pcall(vim.fn.jobstop, chan) -- Stop any existing job
-      M.terminal_channels[buf] = nil
-    end
-
+    -- Setup terminal buffer
+    local buf = setup_terminal_buffer()
     local term_chan = vim.api.nvim_open_term(buf, {})
-    vim.api.nvim_set_option_value("filetype", "terminal", { buf = buf })
 
     -- Execute command with error handling
     local success, error_msg
@@ -287,64 +294,76 @@ function M.apply_edits()
   -- Store current working directory
   local original_cwd = vim.fn.getcwd()
 
-  -- Create a new buffer for output
-  local buf = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_set_option_value("filetype", "text", { buf = buf })
-  vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
-  vim.api.nvim_buf_set_name(buf, "apply-llm-edits output")
+  -- Setup terminal buffer
+  local buf = setup_terminal_buffer()
 
-  -- Set keymap to close buffer
-  vim.api.nvim_buf_set_keymap(buf, "n", "<Esc><Esc>", ":bdelete<CR>", { noremap = true, silent = true })
-
-  -- Open the buffer in a new window
-  vim.api.nvim_command("vsplit | buffer " .. buf)
-  vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "Running apply-llm-edits..." })
+  -- Create terminal channel
+  local term_chan = vim.api.nvim_open_term(buf, {})
 
   -- Execute command with error handling
   local success, error_msg
   vim.fn.chdir(buffer_dir) -- Change to buffer's directory
   success, error_msg = pcall(function()
-    local output = vim.fn.system("apply-llm-edits")
-    vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(output, "\n"))
-
-    if vim.v.shell_error ~= 0 then
-      vim.notify("apply failed!", vim.log.levels.ERROR)
-    else
-      vim.notify("apply succeeded!", vim.log.levels.INFO)
-
-      -- Get repository root
-      local repo_root = require("lib.git").git_repo_toplevel()
-      if repo_root then
-        -- Parse output for unique filenames (format: "Applying diff to ${filename} ...")
-        local seen_filenames = {}
-        local unique_filenames = {}
-        for _, line in ipairs(vim.split(output, "\n")) do
-          local filename = line:match("^Applying diff to ([^%s]+)")
-          if filename and not seen_filenames[filename] then
-            seen_filenames[filename] = true
-            table.insert(unique_filenames, filename)
-          end
+    local chan = vim.fn.jobstart("apply-llm-edits", {
+      on_stdout = function(_, data)
+        if data then
+          vim.api.nvim_chan_send(term_chan, table.concat(data, "\n") .. "\n")
         end
+      end,
+      on_stderr = function(_, data)
+        if data then
+          vim.api.nvim_chan_send(term_chan, table.concat(data, "\n") .. "\n")
+        end
+      end,
+      on_exit = function(_, code)
+        M.terminal_channels[buf] = nil -- Clean up on exit
+        vim.api.nvim_chan_send(term_chan, code == 0 and "apply-llm-edits executed\n" or "apply-llm-edits failed\n")
+        if code == 0 then
+          -- Get repository root
+          local repo_root = require("lib.git").git_repo_toplevel()
+          if repo_root then
+            -- Parse output for unique filenames (format: "Applying diff to ${filename} ...")
+            local seen_filenames = {}
+            local unique_filenames = {}
+            for _, line in ipairs(vim.api.nvim_buf_get_lines(buf, 0, -1, false)) do
+              local filename = line:match("^Applying diff to ([^%s]+)")
+              if filename and not seen_filenames[filename] then
+                seen_filenames[filename] = true
+                table.insert(unique_filenames, filename)
+              end
+            end
 
-        -- Process each unique filename
-        for _, filename in ipairs(unique_filenames) do
-          -- Convert relative path to absolute
-          local absolute_path = repo_root .. "/" .. filename
-          -- Check all active buffers
-          for _, buf_id in ipairs(vim.api.nvim_list_bufs()) do
-            if vim.api.nvim_buf_is_loaded(buf_id) then
-              local buf_name = vim.api.nvim_buf_get_name(buf_id)
-              if buf_name == absolute_path then
-                -- Reload the buffer
-                vim.api.nvim_buf_call(buf_id, function()
-                  vim.cmd("edit!")
-                end)
+            -- Process each unique filename
+            for _, filename in ipairs(unique_filenames) do
+              -- Convert relative path to absolute
+              local absolute_path = repo_root .. "/" .. filename
+              -- Check all active buffers
+              for _, buf_id in ipairs(vim.api.nvim_list_bufs()) do
+                if vim.api.nvim_buf_is_loaded(buf_id) then
+                  local buf_name = vim.api.nvim_buf_get_name(buf_id)
+                  if buf_name == absolute_path then
+                    -- Reload the buffer
+                    vim.api.nvim_buf_call(buf_id, function()
+                      vim.cmd("edit!")
+                    end)
+                  end
+                end
               end
             end
           end
+          vim.notify("apply-llm-edits executed", vim.log.levels.INFO)
+        else
+          vim.notify("apply-llm-edits failed", vim.log.levels.ERROR)
         end
-      end
+      end,
+      pty = true, -- Enable ANSI code processing
+    })
+
+    if chan <= 0 then
+      error("Failed to start job for command: apply-llm-edits")
     end
+
+    M.terminal_channels[buf] = chan
   end)
   vim.fn.chdir(original_cwd) -- Always restore original working directory
 
