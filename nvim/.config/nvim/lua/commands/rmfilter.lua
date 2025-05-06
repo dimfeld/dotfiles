@@ -23,12 +23,12 @@ local last_model = "grok"
 
 -- Helper function to setup terminal buffer and window
 local function setup_terminal_buffer()
-  -- See if any buffer has the name 'rmfilter'
-  local buf = vim.fn.bufnr("rmfilter")
+  -- See if any buffer has the name 'rmfilter output'
+  local buf = vim.fn.bufnr("rmfilter output")
   if buf == -1 then
     -- Create a new buffer for output
     buf = vim.api.nvim_create_buf(false, true)
-    vim.api.nvim_buf_set_name(buf, "rmfilter")
+    vim.api.nvim_buf_set_name(buf, "rmfilter output")
     vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
   end
 
@@ -79,6 +79,10 @@ local function show_rmfilter_dialog(submit)
     size = { width = width, height = 1 },
     border = { style = "rounded", text = { top = "Arguments" } },
     win_options = { winhighlight = "Normal:Normal,FloatBorder:Normal" },
+    buf_options = {
+      textwidth = 0,
+      wrapmargin = 0,
+    },
   })
 
   local instructions_input = Popup({
@@ -88,6 +92,8 @@ local function show_rmfilter_dialog(submit)
     win_options = { winhighlight = "Normal:Normal,FloatBorder:Normal", wrap = true },
     buf_options = {
       filetype = "markdown",
+      textwidth = 0,
+      wrapmargin = 0,
     },
   })
 
@@ -96,6 +102,10 @@ local function show_rmfilter_dialog(submit)
     size = { width = width, height = 1 },
     border = { style = "rounded", text = { top = "Model" } },
     win_options = { winhighlight = "Normal:Normal,FloatBorder:Normal" },
+    buf_options = {
+      textwidth = 0,
+      wrapmargin = 0,
+    },
   })
 
   -- Create layout to stack inputs vertically
@@ -304,10 +314,13 @@ function M.apply_edits()
   local success, error_msg
   vim.fn.chdir(buffer_dir) -- Change to buffer's directory
   success, error_msg = pcall(function()
+    local output_buffer = {}
     local chan = vim.fn.jobstart("apply-llm-edits", {
       on_stdout = function(_, data)
         if data then
-          vim.api.nvim_chan_send(term_chan, table.concat(data, "\n"))
+          local output = table.concat(data, "\n")
+          table.insert(output_buffer, output)
+          vim.api.nvim_chan_send(term_chan, output)
         end
       end,
       on_stderr = function(_, data)
@@ -325,7 +338,7 @@ function M.apply_edits()
             -- Parse output for unique filenames (format: "Applying diff to ${filename} ...")
             local seen_filenames = {}
             local unique_filenames = {}
-            for _, line in ipairs(vim.api.nvim_buf_get_lines(buf, 0, -1, false)) do
+            for _, line in ipairs(vim.split(table.concat(output_buffer, "\n"), "\n")) do
               local filename = line:match("^Applying diff to ([^%s]+)")
               if filename and not seen_filenames[filename] then
                 seen_filenames[filename] = true

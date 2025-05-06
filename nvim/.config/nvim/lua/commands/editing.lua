@@ -44,7 +44,7 @@ local function find_and_replace(fname, args, projectwide)
   end
 end
 
--- Create a FindAndReplace command for project-wide search and replace
+-- FindAndReplace does a find and replace in all files under the current directory
 vim.api.nvim_create_user_command("FindAndReplace", function(opts)
   -- Get the command arguments
   local args = opts.args
@@ -65,6 +65,7 @@ end, {
   desc = "Perform find and replace in the current directory using /pattern/replacement/[flags] format",
 })
 
+-- FindAndReplaceProject does a find and replace in all files under the git root
 vim.api.nvim_create_user_command("FindAndReplaceProject", function(opts)
   -- Get the command arguments
   local args = opts.args
@@ -82,7 +83,7 @@ end, {
     -- No completion provided for now
     return {}
   end,
-  desc = "Perform project-wide find and replace using /pattern/replacement/[flags] format",
+  desc = "Perform repository-wide find and replace using /pattern/replacement/[flags] format",
 })
 
 -- Copy the current buffer's path to the yank register

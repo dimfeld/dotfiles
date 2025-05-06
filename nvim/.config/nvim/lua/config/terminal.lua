@@ -15,7 +15,9 @@ toggleterm.setup({
 })
 
 vim.api.nvim_create_user_command("VTerm", "ToggleTerm size=80 direction=vertical", {})
+vim.api.nvim_create_user_command("Vterm", "ToggleTerm size=80 direction=vertical", {})
 vim.api.nvim_create_user_command("HTerm", "ToggleTerm size=20 direction=horizontal", {})
+vim.api.nvim_create_user_command("Hterm", "ToggleTerm size=20 direction=horizontal", {})
 
 -- Tell neovim to catch these keystrokes instead of passing them through to the terminal.
 function set_terminal_keymaps()

@@ -268,8 +268,8 @@ return {
       "onsails/lspkind-nvim",
       {
         "cmp-async-path",
-        dir = "~/Documents/projects/cmp-async-path",
-        -- url = "https://codeberg.org/FelipeLema/cmp-async-path.git",
+        -- dir = "~/Documents/projects/cmp-async-path",
+        url = "https://github.com/dimfeld/cmp-async-path",
       },
     },
     opts = {},

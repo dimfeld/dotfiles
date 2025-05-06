@@ -40,6 +40,7 @@ return {
             ["if"] = "@function.inner",
             ["ac"] = "@class.outer",
             ["ic"] = "@class.inner",
+            ["as"] = "@statement.outer",
           },
         },
         move = {
