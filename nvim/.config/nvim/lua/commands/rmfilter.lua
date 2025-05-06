@@ -248,12 +248,12 @@ function M.ask_rmfilter()
       chan = vim.fn.jobstart(cmd, {
         on_stdout = function(_, data)
           if data then
-            vim.api.nvim_chan_send(term_chan, table.concat(data, "\n") .. "\n")
+            vim.api.nvim_chan_send(term_chan, table.concat(data, "\n"))
           end
         end,
         on_stderr = function(_, data)
           if data then
-            vim.api.nvim_chan_send(term_chan, table.concat(data, "\n") .. "\n")
+            vim.api.nvim_chan_send(term_chan, table.concat(data, "\n"))
           end
         end,
         on_exit = function(_, code)
@@ -307,12 +307,12 @@ function M.apply_edits()
     local chan = vim.fn.jobstart("apply-llm-edits", {
       on_stdout = function(_, data)
         if data then
-          vim.api.nvim_chan_send(term_chan, table.concat(data, "\n") .. "\n")
+          vim.api.nvim_chan_send(term_chan, table.concat(data, "\n"))
         end
       end,
       on_stderr = function(_, data)
         if data then
-          vim.api.nvim_chan_send(term_chan, table.concat(data, "\n") .. "\n")
+          vim.api.nvim_chan_send(term_chan, table.concat(data, "\n"))
         end
       end,
       on_exit = function(_, code)
