@@ -1,0 +1,2 @@
+#!/bin/bash
+grep Cost: $1 | cut -d' ' -f2 | awk '{sum += substr($1,2,4)} END { print sum }'

@@ -62,3 +62,6 @@ bindkey "${key[End]}" end-of-line
 bindkey '^[[F' end-of-line
 
 bindkey '^]' autosuggest-accept
+
+# Disable clearing screen since I'm using this in tmux
+bindkey -r "^L"
