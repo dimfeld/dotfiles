@@ -36,6 +36,10 @@ vim.o.backup = true
 vim.o.swapfile = false
 vim.o.scrolloff = 8
 
+if vim.env.OSC52 == 'true' then
+  vim.g.clipboard = "osc52"
+end
+
 ---- code language configs
 
 local auGroup = vim.api.nvim_create_augroup("CodeLangs", {})
