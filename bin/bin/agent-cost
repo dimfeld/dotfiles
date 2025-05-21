@@ -25,7 +25,8 @@ async function processFile(file: string): Promise<string | null> {
 
     // Only return result if costSum is non-zero
     if (costSum > 0) {
-      return `${date} ${file} $${costSum.toFixed(2)}`;
+      let costString = ('$' + costSum.toFixed(2)).padStart(6, ' ');
+      return `${date} ${costString} ${file}`;
     }
     return null;
   } catch (error) {
