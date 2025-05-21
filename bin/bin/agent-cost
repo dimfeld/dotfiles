@@ -1,2 +1,44 @@
-#!/bin/bash
-grep Cost: $1 | cut -d' ' -f2 | awk '{sum += substr($1,2,4)} END { print sum }'
+#!/usr/bin/env bun
+import { readdir, stat, readFile } from 'fs/promises';
+import { join } from 'path';
+
+// Get file paths from command-line arguments
+const files = Bun.argv.slice(2);
+
+async function processFile(file: string): Promise<string | null> {
+  try {
+    // Get file modification date
+    const stats = await stat(file);
+    const date = stats.mtime.toISOString().slice(0, 16).replace('T', ' '); // Format as YYYY-MM-DD HH:MM
+
+    // Read file content
+    const content = await readFile(file, 'utf8');
+    
+    // Extract costs (lines with "Cost:") and sum them
+    const costLines = content.split('\n').filter(line => line.includes('Cost:'));
+    const costSum = costLines
+      .map(line => {
+        const cost = line.split(' ')[1]?.slice(1, 5); // Extract cost value, take chars 1-4
+        return cost ? parseFloat(cost) : 0;
+      })
+      .reduce((sum, cost) => sum + cost, 0);
+
+    // Only return result if costSum is non-zero
+    if (costSum > 0) {
+      return `${date} ${file} $${costSum.toFixed(2)}`;
+    }
+    return null;
+  } catch (error) {
+    console.error(`Error processing ${file}:`, error);
+    return null;
+  }
+}
+
+// Process all files and collect results
+const results = await Promise.all(files.map(file => processFile(file)));
+
+// Filter out null results, sort, and print
+results
+  .filter((result): result is string => result !== null)
+  .sort()
+  .forEach(result => console.log(result));
