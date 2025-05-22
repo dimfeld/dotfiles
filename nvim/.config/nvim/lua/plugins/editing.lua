@@ -49,6 +49,10 @@ return {
     end,
   },
 
+  {
+    "rafikdraoui/jj-diffconflicts",
+  },
+
   -- Leap for quick navigation through the buffer
   {
     "ggandor/leap.nvim",
