@@ -409,6 +409,3 @@ zinit light zsh-users/zsh-autosuggestions
 
 # Added by Windsurf - Next
 export PATH="/Users/dimfeld/.codeium/windsurf/bin:$PATH"
-
-# Added by Windsurf - Next
-export PATH="/Users/dimfeld/.codeium/windsurf/bin:$PATH"

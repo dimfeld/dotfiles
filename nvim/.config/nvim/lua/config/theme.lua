@@ -67,6 +67,7 @@ vim.api.nvim_create_autocmd("FileType", {
     if lang then
       local ts = vim.treesitter.language.add(lang)
       if ts then
+        vim.cmd("syntax off")
         vim.treesitter.start()
       end
     end

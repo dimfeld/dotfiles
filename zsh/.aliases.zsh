@@ -48,21 +48,39 @@ alias gcm='git commit -m'
 alias gco-='git checkout -'
 alias grc='git rebase --continue'
 
-alias jc='jj commit'
-alias jjc='jj commit'
+alias jjn='jj new'
+function jjc() {
+    for arg in "$@"; do
+        if [ ! -e "$arg" ]; then
+            echo "Error: Path '$arg' does not exist. Did you mean to use 'jjcm'?"
+            return 1
+        fi
+    done
+    jj commit "$@"
+}
 alias jjcm='jj commit -m'
 alias jd='jj diff'
 alias jjd='jj diff'
 alias js='jj status'
-alias jjs='jj status'
 alias jjsh='jj show'
-alias jje='jj edit'
 alias jjpush='jj git push'
 alias jjgp='jj git push'
 alias jjgf='jj git fetch'
 alias jjpb="jj log -r 'latest(heads(ancestors(@) & bookmarks()), 1)' --limit 1 --no-graph --ignore-working-copy -T bookmarks | tr -d '*'"
 
 alias copydiff="jj diff --from main | pbcopy"
+
+function jj-track-bookmark-and-new() {
+  jj bookmark track $1@origin && jj new $1
+}
+alias jjbtn="jj-track-bookmark-and-new"
+alias jjbt="jj bookmark track"
+
+function jj-fetch-and-new() {
+  BRANCH=${1:-$(jjpb)}
+  jj git fetch && jj new $BRANCH
+}
+alias jjfn=jj-fetch-and-new
 
 function jj-update-branch() {
   REV=${1:-@-}

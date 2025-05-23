@@ -36,7 +36,7 @@ vim.o.backup = true
 vim.o.swapfile = false
 vim.o.scrolloff = 8
 
-if vim.env.OSC52 == 'true' then
+if vim.env.OSC52 == "true" then
   vim.g.clipboard = "osc52"
 end
 
