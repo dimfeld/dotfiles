@@ -57,6 +57,8 @@ alias cps="gh copilot suggest -t shell"
 
 alias wind="/Users/dimfeld/.codeium/windsurf/bin/windsurf-next"
 
+alias zs='zellij --session'
+
 # AWS
 
 alias aws-whoami='aws sts get-caller-identity'
