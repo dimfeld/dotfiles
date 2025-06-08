@@ -318,24 +318,17 @@ return {
     opts = {
       -- provider = "copilot",
       provider = "gemini",
-      deepseek = {
-        model = "deepseek-chat",
-      },
-      claude = {
-        model = "claude-3-7-sonnet-latest",
-        -- max_tokens = 4096,
-      },
-      gemini = {
-        model = "gemini-2.5-flash-preview-04-17",
-      },
-      vendors = {
-        claude_sonnet_35 = {
-          __inherits_from = "claude",
-          model = "claude-3-5-sonnet-latest",
+      providers = {
+        claude = {
+          model = "claude-sonnet-4-sonnet-latest",
+          -- max_tokens = 4096,
+        },
+        gemini = {
+          model = "gemini-2.5-flash-preview-04-17",
         },
         gemini_pro = {
           __inherits_from = "gemini",
-          model = "gemini-2.5-pro-exp-03-25",
+          model = "gemini-2.5-pro-preview-06-05",
         },
         ---@type AvanteProvider
         deepseek = {

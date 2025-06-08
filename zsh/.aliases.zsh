@@ -66,7 +66,7 @@ alias jjsh='jj show'
 alias jjpush='jj git push'
 alias jjgp='jj git push'
 alias jjgf='jj git fetch'
-alias jjpb="jj log -r 'latest(heads(ancestors(@) & bookmarks()), 1)' --limit 1 --no-graph --ignore-working-copy -T bookmarks | tr -d '*'"
+alias jjpb="jj log -r 'latest(heads(ancestors(@) & bookmarks()), 1)' --limit 1 --no-graph --ignore-working-copy -T local_bookmarks | tr -d '*'"
 
 alias copydiff="jj diff --from main | pbcopy"
 
@@ -118,3 +118,11 @@ alias wind="/Users/dimfeld/.codeium/windsurf/bin/windsurf-next"
 # AWS
 
 alias aws-whoami='aws sts get-caller-identity'
+
+alias rmp=rmplan
+
+# Turbo
+alias trl="turbo run --cache=local:rw"
+
+
+alias claude="ANTHROPIC_API_KEY= claude"

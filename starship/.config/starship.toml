@@ -31,7 +31,7 @@ format = 'via [${symbol}${pyenv_prefix}(\($virtualenv\) )]($style)'
 [custom.jjupstreambranch]
 when = true
 command = '''
-jj root > /dev/null && jj log -r 'latest(heads(ancestors(@) & bookmarks()), 1)' --limit 1 --no-graph --ignore-working-copy -T '"jj> " ++ raw_escape_sequence("\x1b[1;35m") ++ bookmarks ++ raw_escape_sequence("\x1b[0m")'
+jj root > /dev/null && jj log -r 'latest(heads(ancestors(@) & bookmarks()), 1)' --limit 1 --no-graph --ignore-working-copy -T '"jj> " ++ raw_escape_sequence("\x1b[1;35m") ++ local_bookmarks ++ raw_escape_sequence("\x1b[0m")'
 '''
 
 # custom module for jj status
@@ -45,7 +45,7 @@ jj root > /dev/null && jj log --revisions 'ancestors(@, 2)' --no-graph --ignore-
   separate(" ",
     "|",
     if(current_working_copy, "@", "@-") ++ change_id.shortest(4),
-    bookmarks,
+    local_bookmarks,
     concat(
       if(conflict, "💥"),
       if(divergent, "🚧"),
@@ -69,7 +69,7 @@ jj root > /dev/null && jj log --revisions 'ancestors(@, 2)' --no-graph --ignore-
 # command = '''
 # jj log -r@ -n1 --ignore-working-copy --no-graph --color always  -T '
 #   separate(" ",
-#     bookmarks.map(|x| if(
+#     local_bookmarks.map(|x| if(
 #         x.name().substr(0, 10).starts_with(x.name()),
 #         x.name().substr(0, 10),
 #         x.name().substr(0, 9) ++ "…")
