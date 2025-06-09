@@ -1,8 +1,12 @@
 #!/bin/bash
 set -euxo pipefail
-# Sudo command at the start so I don't have to type the password halfway through
-# later.
-sudo echo
+
+# Run sudo commands first to get the password prompt out of the way
+if [ -f "$(which apt-get)" ]; then
+  sudo apt -y update && apt list --upgradable && sudo apt -y dist-upgrade
+  sudo apt autoremove
+fi
+
 deactivate &> /dev/null || true
 pnpm --global update -L
 rustup update stable
@@ -21,9 +25,5 @@ if [ -f "$(which brew)" ]; then
   brew upgrade || true
 fi
 
-if [ -f "$(which apt-get)" ]; then
-  sudo apt -y update && apt list --upgradable && sudo apt -y dist-upgrade
-  sudo apt autoremove
-fi
 
 nvim "+lua require('lazy').sync()"
