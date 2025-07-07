@@ -13,3 +13,7 @@
   - `jj git push` - Push changes to the remote Git repository
 
 - When using absolute paths, make sure to write `dimfeld` as the user name not `dimfield`
+
+## Removing Files
+
+My `rm` command is aliased to `rm -i`. This means that you need to use `rm -f` to remove files.

@@ -22,21 +22,20 @@ local function configure_lsp_servers()
 
   -- local capabilities = vim.lsp.protocol.make_client_capabilities()
   -- capabilities.textDocument.completion.completionItem.snippetSupport = true
-  local lspconfig = require("lspconfig")
-
-  -- The order of initialization is important here because it determines the order in which code actions show up
-  -- when more than one LS has actions.
 
   local svelte_lsp_capabilities = vim.lsp.protocol.make_client_capabilities()
   svelte_lsp_capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = true
-  lspconfig.svelte.setup({
+  vim.lsp.config("svelte", {
     capabilities = svelte_lsp_capabilities,
+    -- Look at .git, not package.json to make sure that monorepos work properly
+    root_markers = { ".git" },
     settings = {
       typescript = ts_server_settings,
       javascript = ts_server_settings,
     },
   })
-  lspconfig.vtsls.setup({
+
+  vim.lsp.config("vtsls", {
     settings = {
       typescript = ts_server_settings,
       javascript = ts_server_settings,
@@ -66,10 +65,18 @@ local function configure_lsp_servers()
     },
   })
 
-  lspconfig.gopls.setup({})
-  lspconfig.html.setup({})
-  lspconfig.jsonls.setup({})
-  lspconfig.lua_ls.setup({
+  vim.lsp.config("harper_ls", {
+    settings = {
+      ["harper-ls"] = {
+        linters = {
+          SentenceCapitalization = false,
+          SpellCheck = false,
+        },
+      },
+    },
+  })
+
+  vim.lsp.config("lua_ls", {
     settings = {
       Lua = {
         runtime = {
@@ -88,7 +95,15 @@ local function configure_lsp_servers()
       },
     },
   })
-  lspconfig.pyright.setup({
+
+  -- vim.lsp.config["markdown-frontmatter"] = {
+  --   cmd = { "node", "~/Documents/projects/markdown-frontmatter-lsp/server/out/server.js" },
+  --   filetypes = { "markdown" },
+  --   root_markers = { ".git" },
+  -- }
+  -- vim.lsp.enable("markdown-frontmatter")
+
+  vim.lsp.config("pyright", {
     settings = {
       pyright = {
         inlayHints = {
@@ -97,7 +112,8 @@ local function configure_lsp_servers()
       },
     },
   })
-  lspconfig.rust_analyzer.setup({
+
+  vim.lsp.config("rust_analyzer", {
     settings = {
       ["rust-analyzer"] = {
         rustFmt = {
@@ -109,9 +125,8 @@ local function configure_lsp_servers()
     },
   })
 
-  lspconfig.tailwindcss.setup({})
-  lspconfig.terraformls.setup({})
-  lspconfig.yamlls.setup({
+  vim.lsp.config("yamlls", {
+    filetypes = { "yaml", "yaml.docker-compose", "yaml.gitlab", "yaml.helm-values", "markdown.yaml" },
     settings = {
       yaml = {
         schemaStore = {
@@ -123,8 +138,7 @@ local function configure_lsp_servers()
     },
   })
 
-  lspconfig.cssls.setup({})
-  lspconfig.eslint.setup({
+  vim.lsp.config("eslint", {
     settings = {
       eslint = {
         workingDirectories = {
@@ -132,6 +146,25 @@ local function configure_lsp_servers()
         },
       },
     },
+  })
+
+  -- The order of initialization is important here because it determines the order in which code actions show up
+  -- when more than one LS has actions.
+  vim.lsp.enable({
+    "svelte",
+    "vtsls",
+    "cssls",
+    "eslint",
+    "gopls",
+    "html",
+    "jsonls",
+    "lua_ls",
+    "pyright",
+    "rust_analyzer",
+    "tailwindcss",
+    "terraformls",
+    "yamlls",
+    "harper_ls",
   })
 end
 

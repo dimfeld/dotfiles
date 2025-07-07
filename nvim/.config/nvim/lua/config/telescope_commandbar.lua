@@ -35,6 +35,7 @@ M.commands = {
         -- local ac = client.capabilities.textDocument.codeAction.codeActionLiteralSupport.codeActionKind.valueSet
         local ac = client.server_capabilities
             and client.server_capabilities.codeActionProvider
+            and type(client.server_capabilities.codeActionProvider) == "table"
             and client.server_capabilities.codeActionProvider.codeActionKinds
           or {}
 

@@ -119,7 +119,8 @@ alias wind="/Users/dimfeld/.codeium/windsurf/bin/windsurf-next"
 
 alias aws-whoami='aws sts get-caller-identity'
 
-alias rmp=rmplan
+alias rmp="~/Documents/projects/llmutils/dist/rmplan.js"
+alias rmpd="~/Documents/projects/llmutils/src/rmplan/rmplan.ts"
 
 # Turbo
 alias trl="turbo run --cache=local:rw"
