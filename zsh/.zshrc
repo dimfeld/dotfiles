@@ -401,7 +401,7 @@ zinit light-mode for \
 
 ### End of Zinit's installer chunk
 
-zi snippet OMZP::git
+# zi snippet OMZP::git
 zi snippet OMZP::ssh-agent
 zi light Aloxaf/fzf-tab
 zinit ice wait lucid atload'_zsh_autosuggest_start'

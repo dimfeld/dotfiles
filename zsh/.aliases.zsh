@@ -121,9 +121,22 @@ alias aws-whoami='aws sts get-caller-identity'
 
 alias rmp="~/Documents/projects/llmutils/dist/rmplan.js"
 alias rmpd="~/Documents/projects/llmutils/src/rmplan/rmplan.ts"
+function rmp-prep-and-run() {
+  rmp prepare --claude --next-ready "$@" && jj commit -m 'prepare plan' && rmp run --next-ready "$@" 
+}
+
+function rmp-yolo() {
+  rmp generate --claude "$@" && jj commit -m 'generate plan' && rmp-prep-and-run "$@"
+}
 
 # Turbo
 alias trl="turbo run --cache=local:rw"
 
+alias claude="ANTHROPIC_API_KEY= CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=true claude"
+alias claudes="ANTHROPIC_API_KEY= CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=true claude --model sonnet"
 
-alias claude="ANTHROPIC_API_KEY= claude"
+
+# wezterm
+if [ -n "$WEZTERM_PANE" ]; then
+  alias rename-workspace="wezterm cli rename-workspace"
+fi

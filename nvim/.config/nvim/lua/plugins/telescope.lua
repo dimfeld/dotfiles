@@ -15,6 +15,46 @@ local preserve_order_sorter = function()
   })
 end
 
+local yank_path_action = function(prompt_bufnr)
+  local result = ""
+
+  -- If the string contains a colon, remove the colon and everything after it.
+  local trim_colon = function(str)
+    local colon_index = str:find(":")
+    if colon_index then
+      return str:sub(1, colon_index - 1)
+    else
+      return str
+    end
+  end
+
+  -- Try the multi-select case first
+  require("telescope.actions.utils").map_selections(prompt_bufnr, function(entry)
+    if result ~= "" then
+      result = result .. "\n"
+    end
+    result = result .. trim_colon(entry.value)
+  end)
+
+  if result == "" then
+    -- Nothing selected explicitly, use the current entry
+    local entry = require("telescope.actions.state").get_selected_entry()
+    result = trim_colon(entry.value)
+  end
+
+  local cb_opts = vim.opt.clipboard:get()
+  if vim.tbl_contains(cb_opts, "unnamed") then
+    vim.fn.setreg("*", result)
+  end
+  if vim.tbl_contains(cb_opts, "unnamedplus") then
+    vim.fn.setreg("+", result)
+  end
+  vim.fn.setreg("", result)
+
+  -- Close the prompt
+  require("telescope.actions").close(prompt_bufnr)
+end
+
 -- Copied from https://github.com/nvim-telescope/telescope.nvim/blob/10b8a82b042caf50b78e619d92caf0910211973d/lua/telescope/builtin/__internal.lua#L579
 -- and modified to use `preserve_order_sorter` instead of the normal sorter.
 local command_history = function(opts)
@@ -224,7 +264,11 @@ local configure_telescope = function()
     builtin.grep_string({ search_dirs = { githelpers.git_repo_toplevel() } })
   end, { desc = "Grep for current string in Git Repo" })
   vim.keymap.set("n", "<leader>n", function()
-    extensions.file_browser.file_browser({ cwd = require("telescope.utils").buffer_dir() })
+    extensions.file_browser.file_browser({
+      cwd = require("telescope.utils").buffer_dir(),
+      respect_gitignore = false,
+      no_ignore = true,
+    })
   end, { desc = "File Browser" })
   vim.keymap.set("n", "<leader>v", builtin.treesitter, { desc = "Show Treesitter Symbols" })
   vim.keymap.set("n", "<leader>R", builtin.resume, { desc = "Restore last Telescope Picker" })
@@ -349,8 +393,21 @@ return {
     },
     config = function(_, opts)
       require("telescope").setup({
+        defaults = {
+          mappings = {
+            ["i"] = {
+              ["<C-y>"] = yank_path_action,
+            },
+            ["n"] = {
+              ["y"] = yank_path_action,
+            },
+          },
+        },
         extensions = {
           undo = opts,
+          file_browser = {
+            hijack_netrw = true,
+          },
         },
       })
       require("telescope").load_extension("undo")

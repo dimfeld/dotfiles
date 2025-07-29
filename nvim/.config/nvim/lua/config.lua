@@ -206,6 +206,8 @@ vim.keymap.set("n", "<C-l>", "<C-w>l")
 vim.keymap.set("n", "<leader>p", ":b#<CR>", { silent = true })
 
 -- Command line
+vim.keymap.set("c", "<C-a>", "<Home>", {})
+vim.keymap.set("c", "<C-e>", "<End>", {})
 vim.keymap.set("c", "<D-Left>", "<Home>", {})
 vim.keymap.set("c", "<D-Right>", "<End>", {})
 vim.keymap.set("c", "<M-Left>", "<S-Left>", {})

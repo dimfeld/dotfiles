@@ -18,6 +18,9 @@ local function configure_lsp_servers()
       importModuleSpecifierEnding = "js",
       importModuleSpecifierPreference = "shortest",
     },
+    server = {
+      maxTsServerMemory = 8192,
+    },
   }
 
   -- local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -28,7 +31,7 @@ local function configure_lsp_servers()
   vim.lsp.config("svelte", {
     capabilities = svelte_lsp_capabilities,
     -- Look at .git, not package.json to make sure that monorepos work properly
-    root_markers = { ".git" },
+    -- root_markers = { ".git" },
     settings = {
       typescript = ts_server_settings,
       javascript = ts_server_settings,
@@ -65,16 +68,16 @@ local function configure_lsp_servers()
     },
   })
 
-  vim.lsp.config("harper_ls", {
-    settings = {
-      ["harper-ls"] = {
-        linters = {
-          SentenceCapitalization = false,
-          SpellCheck = false,
-        },
-      },
-    },
-  })
+  -- vim.lsp.config("harper_ls", {
+  --   settings = {
+  --     ["harper-ls"] = {
+  --       linters = {
+  --         SentenceCapitalization = false,
+  --         SpellCheck = false,
+  --       },
+  --     },
+  --   },
+  -- })
 
   vim.lsp.config("lua_ls", {
     settings = {
@@ -103,15 +106,15 @@ local function configure_lsp_servers()
   -- }
   -- vim.lsp.enable("markdown-frontmatter")
 
-  vim.lsp.config("pyright", {
-    settings = {
-      pyright = {
-        inlayHints = {
-          parameterTypes = false,
-        },
-      },
-    },
-  })
+  -- vim.lsp.config("pyright", {
+  --   settings = {
+  --     pyright = {
+  --       inlayHints = {
+  --         parameterTypes = false,
+  --       },
+  --     },
+  --   },
+  -- })
 
   vim.lsp.config("rust_analyzer", {
     settings = {
@@ -164,7 +167,7 @@ local function configure_lsp_servers()
     "tailwindcss",
     "terraformls",
     "yamlls",
-    "harper_ls",
+    -- "harper_ls",
   })
 end
 
