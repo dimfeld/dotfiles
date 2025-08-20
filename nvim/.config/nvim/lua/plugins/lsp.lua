@@ -18,7 +18,7 @@ local function configure_lsp_servers()
       importModuleSpecifierEnding = "js",
       importModuleSpecifierPreference = "shortest",
     },
-    server = {
+    tsserver = {
       maxTsServerMemory = 8192,
     },
   }

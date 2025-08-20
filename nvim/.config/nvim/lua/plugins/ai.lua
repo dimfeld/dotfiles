@@ -153,6 +153,7 @@ return {
     "zbirenbaum/copilot.lua",
     event = "VeryLazy",
     cond = not vim.g.vscode,
+    enabled = false,
     opts = {
       -- Just using this for avante config, don't need the UI functionality
       suggestion = {

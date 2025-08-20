@@ -132,8 +132,22 @@ function rmp-yolo() {
 # Turbo
 alias trl="turbo run --cache=local:rw"
 
-alias claude="ANTHROPIC_API_KEY= CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=true claude"
-alias claudes="ANTHROPIC_API_KEY= CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=true claude --model sonnet"
+# Temporarily unset claude alias so we can use the regular binary in the functions
+unalias claude
+
+function claudegr() {
+  (
+  cdgr
+  ANTHROPIC_API_KEY= CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=true claude "$@"
+  )
+}
+
+function claudecwd() {
+  ANTHROPIC_API_KEY= CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=true claude "$@"
+}
+
+alias claude="claudegr"
+alias claudes="claudegr --model sonnet"
 
 
 # wezterm

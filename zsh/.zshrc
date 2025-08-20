@@ -121,7 +121,10 @@ inpane() {
 
 # cd to git root
 cdgr() {
-  cd `gitroot`
+  GITROOT=$(gitroot)
+  if [[ $? -eq 0 ]]; then
+    cd "$GITROOT"
+  fi
 }
 
 function choose_aws_profile() {
