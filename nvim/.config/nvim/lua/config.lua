@@ -107,6 +107,7 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   pattern = "*.md",
   callback = function()
     vim.opt_local.spell = true
+    vim.opt_local.shiftwidth = 2
     vim.opt_local.formatoptions:append("t")
   end,
 })

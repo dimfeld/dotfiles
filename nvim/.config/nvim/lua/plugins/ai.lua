@@ -418,17 +418,6 @@ return {
       },
     },
     config = function(_, opts)
-      opts.adapters = {
-        copilot = function()
-          return require("codecompanion.adapters").extend("copilot", {
-            schema = {
-              model = {
-                default = "claude-3-5-sonnet",
-              },
-            },
-          })
-        end,
-      }
       require("codecompanion").setup(opts)
 
       vim.api.nvim_create_user_command("CC", "CodeCompanionChat", {})

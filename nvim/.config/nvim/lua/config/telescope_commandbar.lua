@@ -228,6 +228,30 @@ M.commands = {
       require("commands.rmfilter").apply_edits()
     end),
   },
+
+  {
+    name = "Nodes Join",
+    category = "Editing",
+    action = function()
+      require("treesj").join()
+    end,
+  },
+
+  {
+    name = "Nodes Split",
+    category = "Editing",
+    action = function()
+      require("treesj").split()
+    end,
+  },
+
+  {
+    name = "Nodes Toggle",
+    category = "Editing",
+    action = function()
+      require("treesj").toggle()
+    end,
+  },
 }
 
 --- @param commands CommandBarAction[]

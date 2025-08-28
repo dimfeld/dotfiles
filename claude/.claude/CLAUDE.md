@@ -9,7 +9,6 @@
 - Common `jj` commands:
   - `jj status` - Show current status of the repository
   - `jj commit -m "message"` - Create a commit with the specified message
-  - `jjub` - Update current branch to point to the latest commit
   - `jj git push` - Push changes to the remote Git repository
 
 - When using absolute paths, make sure to write `dimfeld` as the user name not `dimfield`

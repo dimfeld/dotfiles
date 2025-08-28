@@ -31,7 +31,7 @@ format = 'via [${symbol}${pyenv_prefix}(\($virtualenv\) )]($style)'
 [custom.jjupstreambranch]
 when = true
 command = '''
-jj root > /dev/null && jj log -r 'latest(heads(ancestors(@) & bookmarks()), 1)' --limit 1 --no-graph --ignore-working-copy -T '"jj> " ++ raw_escape_sequence("\x1b[1;35m") ++ local_bookmarks ++ raw_escape_sequence("\x1b[0m")'
+jj root > /dev/null && jj log -r 'latest(heads(ancestors(@) & bookmarks()), 1)' --limit 1 --no-graph --ignore-working-copy -T 'raw_escape_sequence("\x1b[0;32m") ++ "jj> " ++ raw_escape_sequence("\x1b[0;33m") ++ local_bookmarks ++ raw_escape_sequence("\x1b[0m")'
 '''
 
 # custom module for jj status
@@ -52,8 +52,8 @@ jj root > /dev/null && jj log --revisions 'ancestors(@, 2)' --no-graph --ignore-
       if(hidden, "👻"),
       if(immutable, "🔒"),
     ),
-    if(empty, raw_escape_sequence("\x1b[1;32m") ++ "(empty)" ++ raw_escape_sequence("\x1b[0m")),
-    raw_escape_sequence("\x1b[1;32m") ++ if(description.first_line().len() == 0,
+    if(empty, raw_escape_sequence("\x1b[0;32m") ++ "(empty)" ++ raw_escape_sequence("\x1b[0m")),
+    raw_escape_sequence("\x1b[0;32m") ++ if(description.first_line().len() == 0,
       "(no description set)",
       if(description.first_line().substr(0, 29) == description.first_line(),
         description.first_line(),

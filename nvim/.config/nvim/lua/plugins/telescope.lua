@@ -1,4 +1,5 @@
 -- A sorter that does case-insensitive substring matching, but doesn't reorder anything.
+local githelpers = require("lib.git")
 local preserve_order_sorter = function()
   local Sorter = require("telescope.sorters").Sorter
 
@@ -28,18 +29,34 @@ local yank_path_action = function(prompt_bufnr)
     end
   end
 
+  -- If the path is under the current git root, strip the root to make it relative
+  local git_root = githelpers.git_repo_toplevel()
+  local function relativize_to_git_root(path)
+    if not git_root then
+      return path
+    end
+    if path:sub(1, #git_root) == git_root then
+      local rel = path:sub(#git_root + 1)
+      if rel:sub(1, 1) == "/" then
+        rel = rel:sub(2)
+      end
+      return rel
+    end
+    return path
+  end
+
   -- Try the multi-select case first
   require("telescope.actions.utils").map_selections(prompt_bufnr, function(entry)
     if result ~= "" then
       result = result .. "\n"
     end
-    result = result .. trim_colon(entry.value)
+    result = result .. relativize_to_git_root(trim_colon(entry.value))
   end)
 
   if result == "" then
     -- Nothing selected explicitly, use the current entry
     local entry = require("telescope.actions.state").get_selected_entry()
-    result = trim_colon(entry.value)
+    result = relativize_to_git_root(trim_colon(entry.value))
   end
 
   local cb_opts = vim.opt.clipboard:get()

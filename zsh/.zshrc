@@ -373,6 +373,8 @@ export DN_DISCORD_WEBHOOK=${DISCORD_WEBHOOK}
 
 export PRETTIERD_LOCAL_PRETTIER_ONLY=true
 
+export TURBO_LOG_ORDER=grouped
+
 setopt auto_pushd
 
 # Better autocompletion

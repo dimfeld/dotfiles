@@ -52,6 +52,7 @@ local function configure_lsp_servers()
           },
         },
         tsserver = {
+          maxTsServerMemory = 8192,
           globalPlugins = {
             {
               name = "typescript-svelte-plugin",

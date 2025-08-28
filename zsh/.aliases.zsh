@@ -75,12 +75,14 @@ function jj-track-bookmark-and-new() {
 }
 alias jjbtn="jj-track-bookmark-and-new"
 alias jjbt="jj bookmark track"
+alias jjblr="jj bookmark list --sort committer-date-"
 
 function jj-fetch-and-new() {
   BRANCH=${1:-$(jjpb)}
   jj git fetch && jj new $BRANCH
 }
 alias jjfn=jj-fetch-and-new
+alias jjfm='jj git fetch --branch main'
 
 function jj-update-branch() {
   REV=${1:-@-}
@@ -98,6 +100,17 @@ function jjbm() {
   shift 2
 
   jj bookmark move "$BOOKMARK" --to "$REV" "$@"
+}
+
+function jj-restack() {
+  if [ $# -ne 1 ]; then
+    echo "Usage: jj-restack <bookmark>"
+    return
+  fi
+  BOOKMARK="stacked($1)"
+
+  jj log -r "$BOOKMARK" -n50
+  jj git fetch -b main && jj rebase -r "$BOOKMARK" -d main
 }
 
 alias avpr='av pr create'
@@ -125,6 +138,14 @@ function rmp-prep-and-run() {
   rmp prepare --claude --next-ready "$@" && jj commit -m 'prepare plan' && rmp run --next-ready "$@" 
 }
 
+function rmp-prep-and-run-codex() {
+  rmp prepare --claude --next-ready "$@" && jj commit -m 'prepare plan' && ALLOW_ALL_TOOLS=true rmp run -x codex-cli --next-ready "$@" 
+}
+
+function rmp-gen-and-run-codex() {
+  rmp generate --claude --next-ready "$@" && jj commit -m 'generate' && ALLOW_ALL_TOOLS=true rmp run -x codex-cli --next-ready "$@" 
+}
+
 function rmp-yolo() {
   rmp generate --claude "$@" && jj commit -m 'generate plan' && rmp-prep-and-run "$@"
 }
@@ -133,7 +154,7 @@ function rmp-yolo() {
 alias trl="turbo run --cache=local:rw"
 
 # Temporarily unset claude alias so we can use the regular binary in the functions
-unalias claude
+unalias claude &> /dev/null
 
 function claudegr() {
   (
@@ -149,6 +170,22 @@ function claudecwd() {
 alias claude="claudegr"
 alias claudes="claudegr --model sonnet"
 
+unalias codex &> /dev/null
+
+function codexgr() {
+  (
+  cdgr
+  AGENT=1 codex "$@"
+  )
+}
+
+alias codex="codexgr --search"
+alias codexfa="codexgr --search --full-auto"
+alias codexyolo="codexgr --search --dangerously-bypass-approvals-and-sandbox"
+
+function new-from-linear() {
+  rmp import "$@" && jj b c "$@" -r@ && jj commit -m 'import from linear'
+}
 
 # wezterm
 if [ -n "$WEZTERM_PANE" ]; then
