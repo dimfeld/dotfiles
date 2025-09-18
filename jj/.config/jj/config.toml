@@ -1,0 +1,53 @@
+[user]
+name = "Daniel Imfeld"
+email = "daniel@imfeld.dev"
+
+[ui]
+pager = "delta"
+# diff.tool = "delta"
+diff-formatter = ":git"
+default-command = "log"
+diff-editor = ":builtin"
+merge-editor = "diffconflicts"
+
+[colors]
+# change_id = "cyan"
+# bookmark = "yellow"
+# bookmarks = "yellow"
+# local_bookmarks = "yellow"
+# remote_bookmarks = "yellow"
+
+[aliases]
+lt = ['log', '-r', 'ancestors(@)']
+ls = ['log', '-n', '20']
+lst = ['log', '-n', '20', '-r', 'this']
+bm = ['bookmark', 'move']
+bc = ['bookmark', 'create']
+
+[revset-aliases]
+this = "ancestors(@)"
+"branch(name)" = "(ancestors(name) | children(name)) ~ ancestors(main)"
+branch = "branch(@)"
+"stacked(name)" = "name:: ~ name"
+stacked = "stacked(@)"
+
+[templates]
+draft_commit_description = '''
+concat(
+  description,
+  surround(
+    "\nJJ: This commit contains the following changes:\n", "",
+    indent("JJ:     ", diff.stat(72)),
+  ),
+  "\nJJ: ignore-rest\n",
+  diff.git(),
+)
+'''
+
+[merge-tools.diffconflicts]
+program = "nvim"
+merge-args = [
+    "-c", "let g:jj_diffconflicts_marker_length=$marker_length",
+    "-c", "JJDiffConflicts!", "$output", "$base", "$left", "$right",
+]
+merge-tool-edits-conflict-markers = true
