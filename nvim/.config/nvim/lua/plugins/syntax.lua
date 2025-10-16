@@ -27,8 +27,6 @@ return {
   { "gutenye/json5.vim", ft = "json5" },
 
   "HiPhish/jinja.vim",
-  -- Aviator Git CLI highlighting
-  "aviator-co/av-vim-plugin",
 
   -- Javascript
 

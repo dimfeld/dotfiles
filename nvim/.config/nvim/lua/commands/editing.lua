@@ -115,3 +115,79 @@ vim.api.nvim_create_user_command("RmCopyBufferPath", function()
 end, {
   desc = "Copy the current buffer's path with repo: prefix to the yank register",
 })
+
+--- Get the comment string for the current filetype
+--- @return string
+local function get_comment_string()
+  local commentstring = vim.filetype.get_option(vim.bo.filetype, "commentstring")
+  if commentstring == "" then
+    commentstring = "// %s"
+  end
+  -- Extract just the comment prefix (remove the %s placeholder and trim)
+  local comment_prefix = commentstring:gsub("%%s", ""):gsub("%s+$", "")
+  return comment_prefix
+end
+
+--- Get leading whitespace from a line
+--- @param line_num number
+--- @return string
+local function get_leading_whitespace(line_num)
+  local line = vim.fn.getline(line_num)
+  local indent = line:match("^%s*")
+  return indent or ""
+end
+
+--- Add AI comment markers above the current line or around a visual selection
+--- @param opts table
+local function add_ai_comment(opts)
+  local comment = get_comment_string()
+  local line1 = opts.line1
+  local line2 = opts.line2
+  local is_range = line1 ~= line2
+
+  if is_range then
+    -- Visual selection: add AI_COMMENT_START above and AI_COMMENT_END below
+    local start_indent = get_leading_whitespace(line1)
+    local end_indent = get_leading_whitespace(line2)
+
+    local start_comment = start_indent .. comment .. " AI_COMMENT_START "
+    local end_comment = end_indent .. comment .. " AI_COMMENT_END"
+
+    -- Insert end comment first (so line numbers don't shift)
+    vim.fn.append(line2, end_comment)
+    -- Insert start comment above the selection
+    vim.fn.append(line1 - 1, start_comment)
+
+    -- Move cursor to end of the AI_COMMENT_START line
+    vim.api.nvim_win_set_cursor(0, { line1, #start_comment + 1 })
+    -- Enter insert mode at end of line
+    vim.cmd("startinsert!")
+  else
+    -- Normal mode: add "AI: " above current line
+    local indent = get_leading_whitespace(line1)
+    local ai_comment = indent .. comment .. " AI: "
+    vim.fn.append(line1 - 1, ai_comment)
+    -- Move cursor to end of the AI: line
+    vim.api.nvim_win_set_cursor(0, { line1, #ai_comment + 1 })
+    -- Enter insert mode at end of line
+    vim.cmd("startinsert!")
+  end
+end
+
+-- Command for adding AI comment markers
+vim.api.nvim_create_user_command("AIComment", add_ai_comment, {
+  range = true,
+  desc = "Add AI comment marker(s) - single line in normal mode, start/end markers in visual mode",
+})
+
+-- Keymap for normal mode
+vim.keymap.set("n", "<leader>ar", "<cmd>AIComment<CR>", {
+  desc = "Add AI comment marker above current line",
+  silent = false,
+})
+
+-- Keymap for visual mode
+vim.keymap.set("v", "<leader>ar", ":'<,'>AIComment<CR>", {
+  desc = "Add AI comment markers around selection",
+  silent = true,
+})

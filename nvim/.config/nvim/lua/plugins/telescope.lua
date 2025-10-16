@@ -360,6 +360,8 @@ return {
     },
     opts = {
       defaults = {
+        -- path_display = { filename_first = { reverse_directories = true } },
+        path_display = { "truncate" },
         mappings = {
           i = {
             ["<C-u>"] = false,

@@ -7,7 +7,7 @@ vim.api.nvim_create_user_command("Gadd", ":Git add %", {})
 vim.keymap.set("n", "dgl", "&diff ? ':diffget //2<CR>' : ''", { expr = true, desc = "Get diff from left side" })
 -- Use chunk from right side
 vim.keymap.set("n", "dgr", "&diff ? ':diffget //3<CR>' : ''", { expr = true, desc = "Get diff from right side" })
-vim.keymap.set("n", "dg", ":diffget", { expr = true, desc = "Get diff" })
+-- vim.keymap.set("n", "dg", ":diffget", { expr = true, desc = "Get diff" })
 vim.keymap.set("n", "dgo", ":diffget", { expr = true, desc = "Get diff" })
 
 cmdbar.add_commands({

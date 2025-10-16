@@ -15,8 +15,8 @@ local function configure_lsp_servers()
       completeFunctionCalls = true,
     },
     preferences = {
-      importModuleSpecifierEnding = "js",
       importModuleSpecifierPreference = "shortest",
+      preferTypeOnlyAutoImports = true,
     },
     tsserver = {
       maxTsServerMemory = 8192,
@@ -66,6 +66,38 @@ local function configure_lsp_servers()
     filetypes = {
       "javascript",
       "typescript",
+    },
+  })
+
+  vim.lsp.config("ts_ls", {
+    init_options = {
+      maxTsServerMemory = 32768,
+      preferences = ts_server_settings.preferences,
+      plugins = {
+        {
+          name = "typescript-svelte-plugin",
+          location = vim.fn.expand("$HOME/.pnpm/5/node_modules/typescript-svelte-plugin"),
+          languages = {
+            "typescript",
+            "javascript",
+            "svelte",
+          },
+          enableForWorkspaceTypeScriptVersions = true,
+        },
+      },
+    },
+    settings = {
+      typescript = ts_server_settings,
+      javascript = ts_server_settings,
+      complete_function_calls = true,
+    },
+  })
+
+  vim.lsp.config("tsgo", {
+    settings = {
+      typescript = ts_server_settings,
+      javascript = ts_server_settings,
+      complete_function_calls = true,
     },
   })
 
@@ -156,7 +188,9 @@ local function configure_lsp_servers()
   -- when more than one LS has actions.
   vim.lsp.enable({
     "svelte",
-    "vtsls",
+    -- "vtsls",
+    -- "ts_ls",
+    "tsgo",
     "cssls",
     "eslint",
     "gopls",
@@ -290,6 +324,29 @@ return {
           float = false,
         },
         severity_sort = true,
+      })
+    end,
+  },
+
+  {
+    "pmizio/typescript-tools.nvim",
+    dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+    opts = {},
+    enabled = false,
+    config = function(_, opts)
+      require("typescript-tools").setup({
+        settings = {
+          expose_as_code_action = "all",
+          tsserver_max_memory = 16384,
+          tsserver_plugins = {
+            "typescript-svelte-plugin",
+            -- {
+            --   name = "typescript-svelte-plugin",
+            --   location = vim.fn.expand("$HOME/.pnpm/5/node_modules/typescript-svelte-plugin"),
+            --   enableForWorkspaceTypeScriptVersions = true,
+            -- },
+          },
+        },
       })
     end,
   },

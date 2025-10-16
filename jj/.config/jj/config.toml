@@ -24,11 +24,23 @@ lst = ['log', '-n', '20', '-r', 'this']
 bm = ['bookmark', 'move']
 bc = ['bookmark', 'create']
 
+z = ["fuzzy_bookmark"]
+za = ["bookmark", "list", "-a"]
+fuzzy_bookmark = ["util", "exec", "--", "sh", "-c", """
+if [ "x$1" = "x" ]; then
+  jj bookmark list
+else
+  jj bookmark list -a -T 'separate("@", name, remote) ++ "\n"' 2> /dev/null | sort | uniq | fzf -f "$1" | head -n1 | xargs jj new
+fi
+""", ""]
+
 [revset-aliases]
 this = "ancestors(@)"
 "branch(name)" = "(ancestors(name) | children(name)) ~ ancestors(main)"
+"b(name)" = "branch(name)"
 branch = "branch(@)"
 "stacked(name)" = "name:: ~ name"
+"s(name)" = "stacked(name)"
 stacked = "stacked(@)"
 
 [templates]
@@ -44,6 +56,13 @@ concat(
 )
 '''
 
+log_json_stream = '''
+  "{" ++
+    "change_id".escape_json() ++ ": " ++ stringify(change_id).escape_json() ++ ", " ++
+    "author".escape_json() ++ ": " ++ stringify(author).escape_json() ++
+  "}\n"
+'''
+
 [merge-tools.diffconflicts]
 program = "nvim"
 merge-args = [
@@ -51,3 +70,4 @@ merge-args = [
     "-c", "JJDiffConflicts!", "$output", "$base", "$left", "$right",
 ]
 merge-tool-edits-conflict-markers = true
+

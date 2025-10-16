@@ -24,6 +24,49 @@ local entry_display = require("telescope.pickers.entry_display")
 --- @type CursorRange
 M.current_cursor = nil
 
+function runLspPrefixAction(prefix)
+  -- local current_ft = vim.bo.filetype
+  -- if current_ft == "typescript" then
+  --   vim.cmd("TSToolsOrganizeImports")
+  --   return
+  -- end
+
+  for _, client in ipairs(vim.lsp.get_clients()) do
+    local ac1 = (
+      client.server_capabilities
+      and client.server_capabilities.codeActionProvider
+      and type(client.server_capabilities.codeActionProvider) == "table"
+      and client.server_capabilities.codeActionProvider.codeActionKinds
+    ) or {}
+
+    local ac2 = (
+      client.capabilities
+      and client.capabilities.textDocument
+      and client.capabilities.textDocument.codeAction
+      and client.capabilities.textDocument.codeAction.codeActionLiteralSupport
+      and client.capabilities.textDocument.codeAction.codeActionLiteralSupport.codeActionKind
+      and client.capabilities.textDocument.codeAction.codeActionLiteralSupport.codeActionKind.valueSet
+    ) or {}
+
+    local ac = vim.list_extend(vim.deepcopy(ac1), ac2)
+
+    for _, action in ipairs(ac) do
+      if vim.startswith(action, prefix) then
+        vim.lsp.buf.code_action({
+          context = {
+            only = { action },
+            diagnostics = {},
+          },
+          apply = true,
+        })
+
+        -- client:exec_cmd({ command = "source.organizeImports", arguments = { vim.uri_from_bufnr(0) } })
+        return
+      end
+    end
+  end
+end
+
 --- @type CommandBarAction[]
 M.commands = {
   {
@@ -31,28 +74,8 @@ M.commands = {
     category = "LS",
     filetype = "typescript",
     action = function()
-      for _, client in ipairs(vim.lsp.get_clients()) do
-        -- local ac = client.capabilities.textDocument.codeAction.codeActionLiteralSupport.codeActionKind.valueSet
-        local ac = client.server_capabilities
-            and client.server_capabilities.codeActionProvider
-            and type(client.server_capabilities.codeActionProvider) == "table"
-            and client.server_capabilities.codeActionProvider.codeActionKinds
-          or {}
-
-        for _, action in ipairs(ac) do
-          if action == "source.organizeImports" then
-            vim.lsp.buf.code_action({
-              context = {
-                only = { "source.organizeImports" },
-              },
-              apply = true,
-            })
-
-            -- client:exec_cmd({ command = "source.organizeImports", arguments = { vim.uri_from_bufnr(0) } })
-            return
-          end
-        end
-      end
+      -- runLspPrefixAction("source.removeUnusedImports")
+      runLspPrefixAction("source.organizeImports")
     end,
   },
   {
@@ -60,10 +83,16 @@ M.commands = {
     category = "LS",
     filetype = "typescript",
     action = function()
-      vim.lsp.buf.execute_command({
-        command = "typescript.removeUnusedImports",
-        arguments = { vim.fn.expand("%:p") },
-      })
+      runLspPrefixAction("source.removeUnusedImports")
+    end,
+  },
+
+  {
+    name = "Add Missing imports",
+    category = "LS",
+    filetype = "typescript",
+    action = function()
+      runLspPrefixAction("source.addMissingImports")
     end,
   },
   -- { name = "Format document", category = "LS", coc_cmd = "editor.action.formatDocument" },
@@ -115,6 +144,15 @@ M.commands = {
   },
   -- { name = "Reload Typescript Project", category = "LS", coc_cmd = "tsserver.reloadProjects" },
   -- { name = "Show LS Output", category = "LS", coc_cmd = "workspace.showOutput" },
+
+  {
+    name = "Copy Buffer Path to Clipboard",
+    category = "Clipboard",
+    action = function()
+      local path = require("lib.window").get_repo_buffer_path()
+      vim.fn.setreg("+", path)
+    end,
+  },
 
   {
     name = "Unescape JSON quotes",

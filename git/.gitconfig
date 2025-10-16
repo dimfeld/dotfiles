@@ -9,7 +9,7 @@
 
 [core]
   pager = delta --dark
-	excludesfile = /Users/dimfeld/.gitignore_global
+	excludesfile = /Users/dimfeld/.gitignore
 
 #[diff]
   #external = difft

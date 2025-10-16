@@ -96,6 +96,7 @@ return {
   {
     "supermaven-inc/supermaven-nvim",
     cond = completion_assistant == "supermaven",
+    enabled = false,
     event = "VeryLazy",
     opts = {
       keymaps = {
@@ -122,7 +123,7 @@ return {
   },
   {
     "joshuavial/aider.nvim",
-    enabled = true,
+    enabled = false,
     event = "VeryLazy",
     cond = not vim.g.vscode,
     opts = {
@@ -167,6 +168,7 @@ return {
   {
     "CopilotC-Nvim/CopilotChat.nvim",
     branch = "main",
+    enabled = false,
     cond = not vim.g.vscode,
     dependencies = {
       { "zbirenbaum/copilot.lua" }, -- or github/copilot.vim
@@ -311,7 +313,7 @@ return {
   },
   {
     "yetone/avante.nvim",
-    enabled = true,
+    enabled = false,
     cond = not vim.g.vscode,
     event = "VeryLazy",
     version = false,
@@ -397,8 +399,106 @@ return {
     },
   },
   {
+    "coder/claudecode.nvim",
+    name = "claudecode.nvim",
+    dir = "~/Documents/src/claudecode.nvim",
+    dependencies = { "folke/snacks.nvim" },
+    opts = {
+      terminal_cmd = "claude --model sonnet",
+      terminal = {
+        ---@module "snacks"
+        ---@type snacks.win.Config|{}
+        snacks_win_opts = {
+          keys = {
+            claude_hide = {
+              "<C-,>",
+              function(self)
+                self:hide()
+              end,
+              mode = "t",
+              desc = "Hide",
+            },
+          },
+        },
+      },
+      cwd_provider = function(ctx)
+        return require("lib.git").git_repo_toplevel() or ctx.file_dir or ctx.cwd
+      end,
+      focus_after_send = true,
+      -- Wait longer for Claude Code to connect when there's a mention to send
+      queue_timeout = 10000,
+      diff_opts = {
+        keep_terminal_focus = true,
+        open_in_current_tab = false,
+      },
+    },
+    config = function(_, opts)
+      require("claudecode").setup(opts)
+
+      cmdbar.add_commands({
+        {
+          name = "Claude Code",
+          category = "AI",
+          action = function()
+            vim.cmd("ClaudeCodeFocus")
+          end,
+        },
+        {
+          name = "Claude Code - Toggle",
+          category = "AI",
+          action = function()
+            vim.cmd("ClaudeCode")
+          end,
+        },
+        {
+          name = "Claude Code - Continue",
+          category = "AI",
+          action = function()
+            vim.cmd("ClaudeCode --continue")
+          end,
+        },
+        {
+          name = "Claude Code - Resume",
+          category = "AI",
+          action = function()
+            vim.cmd("ClaudeCode --resume")
+          end,
+        },
+        {
+          name = "Claude Code - Select Model",
+          category = "AI",
+          action = function()
+            vim.cmd("ClaudeCodeSelectModel")
+          end,
+        },
+      })
+    end,
+    event = "VeryLazy",
+    keys = {
+      { "<leader>a", nil, desc = "AI/Claude Code" },
+      { "<leader>at", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude" },
+      { "<C-,>", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude" },
+      -- { "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude" },
+      -- { "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude" },
+      -- { "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
+      -- { "<leader>am", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select Claude model" },
+      { "<leader>as", "<cmd>ClaudeCodeAdd %:p<cr>", mode = "n", desc = "Add current buffer" },
+      { "<leader>as", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude" },
+      {
+        "<leader>as",
+        "<cmd>ClaudeCodeTreeAdd<cr>",
+        desc = "Add file",
+        ft = { "NvimTree", "neo-tree", "oil", "minifiles", "netrw" },
+      },
+      -- Diff management
+      { "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
+      { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
+    },
+  },
+  {
     "olimorris/codecompanion.nvim",
     cond = not vim.g.vscode,
+    enabled = false,
     event = "VeryLazy",
     dependencies = {
       "nvim-lua/plenary.nvim",

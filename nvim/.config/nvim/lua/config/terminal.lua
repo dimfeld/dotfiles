@@ -40,7 +40,30 @@ function set_terminal_keymaps()
   vim.api.nvim_buf_set_keymap(0, "t", "<D-Right>", "<C-E>", { noremap = true })
 
   vim.api.nvim_buf_set_keymap(0, "t", toggleterm_open_mapping, term_escape .. "<cmd>ToggleTerm<CR>", { noremap = true })
-  vim.api.nvim_buf_set_keymap(0, "t", "<esc><esc>", term_escape, { noremap = true })
+
+  -- Double-escape with timeout: press <esc> twice quickly to exit terminal mode
+  -- If you don't press the second <esc> within the timeout, it sends a normal <esc>
+  local esc_timer = nil
+  local timeout_ms = 500 -- Adjust this value to your preference (in milliseconds)
+
+  vim.keymap.set("t", "<esc>", function()
+    if esc_timer then
+      -- Second escape pressed within timeout - exit terminal mode
+      esc_timer:stop()
+      esc_timer = nil
+      vim.cmd("stopinsert")
+    else
+      -- First escape - start timer
+      esc_timer = vim.uv.new_timer()
+      esc_timer:start(timeout_ms, 0, function()
+        esc_timer = nil
+        -- Timeout expired - send escape to terminal
+        vim.schedule(function()
+          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "n", false)
+        end)
+      end)
+    end
+  end, { buffer = 0, noremap = true })
 end
 
 vim.keymap.set({ "n", "t" }, "<c-1>", function()

@@ -34,15 +34,36 @@ return {
 
   {
     "sindrets/diffview.nvim",
-    config = function()
-      require("diffview").setup()
+    opts = {
+      file_panel = {
+        win_config = {
+          width = 50,
+        },
+      },
+    },
+    config = function(_, opts)
+      require("diffview").setup(opts)
 
       require("config.telescope_commandbar").add_commands({
         {
-          name = "Diff View",
+          name = "Diff View vs. Local",
           category = "Diff",
           action = function()
             require("diffview").open()
+          end,
+        },
+        {
+          name = "Diffview vs. Main",
+          category = "Git",
+          action = function()
+            vim.cmd("DiffviewOpen main")
+          end,
+        },
+        {
+          name = "DiffView File History",
+          category = "Git",
+          action = function()
+            vim.cmd("DiffviewFileHistory %")
           end,
         },
       })
@@ -57,8 +78,8 @@ return {
   {
     "ggandor/leap.nvim",
     config = function()
-      vim.keymap.set({ "n", "x", "o" }, "s", "<Plug>(leap-forward-to)", { noremap = false })
-      vim.keymap.set({ "n", "x", "o" }, "S", "<Plug>(leap-backward-to)", { noremap = false })
+      vim.keymap.set({ "n", "x", "o" }, "s", "<Plug>(leap-forward)", { noremap = false })
+      vim.keymap.set({ "n", "x", "o" }, "S", "<Plug>(leap-backward)", { noremap = false })
       vim.keymap.set({ "x", "o" }, "x", "<Plug>(leap-forward-till)", { noremap = false })
       vim.keymap.set({ "x", "o" }, "X", "<Plug>(leap-backward-till)", { noremap = false })
       vim.keymap.set({ "n", "x", "o" }, "gs", "<Plug>(leap-from-window)", { noremap = false })
@@ -142,6 +163,7 @@ return {
 
   {
     "dimfeld/section-wordcount.nvim",
+    enabled = false,
     lazy = true,
     ft = { "markdown", "asciidoc" },
     config = function()

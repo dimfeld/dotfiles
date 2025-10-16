@@ -48,81 +48,10 @@ alias gcm='git commit -m'
 alias gco-='git checkout -'
 alias grc='git rebase --continue'
 
-alias jjn='jj new'
-function jjc() {
-    for arg in "$@"; do
-        if [ ! -e "$arg" ]; then
-            echo "Error: Path '$arg' does not exist. Did you mean to use 'jjcm'?"
-            return 1
-        fi
-    done
-    jj commit "$@"
+function apply-pb-diff() {
+  cdgr;
+  pbpaste | git apply
 }
-alias jjcm='jj commit -m'
-alias jd='jj diff'
-alias jjd='jj diff'
-alias js='jj status'
-alias jjsh='jj show'
-alias jjpush='jj git push'
-alias jjgp='jj git push'
-alias jjgf='jj git fetch'
-alias jjpb="jj log -r 'latest(heads(ancestors(@) & bookmarks()), 1)' --limit 1 --no-graph --ignore-working-copy -T local_bookmarks | tr -d '*'"
-
-alias copydiff="jj diff --from main | pbcopy"
-
-function jj-track-bookmark-and-new() {
-  jj bookmark track $1@origin && jj new $1
-}
-alias jjbtn="jj-track-bookmark-and-new"
-alias jjbt="jj bookmark track"
-alias jjblr="jj bookmark list --sort committer-date-"
-
-function jj-fetch-and-new() {
-  BRANCH=${1:-$(jjpb)}
-  jj git fetch && jj new $BRANCH
-}
-alias jjfn=jj-fetch-and-new
-alias jjfm='jj git fetch --branch main'
-
-function jj-update-branch() {
-  REV=${1:-@-}
-  if [ $# -gt 0 ]; then
-    shift
-  fi
-  jj bookmark move $(jjpb) --to "$REV" "$@"
-}
-
-alias jjub=jj-update-branch
-
-function jjbm() {
-  BOOKMARK=$1
-  REV=${2:-@}
-  shift 2
-
-  jj bookmark move "$BOOKMARK" --to "$REV" "$@"
-}
-
-function jj-restack() {
-  if [ $# -ne 1 ]; then
-    echo "Usage: jj-restack <bookmark>"
-    return
-  fi
-  BOOKMARK="stacked($1)"
-
-  jj log -r "$BOOKMARK" -n50
-  jj git fetch -b main && jj rebase -r "$BOOKMARK" -d main
-}
-
-alias avpr='av pr create'
-alias avb='av branch'
-alias avbc='av commit -b'
-alias avc='av commit'
-alias avs='av stack'
-alias avco='av switch'
-alias avsw='av switch'
-alias avsync='av sync --prune --rebase-to-trunk'
-alias avpush='av sync'
-alias avsub='av pr --all'
 
 alias cps="gh copilot suggest -t shell"
 
@@ -134,21 +63,24 @@ alias aws-whoami='aws sts get-caller-identity'
 
 alias rmp="~/Documents/projects/llmutils/dist/rmplan.js"
 alias rmpd="~/Documents/projects/llmutils/src/rmplan/rmplan.ts"
-function rmp-prep-and-run() {
-  rmp prepare --claude --next-ready "$@" && jj commit -m 'prepare plan' && rmp run --next-ready "$@" 
-}
-
-function rmp-prep-and-run-codex() {
-  rmp prepare --claude --next-ready "$@" && jj commit -m 'prepare plan' && ALLOW_ALL_TOOLS=true rmp run -x codex-cli --next-ready "$@" 
-}
+alias rmpl="./src/rmplan/rmplan.ts"
+# Not using prepare anymore since coding agents got better.
+# function rmp-prep-and-run() {
+#   rmp prepare --claude --next-ready "$@" && jj commit -m 'prepare plan' && rmp run --next-ready "$@"
+# }
+#
+# function rmp-prep-and-run-codex() {
+#   rmp prepare --claude --next-ready "$@" && jj commit -m 'prepare plan' && ALLOW_ALL_TOOLS=true rmp run -x codex-cli --next-ready "$@"
+# }
 
 function rmp-gen-and-run-codex() {
-  rmp generate --claude --next-ready "$@" && jj commit -m 'generate' && ALLOW_ALL_TOOLS=true rmp run -x codex-cli --next-ready "$@" 
+  rmp generate --claude --next-ready "$@" && jj commit -m 'generate plan' && ALLOW_ALL_TOOLS=true rmp run -x codex-cli --next-ready "$@"
 }
 
-function rmp-yolo() {
-  rmp generate --claude "$@" && jj commit -m 'generate plan' && rmp-prep-and-run "$@"
+function rmp-gen-and-run-claude() {
+  rmp generate --claude --next-ready "$@" && jj commit -m 'generate plan' && rmp run "$@"
 }
+
 
 # Turbo
 alias trl="turbo run --cache=local:rw"
@@ -159,16 +91,17 @@ unalias claude &> /dev/null
 function claudegr() {
   (
   cdgr
-  ANTHROPIC_API_KEY= CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=true claude "$@"
+  ANTHROPIC_API_KEY= CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=true CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1 claude "$@"
   )
 }
 
 function claudecwd() {
-  ANTHROPIC_API_KEY= CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=true claude "$@"
+  ANTHROPIC_API_KEY= CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=true CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1 claude "$@"
 }
 
 alias claude="claudegr"
 alias claudes="claudegr --model sonnet"
+alias claudeo="claudegr --model opus"
 
 unalias codex &> /dev/null
 
@@ -179,15 +112,44 @@ function codexgr() {
   )
 }
 
-alias codex="codexgr --search"
-alias codexfa="codexgr --search --full-auto"
-alias codexyolo="codexgr --search --dangerously-bypass-approvals-and-sandbox"
+alias codex="codexgr"
+alias codexhigh="codex -c model_reasoning_effort=high"
+alias codexfa="codexgr --full-auto"
+alias codexyolo="codexgr --dangerously-bypass-approvals-and-sandbox"
+
+function rm-codex-plan() {
+  codex -c model_reasoning_effort=high "$(rmp prompts generate-plan $@)"
+}
 
 function new-from-linear() {
-  rmp import "$@" && jj b c "$@" -r@ && jj commit -m 'import from linear'
+  rmp import "$@" && \
+    jj bookmark create "$1" -r@ && \
+    jj bookmark track "$1@origin" && \
+    jj commit -m 'import from linear'
 }
 
 # wezterm
 if [ -n "$WEZTERM_PANE" ]; then
   alias rename-workspace="wezterm cli rename-workspace"
 fi
+
+# find and replace
+function preplace() {
+  rg "$1" -l | xargs sed -i '' "s|$1|$2|g"
+}
+
+# alias pnpm='sfw pnpm'
+
+function backup-db() {
+  pg-create-from-snapshot "$1_bak" "$1"
+}
+
+function restore-db() {
+  pg-create-from-snapshot "$1" "$1_bak"
+}
+
+source ~/.zsh-functions/jj.zsh
+source ~/.zsh-functions/_rmplan
+alias rmws="rmplan_ws"
+
+alias cl='chisel -p'

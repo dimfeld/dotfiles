@@ -59,6 +59,8 @@ vim.o.shiftwidth = 2
 vim.o.softtabstop = 2
 vim.o.tabstop = 4
 
+vim.o.diffopt = vim.o.diffopt .. ",iwhiteall"
+
 local auGroup = vim.api.nvim_create_augroup("TabStops", {})
 
 vim.api.nvim_create_autocmd("FileType", {
@@ -109,6 +111,7 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
     vim.opt_local.spell = true
     vim.opt_local.shiftwidth = 2
     vim.opt_local.formatoptions:append("t")
+    vim.opt_local.lbr = true
   end,
 })
 
@@ -223,6 +226,10 @@ require("Comment").setup({
   pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
 })
 
+-- Tab Switching
+vim.keymap.set("n", "[t", ":tabprevious<CR>", { silent = true })
+vim.keymap.set("n", "]t", ":tabnext<CR>", { silent = true })
+
 -- vim-better-whitespace
 -- Strip whitespace from end of line throughout entire file
 vim.keymap.set("n", "<leader>wt", ":StripWhitespace<CR>", { silent = true })
@@ -333,3 +340,6 @@ require("commands.git")
 require("commands.editing")
 require("commands.lsp").setup()
 require("commands.quickfix").setup()
+
+-- Folding... this overrides something else I'm not sure what that is enabling it.
+vim.o.foldenable = false
