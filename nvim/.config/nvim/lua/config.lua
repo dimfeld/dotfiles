@@ -340,6 +340,3 @@ require("commands.git")
 require("commands.editing")
 require("commands.lsp").setup()
 require("commands.quickfix").setup()
-
--- Folding... this overrides something else I'm not sure what that is enabling it.
-vim.o.foldenable = false

@@ -10,34 +10,35 @@ Please do the following:
 
 First, understand the current state of the repository:
 
-1a. Check the working copy status:
-   ```bash
-   jj status
-   ```
+1a. Working copy status:
 
-1b. Check current commit and branch:
-   ```bash
-   jj log -r @ -n 1
-   ```
+!`jj status`
 
-1c. Get the current bookmark/branch name:
-   ```bash
-   jj log -r 'latest(heads(ancestors(@) & bookmarks()), 1)' --limit 1 --no-graph -T local_bookmarks | tr -d '*'
-   ```
-   - This command finds the bookmark associated with the current working copy's ancestors
+1b. Current commit and branch:
+
+!`jj log -r @ -n 1`
+
+1c. The current bookmark/branch name is: !`jj log -r 'latest(heads(ancestors(@) & bookmarks()), 1)' --limit 1 --no-graph -T local_bookmarks | tr -d '*'`
+
    - Store this as `<branch-name>` for use in subsequent steps
-   - If empty, you may need to create a bookmark first with `jj bookmark create <name>`
+   - If empty or "main", you may need to create a bookmark first with `jj bookmark create <name>`
 
-1e. View the commit history on the branch (replace `<branch-name>` with the actual branch):
-   ```bash
-   jj log -r 'main..<branch-name>' --summary
-   ```
+1d. The commit history on the branch:
+
+!`jj log -r 'main::@' --summary`
 
 ## Step 2: Review Changes
 
-2a. Take a diff against the base branch using `jj diff -r <base-branch>..<branch-name>`. If not otherwise specified below, the base branch is `main`.
+If you have just generated a detailed summary of the branch, then skip this step and use the summary verbatim. Otherwise:
 
-2b. Review the changes to understand what will be included in the PR.
+The files that will be included in the PR are:
+
+!`jj diff -f main -s | grep '^[MA]' | nl`
+
+Group this list into chunks (by functional area if possible) and use parallel subagents to analyse the diffs, reading the files and also using `jj diff -f main <filename>` for each
+one to get the diff. Make sure that every file is assigned to a chunk; we don't want to miss any files.
+
+Make sure to go into detail about each file that has major changes related to the task and what changes are in those files.
 
 ## Step 3: Commit New Changes (if needed)
 
@@ -47,6 +48,7 @@ First, understand the current state of the repository:
    - Does not include "Generated with Claude Code" or "Co-Authored-By" lines
 
 3b. If all changes are already committed on the branch, proceed to step 4.
+
 
 ## Step 4: Push Changes
 

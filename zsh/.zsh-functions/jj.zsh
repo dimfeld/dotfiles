@@ -21,7 +21,7 @@ alias jjpb="jj log -r 'latest(heads(ancestors(@) & bookmarks()), 1)' --limit 1 -
 alias copydiff="jj diff --from 'trunk()' | pbcopy"
 
 function jj-track-bookmark-and-new() {
-  jj bookmark track $1@origin && jj new $1
+  jj bookmark track $1 && jj new $1
 }
 alias jjbtn="jj-track-bookmark-and-new"
 alias jjbt="jj bookmark track"
@@ -81,11 +81,11 @@ function jj-squash-after() {
   jj-squash-into $1+ $2
 }
 
-alias jj-squash-branch='jj-squash-into $(jjpb)'
-alias jjsb='jj-squash-into $(jjpb)'
+alias jj-squash-branch='jj squash -f "branch($(jjpb))" -t $(jjpb)'
+alias jjsb='jj-squash-branch'
 
-alias jj-track-current='jj bookmark track $(jjpb)@origin'
-alias jjtc='jj bookmark track $(jjpb)@origin'
+alias jj-track-current='jj bookmark track $(jjpb)'
+alias jjtc='jj bookmark track $(jjpb)'
 
 function jj-restack-from() {
   if [ $# -ne 1 ]; then

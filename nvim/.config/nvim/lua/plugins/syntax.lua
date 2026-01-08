@@ -65,7 +65,6 @@ return {
 
   -- Markdown
   { "godlygeek/tabular", ft = { "markdown" } },
-  { "plasticboy/vim-markdown", ft = { "markdown" } },
   {
     "iamcco/markdown-preview.nvim",
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
