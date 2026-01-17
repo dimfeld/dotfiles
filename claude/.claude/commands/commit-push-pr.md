@@ -54,7 +54,7 @@ Make sure to go into detail about each file that has major changes related to th
 
 4. Push the changes using:
    ```bash
-   jj bookmark track <branch-name>@origin && jj git push --branch <branch-name>
+   jj bookmark track <branch-name> --remote origin && jj git push --branch <branch-name>
    ```
 
 ## Step 5: Create or Update Pull Request
@@ -64,8 +64,9 @@ Make sure to go into detail about each file that has major changes related to th
    gh pr list --head <branch-name>
    ```
 
-5b. If a PR exists, use `gh pr edit` to update the title and body if they are out of date. If the PR does not
-have a body you must add one using the guidelines below.
+5b. If a PR exists, use `gh pr view` to read the existing PR, and then `gh pr edit` to update the title and body if they are out of date. If the PR does not
+have a body you must add one using the guidelines below. If it does have a body, make sure to preserve any tags about
+closing issues.
 
 5c. Otherwise create a draft pull request using `gh pr create --draft --head <branch-name> --base main` with:
    - A clear title summarizing the change

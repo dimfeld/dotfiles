@@ -145,32 +145,48 @@ local function add_ai_comment(opts)
   local line2 = opts.line2
   local is_range = line1 ~= line2
 
+  -- Check if this is an HTML-style comment
+  local is_html_comment = vim.startswith(comment, "<!--")
+
   if is_range then
     -- Visual selection: add AI_COMMENT_START above and AI_COMMENT_END below
     local start_indent = get_leading_whitespace(line1)
     local end_indent = get_leading_whitespace(line2)
 
-    local start_comment = start_indent .. comment .. " AI_COMMENT_START "
-    local end_comment = end_indent .. comment .. " AI_COMMENT_END"
+    -- Build start comment with proper closing for HTML
+    local start_comment_base = start_indent .. comment .. " AI_COMMENT_START "
+    local start_comment = is_html_comment
+      and (start_comment_base:sub(1, -2) .. "-->")  -- Replace trailing space with -->
+      or start_comment_base
+
+    -- Build end comment with proper closing for HTML
+    local end_comment = end_indent .. comment .. (is_html_comment and " AI_COMMENT_END -->" or " AI_COMMENT_END")
 
     -- Insert end comment first (so line numbers don't shift)
     vim.fn.append(line2, end_comment)
     -- Insert start comment above the selection
     vim.fn.append(line1 - 1, start_comment)
 
-    -- Move cursor to end of the AI_COMMENT_START line
-    vim.api.nvim_win_set_cursor(0, { line1, #start_comment + 1 })
-    -- Enter insert mode at end of line
-    vim.cmd("startinsert!")
+    -- Move cursor to after "AI_COMMENT_START " (before --> if HTML)
+    vim.api.nvim_win_set_cursor(0, { line1, #start_comment_base })
+    -- Enter insert mode at cursor position
+    vim.cmd("startinsert")
   else
     -- Normal mode: add "AI: " above current line
     local indent = get_leading_whitespace(line1)
-    local ai_comment = indent .. comment .. " AI: "
+
+    -- Build AI comment with proper closing for HTML
+    local ai_comment_base = indent .. comment .. " AI: "
+    local ai_comment = is_html_comment
+      and (ai_comment_base:sub(1, -2) .. "-->")  -- Replace trailing space with -->
+      or ai_comment_base
+
     vim.fn.append(line1 - 1, ai_comment)
-    -- Move cursor to end of the AI: line
-    vim.api.nvim_win_set_cursor(0, { line1, #ai_comment + 1 })
-    -- Enter insert mode at end of line
-    vim.cmd("startinsert!")
+
+    -- Move cursor to after "AI: " (before --> if HTML)
+    vim.api.nvim_win_set_cursor(0, { line1, #ai_comment_base })
+    -- Enter insert mode at cursor position
+    vim.cmd("startinsert")
   end
 end
 

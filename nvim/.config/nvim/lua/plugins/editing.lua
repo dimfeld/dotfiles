@@ -33,7 +33,8 @@ return {
   "tpope/vim-abolish",
 
   {
-    "sindrets/diffview.nvim",
+    "dimfeld/diffview.nvim",
+    -- dir = "~/Documents/projects/diffview.nvim",
     opts = {
       file_panel = {
         win_config = {

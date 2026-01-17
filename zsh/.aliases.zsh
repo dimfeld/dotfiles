@@ -88,15 +88,26 @@ alias trl="turbo run --cache=local:rw"
 # Temporarily unset claude alias so we can use the regular binary in the functions
 unalias claude &> /dev/null
 
+LLMUTILS_DIR=
+if [ -d ~/Documents/projects/llmutils ]; then
+  LLMUTILS_DIR=~/Documents/projects/llmutils
+elif [ -d ~/projects/llmutils ]; then
+  LLMUTILS_DIR=~/projects/llmutils
+fi
+
+alias baseclaude="ANTHROPIC_API_KEY= CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=true CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1 claude --plugin-dir ${LLMUTILS_DIR}/claude-plugin"
+
 function claudegr() {
   (
   cdgr
-  ANTHROPIC_API_KEY= CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=true CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1 claude "$@"
+  baseclaude "$@"
+  printf '\e[?1004l';
   )
 }
 
 function claudecwd() {
-  ANTHROPIC_API_KEY= CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=true CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1 claude "$@"
+  baseclaude "$@"
+  printf '\e[?1004l';
 }
 
 alias claude="claudegr"
@@ -124,7 +135,7 @@ function rm-codex-plan() {
 function new-from-linear() {
   rmp import "$@" && \
     jj bookmark create "$1" -r@ && \
-    jj bookmark track "$1@origin" && \
+    jj bookmark track "$1" --remote origin && \
     jj commit -m 'import from linear'
 }
 

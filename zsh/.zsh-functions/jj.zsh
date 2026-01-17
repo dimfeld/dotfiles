@@ -85,7 +85,7 @@ alias jj-squash-branch='jj squash -f "branch($(jjpb))" -t $(jjpb)'
 alias jjsb='jj-squash-branch'
 
 alias jj-track-current='jj bookmark track $(jjpb)'
-alias jjtc='jj bookmark track $(jjpb)'
+alias jjbtc='jj bookmark track $(jjpb)'
 
 function jj-restack-from() {
   if [ $# -ne 1 ]; then

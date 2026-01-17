@@ -1,2 +1,5 @@
 .DS_Store
 repomix-output.xml
+
+settings.local.json
+settings.local.yml
