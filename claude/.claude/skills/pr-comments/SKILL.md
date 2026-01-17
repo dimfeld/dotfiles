@@ -36,5 +36,5 @@ After you've done that, display the comments and ask if the user wants to modify
 Generate a type of type input, save it as JSON to a temporary file, and pass it to scripts/create_review.ts.
 
 ```bash
-GITHUB_TOKEN=$(gh auth token) bun scripts/create_review.ts <tempfile>
+GITHUB_TOKEN=$(gh auth token) bun ~/.claude/skills/pr-comments/scripts/create_review.ts <tempfile>
 ```
