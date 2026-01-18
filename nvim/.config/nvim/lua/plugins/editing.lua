@@ -34,12 +34,15 @@ return {
 
   {
     "dimfeld/diffview.nvim",
-    -- dir = "~/Documents/projects/diffview.nvim",
+    dir = "~/Documents/projects/diffview.nvim",
     opts = {
       file_panel = {
         win_config = {
           width = 50,
         },
+      },
+      review = {
+        auto_advance = "next_pending",
       },
     },
     config = function(_, opts)

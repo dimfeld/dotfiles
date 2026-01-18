@@ -129,7 +129,7 @@ alias codexfa="codexgr --full-auto"
 alias codexyolo="codexgr --dangerously-bypass-approvals-and-sandbox"
 
 function rm-codex-plan() {
-  codex -c model_reasoning_effort=high "$(rmp prompts generate-plan $@)"
+  codex --model gpt-5.2 -c model_reasoning_effort=high "$(rmp prompts generate-plan $@)"
 }
 
 function new-from-linear() {

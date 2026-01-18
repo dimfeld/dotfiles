@@ -32,9 +32,6 @@ function set_terminal_keymaps()
   tmap("<C-k>", "<C-w>k")
   tmap("<C-l>", "<C-w>l")
 
-  -- left/right word
-  vim.api.nvim_buf_set_keymap(0, "t", "<M-Left>", "<C-[>b", { noremap = true })
-  vim.api.nvim_buf_set_keymap(0, "t", "<M-Right>", "<C-[>f", { noremap = true })
   -- start/end of line
   vim.api.nvim_buf_set_keymap(0, "t", "<D-Left>", "<C-A>", { noremap = true })
   vim.api.nvim_buf_set_keymap(0, "t", "<D-Right>", "<C-E>", { noremap = true })

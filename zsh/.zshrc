@@ -377,9 +377,20 @@ export TURBO_LOG_ORDER=grouped
 
 setopt auto_pushd
 
-# Better autocompletion
-autoload -Uz compinit && compinit
-source <(COMPLETE=zsh jj)
+# Better autocompletion - only rebuild cache once per day
+autoload -Uz compinit
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+  compinit
+else
+  compinit -C
+fi
+
+# jj completions - cached to file
+_jj_comp_file=~/.zsh-functions/_jj_cached
+if [[ ! -f "$_jj_comp_file" || $(whence -p jj) -nt "$_jj_comp_file" ]]; then
+  COMPLETE=zsh jj > "$_jj_comp_file" 2>/dev/null
+fi
+source "$_jj_comp_file"
 
 # zprof
 
@@ -407,7 +418,9 @@ zinit light-mode for \
 ### End of Zinit's installer chunk
 
 # zi snippet OMZP::git
+zinit ice wait lucid
 zi snippet OMZP::ssh-agent
+zinit ice wait lucid
 zi light Aloxaf/fzf-tab
 zinit ice wait lucid atload'_zsh_autosuggest_start'
 zinit light zsh-users/zsh-autosuggestions
