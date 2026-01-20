@@ -27,6 +27,7 @@ alias jjbtn="jj-track-bookmark-and-new"
 alias jjbt="jj bookmark track"
 alias jjblr="jj bookmark list --sort committer-date-"
 
+
 function jj-fetch-and-new() {
   BRANCH=${1:-$(jjpb)}
   # Try to do "new" twice, occasionally we get concurrent checkout errors
@@ -43,6 +44,12 @@ function jj-update-branch() {
   jj bookmark move $(jjpb) --to "$REV" "$@"
 }
 alias jjub=jj-update-branch
+
+function jjbct() {
+  REV=$1
+  shift
+  jj bookmark create $REV "$@" && jj bookmark track $REV
+}
 
 function jj-merge-main() {
   BOOKMARK=${1:-$(jjpb)}
