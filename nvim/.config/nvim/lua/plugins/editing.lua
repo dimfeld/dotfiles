@@ -60,7 +60,9 @@ return {
           name = "Diffview vs. Main",
           category = "Git",
           action = function()
-            vim.cmd("DiffviewOpen main")
+            local commit_id = vim.fn.system("jj log -r 'heads(::@ & ::main)' --no-graph -T 'commit_id'")
+            commit_id = vim.trim(commit_id)
+            vim.cmd("DiffviewOpen " .. commit_id)
           end,
         },
         {

@@ -21,7 +21,7 @@ alias jjpb="jj log -r 'latest(heads(ancestors(@) & bookmarks()), 1)' --limit 1 -
 alias copydiff="jj diff --from 'trunk()' | pbcopy"
 
 function jj-track-bookmark-and-new() {
-  jj bookmark track $1 && jj new $1
+  jj git fetch -b $1 && jj bookmark track $1 && jj new $1
 }
 alias jjbtn="jj-track-bookmark-and-new"
 alias jjbt="jj bookmark track"
@@ -109,4 +109,5 @@ function jj-rebase-main() {
   jj git fetch -b main && jj rebase -d main
 }
 
+alias jj-base-commit="jj log -r 'heads(::@ & ::main)' --no-graph -T 'commit_id'"
 

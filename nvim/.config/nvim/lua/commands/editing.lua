@@ -123,8 +123,10 @@ local function get_comment_string()
   if commentstring == "" then
     commentstring = "// %s"
   end
-  -- Extract just the comment prefix (remove the %s placeholder and trim)
-  local comment_prefix = commentstring:gsub("%%s", ""):gsub("%s+$", "")
+  -- For multi-part comments like <!-- %s -->, extract just the opening part
+  -- Split on %s and take the first part, then trim trailing whitespace
+  local parts = vim.split(commentstring, "%%s", { plain = true })
+  local comment_prefix = parts[1]:gsub("%s+$", "")
   return comment_prefix
 end
 
@@ -155,8 +157,7 @@ local function add_ai_comment(opts)
 
     -- Build start comment with proper closing for HTML
     local start_comment_base = start_indent .. comment .. " AI_COMMENT_START "
-    local start_comment = is_html_comment
-      and (start_comment_base:sub(1, -2) .. "-->")  -- Replace trailing space with -->
+    local start_comment = is_html_comment and (start_comment_base:sub(1, -2) .. " -->") -- Replace trailing space with -->
       or start_comment_base
 
     -- Build end comment with proper closing for HTML
@@ -168,7 +169,7 @@ local function add_ai_comment(opts)
     vim.fn.append(line1 - 1, start_comment)
 
     -- Move cursor to after "AI_COMMENT_START " (before --> if HTML)
-    vim.api.nvim_win_set_cursor(0, { line1, #start_comment_base })
+    vim.api.nvim_win_set_cursor(0, { line1, #start_comment_base + 1 })
     -- Enter insert mode at cursor position
     vim.cmd("startinsert")
   else
@@ -177,14 +178,13 @@ local function add_ai_comment(opts)
 
     -- Build AI comment with proper closing for HTML
     local ai_comment_base = indent .. comment .. " AI: "
-    local ai_comment = is_html_comment
-      and (ai_comment_base:sub(1, -2) .. "-->")  -- Replace trailing space with -->
+    local ai_comment = is_html_comment and (ai_comment_base:sub(1, -2) .. " -->") -- Replace trailing space with -->
       or ai_comment_base
 
     vim.fn.append(line1 - 1, ai_comment)
 
     -- Move cursor to after "AI: " (before --> if HTML)
-    vim.api.nvim_win_set_cursor(0, { line1, #ai_comment_base })
+    vim.api.nvim_win_set_cursor(0, { line1, #ai_comment_base + 1 })
     -- Enter insert mode at cursor position
     vim.cmd("startinsert")
   end

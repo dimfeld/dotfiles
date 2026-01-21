@@ -1,5 +1,5 @@
 ---
-name: pr-review-from-comments
+name: create-pr-review-from-comments
 description: Converts "AI" comments in local files into Github PR review comments
 ---
 
@@ -26,9 +26,9 @@ interface Input {
 }
 ```
 
-Find all files that have "AI:" comments or AI_COMMENT_START and AI_COMMENT_END comment blocks in them. Extract the comments into an array of Comment structures.
+Find all files that have "AI:" comments or AI_COMMENT_START and AI_COMMENT_END comment blocks in them. Extract the comments into an array of Comment structures. 
 
-When calculating line numbers, account for the actual line numbers without the comments. It may help to run `jj diff
+These comments only exist locally, they won't be in the committed code being reviewed. So when calculating line numbers, account for the actual line numbers without the comments. It may help to run `jj diff
 --color-words` on the files to get the original line numbers.
 
 After you've done that, display the comments and ask if the user wants to modify them or if they want to set a particular status value. If there's a review body they want to provide.
