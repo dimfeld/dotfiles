@@ -110,9 +110,9 @@ function claudecwd() {
   printf '\e[?1004l';
 }
 
-alias claude="claudegr"
+alias claude="claudegr --model opus"
 alias claudes="claudegr --model sonnet"
-alias claudeo="claudegr --model opus"
+alias claudeh="claudegr --model haiku"
 
 unalias codex &> /dev/null
 
@@ -161,6 +161,9 @@ function restore-db() {
 
 source ~/.zsh-functions/jj.zsh
 source ~/.zsh-functions/_rmplan
-alias rmws="rmplan_ws"
+alias rmpwl="rmp workspace list"
+alias rmpws="rmplan_ws"
 
 alias cl='chisel -p'
+
+alias diff-review-guide='nvim "+edit review-guide.md" "+DiffviewOpenJson review-guide.json $(jj-base-commit)"'

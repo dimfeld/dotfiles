@@ -116,6 +116,12 @@ end, {
   desc = "Copy the current buffer's path with repo: prefix to the yank register",
 })
 
+vim.api.nvim_create_user_command("OpenReviewGuide", function()
+  vim.cmd("tabnew review-guide.md")
+end, {
+  desc = "Open the review guide in a new tab",
+})
+
 --- Get the comment string for the current filetype
 --- @return string
 local function get_comment_string()
@@ -125,7 +131,7 @@ local function get_comment_string()
   end
   -- For multi-part comments like <!-- %s -->, extract just the opening part
   -- Split on %s and take the first part, then trim trailing whitespace
-  local parts = vim.split(commentstring, "%%s", { plain = true })
+  local parts = vim.split(commentstring, "%s", { plain = true })
   local comment_prefix = parts[1]:gsub("%s+$", "")
   return comment_prefix
 end
@@ -157,16 +163,16 @@ local function add_ai_comment(opts)
 
     -- Build start comment with proper closing for HTML
     local start_comment_base = start_indent .. comment .. " AI_COMMENT_START "
-    local start_comment = is_html_comment and (start_comment_base:sub(1, -2) .. " -->") -- Replace trailing space with -->
+    local start_comment = is_html_comment and (start_comment_base:sub(1, -2) .. "  -->") -- Replace trailing space with -->
       or start_comment_base
 
     -- Build end comment with proper closing for HTML
     local end_comment = end_indent .. comment .. (is_html_comment and " AI_COMMENT_END -->" or " AI_COMMENT_END")
 
     -- Insert end comment first (so line numbers don't shift)
-    vim.fn.append(line2, end_comment)
+    vim.api.nvim_buf_set_lines(0, line2, line2, false, { end_comment })
     -- Insert start comment above the selection
-    vim.fn.append(line1 - 1, start_comment)
+    vim.api.nvim_buf_set_lines(0, line1 - 1, line1 - 1, false, { start_comment })
 
     -- Move cursor to after "AI_COMMENT_START " (before --> if HTML)
     vim.api.nvim_win_set_cursor(0, { line1, #start_comment_base + 1 })
@@ -178,10 +184,10 @@ local function add_ai_comment(opts)
 
     -- Build AI comment with proper closing for HTML
     local ai_comment_base = indent .. comment .. " AI: "
-    local ai_comment = is_html_comment and (ai_comment_base:sub(1, -2) .. " -->") -- Replace trailing space with -->
+    local ai_comment = is_html_comment and (ai_comment_base:sub(1, -2) .. "  -->") -- Replace trailing space with -->
       or ai_comment_base
 
-    vim.fn.append(line1 - 1, ai_comment)
+    vim.api.nvim_buf_set_lines(0, line1 - 1, line1 - 1, false, { ai_comment })
 
     -- Move cursor to after "AI: " (before --> if HTML)
     vim.api.nvim_win_set_cursor(0, { line1, #ai_comment_base + 1 })

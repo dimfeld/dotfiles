@@ -19,9 +19,9 @@ First, understand the current state of the repository:
 !`jj log -r @ -n 1`
 
 1c. The current bookmark/branch name is: !`jj log -r 'latest(heads(ancestors(@) & bookmarks()), 1)' --limit 1 --no-graph -T local_bookmarks | tr -d '*'`
-
+ 
    - Store this as `<branch-name>` for use in subsequent steps
-   - If empty or "main", you may need to create a bookmark first with `jj bookmark create <name>`
+   - If empty or "main" or another reserved value, you may need to create a bookmark first with `jj bookmark create <name>`
 
 1d. The commit history on the branch:
 

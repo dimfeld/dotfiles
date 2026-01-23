@@ -66,6 +66,15 @@ return {
           end,
         },
         {
+          name = "Diffview Review Guide",
+          category = "Git",
+          action = function()
+            local commit_id = vim.fn.system("jj log -r 'heads(::@ & ::main)' --no-graph -T 'commit_id'")
+            commit_id = vim.trim(commit_id)
+            vim.cmd("DiffviewOpenJson review-guide.json " .. commit_id)
+          end,
+        },
+        {
           name = "DiffView File History",
           category = "Git",
           action = function()
@@ -82,7 +91,7 @@ return {
 
   -- Leap for quick navigation through the buffer
   {
-    "ggandor/leap.nvim",
+    url = "https://codeberg.org/andyg/leap.nvim",
     config = function()
       vim.keymap.set({ "n", "x", "o" }, "s", "<Plug>(leap-forward)", { noremap = false })
       vim.keymap.set({ "n", "x", "o" }, "S", "<Plug>(leap-backward)", { noremap = false })
