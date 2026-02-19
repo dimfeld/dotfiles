@@ -1,7 +1,7 @@
 ---
 description: Commit changes, push to remote, and create a PR
 allowed-tools: Bash(jj status:*), Bash(jj bookmark:*), Bash(jj commit:*), Bash(jj git push:*), Bash(jj log:*), Bash(jj diff:*), Bash(gh pr:*), Bash(tr:*)
-argument-hint: [commit message context]
+argument-hint: [extra context]
 ---
 
 Please do the following:
@@ -76,6 +76,7 @@ closing issues.
      - Test plan section with checkboxes for manual testing steps
      - Mark automated tests as checked if they've passed
    - Note that commits marked "Finish batch tasks iteration" are just related to updating planning documents, not actual code changes
+   - Do not include "Generated with Claude Code" or "Co-Authored-By" lines
 
 ## Notes
 

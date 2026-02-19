@@ -17,6 +17,9 @@ merge-editor = "diffconflicts"
 # local_bookmarks = "yellow"
 # remote_bookmarks = "yellow"
 
+[remotes.origin]
+auto-track-created-bookmarks = '~glob:"t/*"'
+
 [aliases]
 lt = ['log', '-r', 'ancestors(@)']
 ls = ['log', '-n', '20']

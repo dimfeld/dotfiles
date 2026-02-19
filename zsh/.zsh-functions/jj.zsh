@@ -41,7 +41,14 @@ function jj-update-branch() {
   if [ $# -gt 0 ]; then
     shift
   fi
-  jj bookmark move $(jjpb) --to "$REV" "$@"
+
+  BOOKMARK=$(jjpb)
+  if [ "$BOOKMARK" = "production" ]; then
+    echo "Can't jjub on production bookmark"
+    return 1
+  fi
+
+  jj bookmark move $BOOKMARK --to "$REV" "$@"
 }
 alias jjub=jj-update-branch
 
@@ -80,13 +87,14 @@ function jj-squash-into() {
   TO=${1}
   UP_TO=${2:-@}
 
-  jj squash -t ${TO} -f "${TO}..${UP_TO}"
+  jj squash -t "${TO} & ancestors(${UP_TO})" -f "${TO}..${UP_TO}"
 }
 alias jjsi='jj-squash-into'
 
 function jj-squash-after() {
   jj-squash-into $1+ $2
 }
+alias jjsa='jj-squash-after'
 
 alias jj-squash-branch='jj squash -f "branch($(jjpb))" -t $(jjpb)'
 alias jjsb='jj-squash-branch'
@@ -110,4 +118,6 @@ function jj-rebase-main() {
 }
 
 alias jj-base-commit="jj log -r 'heads(::@ & ::main)' --no-graph -T 'commit_id'"
+
+alias jjpc='jj git push --bookmark $(jjpb)'
 

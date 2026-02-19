@@ -11,6 +11,8 @@
   - `jj commit -m "message"` - Create a commit with the specified message (you do not need to "add" files first)
   - `jj git push` - Push changes to the remote Git repository
 
+  When referencing specific files in jj commands, you need to escape brackets [ and ] with backslashes e.g. \\[ and \\].
+
 - When using absolute paths, make sure to write `dimfeld` as the user name not `dimfield`
 
 - When you encounter test failures, you must not `git stash` and then run again to see if they were pre-existing.

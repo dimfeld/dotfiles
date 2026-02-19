@@ -61,24 +61,24 @@ alias wind="/Users/dimfeld/.codeium/windsurf/bin/windsurf-next"
 
 alias aws-whoami='aws sts get-caller-identity'
 
-alias rmp="~/Documents/projects/llmutils/dist/rmplan.js"
-alias rmpd="~/Documents/projects/llmutils/src/rmplan/rmplan.ts"
-alias rmpl="./src/rmplan/rmplan.ts"
+alias tim="~/Documents/projects/llmutils/dist/tim.js"
+alias timd="~/Documents/projects/llmutils/src/tim/tim.ts"
+alias timl="./src/tim/tim.ts"
 # Not using prepare anymore since coding agents got better.
-# function rmp-prep-and-run() {
-#   rmp prepare --claude --next-ready "$@" && jj commit -m 'prepare plan' && rmp run --next-ready "$@"
+# function tim-prep-and-run() {
+#   tim prepare --claude --next-ready "$@" && jj commit -m 'prepare plan' && tim run --next-ready "$@"
 # }
 #
-# function rmp-prep-and-run-codex() {
-#   rmp prepare --claude --next-ready "$@" && jj commit -m 'prepare plan' && ALLOW_ALL_TOOLS=true rmp run -x codex-cli --next-ready "$@"
+# function tim-prep-and-run-codex() {
+#   tim prepare --claude --next-ready "$@" && jj commit -m 'prepare plan' && ALLOW_ALL_TOOLS=true tim run -x codex-cli --next-ready "$@"
 # }
 
-function rmp-gen-and-run-codex() {
-  rmp generate --claude --next-ready "$@" && jj commit -m 'generate plan' && ALLOW_ALL_TOOLS=true rmp run -x codex-cli --next-ready "$@"
+function tim-gen-and-run-codex() {
+  tim generate --claude --next-ready "$@" && jj commit -m 'generate plan' && ALLOW_ALL_TOOLS=true tim run -x codex-cli --next-ready "$@"
 }
 
-function rmp-gen-and-run-claude() {
-  rmp generate --claude --next-ready "$@" && jj commit -m 'generate plan' && rmp run "$@"
+function tim-gen-and-run-claude() {
+  tim generate --claude --next-ready "$@" && jj commit -m 'generate plan' && tim run "$@"
 }
 
 
@@ -105,14 +105,27 @@ function claudegr() {
   )
 }
 
+function claudeprj() {
+  (
+  DIR=$(find-up .agentroot .git .jj)
+  if [ -z "$DIR" ]; then
+    cdgr
+  else
+    cd $(dirname "$DIR")
+  fi
+  baseclaude "$@"
+  printf '\e[?1004l';
+  )
+}
+
 function claudecwd() {
   baseclaude "$@"
   printf '\e[?1004l';
 }
 
-alias claude="claudegr --model opus"
-alias claudes="claudegr --model sonnet"
-alias claudeh="claudegr --model haiku"
+alias claude="claudeprj --model opus"
+alias claudes="claudeprj --model sonnet"
+alias claudeh="claudeprj --model haiku"
 
 unalias codex &> /dev/null
 
@@ -123,19 +136,31 @@ function codexgr() {
   )
 }
 
-alias codex="codexgr"
-alias codexhigh="codex -c model_reasoning_effort=high"
-alias codexfa="codexgr --full-auto"
-alias codexyolo="codexgr --dangerously-bypass-approvals-and-sandbox"
+function codexprj() {
+  (
+  DIR=$(find-up .agentroot .git .jj)
+  if [ -z "$DIR" ]; then
+    cdgr
+  else
+    cd $(dirname "$DIR")
+  fi
+  AGENT=1 codex "$@"
+  )
+}
+
+alias codex="codexprj"
+alias codexs="codexprj --model gpt-5.3-codex-spark"
+alias codexhigh="codexprj -c model_reasoning_effort=high"
+alias codexfa="codexprj --full-auto"
+alias codexyolo="codexprj --dangerously-bypass-approvals-and-sandbox"
 
 function rm-codex-plan() {
-  codex --model gpt-5.2 -c model_reasoning_effort=high "$(rmp prompts generate-plan $@)"
+  codex --model gpt-5.3 -c model_reasoning_effort=high "$(tim prompts generate-plan $@)"
 }
 
 function new-from-linear() {
-  rmp import "$@" && \
+  tim import "$@" && \
     jj bookmark create "$1" -r@ && \
-    jj bookmark track "$1" --remote origin && \
     jj commit -m 'import from linear'
 }
 
@@ -160,9 +185,10 @@ function restore-db() {
 }
 
 source ~/.zsh-functions/jj.zsh
-source ~/.zsh-functions/_rmplan
-alias rmpwl="rmp workspace list"
-alias rmpws="rmplan_ws"
+source ~/.zsh-functions/_tim
+alias timwl="tim workspace list"
+alias timws="tim_ws"
+alias timwp="tim workspace push"
 
 alias cl='chisel -p'
 

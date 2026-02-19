@@ -1,7 +1,8 @@
 ---
 name: create-pr-review-from-comments
 description: Converts "AI" comments in local files into Github PR review comments
-allowedTools: Bash(bun ~/.claude/skills/pr-review-from-comments/scripts/:*)
+allowed-tools: Write(/tmp), Bash(bun * pr-review-from-comments/scripts/:*)
+disable-model-invocation: true
 ---
 
 Find the current jj branch name using: `jj log -r 'latest(heads(ancestors(@) & remote_bookmarks()), 1)' --limit 1 --no-graph -T bookmarks | tr -d '*' | sed 's/@origin$//'`
@@ -11,7 +12,7 @@ Then use `gh pr list --head <branch-name>` to get the number of the PR.
 Run the extract_comments.ts script to find all AI comments in modified files:
 
 ```bash
-bun ~/.claude/skills/pr-review-from-comments/scripts/extract_comments.ts
+~/.claude/skills/pr-review-from-comments/scripts/extract_comments.ts
 ```
 
 This script will output each comment with:
@@ -50,5 +51,5 @@ Finally, separately ask for a review body (main message) to be included with the
 Generate an object of type Input, save it as JSON to a temporary file, and pass it to scripts/create_review.ts.
 
 ```bash
-GITHUB_TOKEN=$(gh auth token) bun ~/.claude/skills/pr-review-from-comments/scripts/create_review.ts <tempfile>
+GITHUB_TOKEN=$(gh auth token) ~/.claude/skills/pr-review-from-comments/scripts/create_review.ts <tempfile>
 ```

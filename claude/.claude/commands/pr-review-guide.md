@@ -1,6 +1,6 @@
 ---
 description: Generate a PR review guide
-allowed-tools: Bash(git log:*), Bash(git show:*), Bash(git diff:*), Bash(jj status:*), Bash(jj bookmark:*), Bash(jj log:*), Bash(jj diff:*), Bash(gh pr:*), Bash(tr:*)
+allowed-tools: Bash(git log:*), Bash(git show:*), Bash(git diff:*), Bash(jj status:*), Bash(jj bookmark:*), Bash(jj log:*), Bash(jj diff:*), Bash(gh pr:*), Bash(tr:*), Write(review-guide.md), Write(review-guide.json)
 argument-hint: [extra context]
 ---
 
@@ -26,6 +26,8 @@ $ARGUMENTS
 2. Create a corresponding review-guide.json file that groups the files appropriately, using the format below.
 3. Then go through the guide you just wrote and perform a thorough review of the changes and add any comments to `review-guide.md`. Take as much time as needed to properly review the changes.
 4. Finally, look through the codebase to see what might have been missed, unnecessarily duplicated code, or code that doesn't follow best practices or existing patterns. Write any additional comments to `review-guide.md`.
+
+Place each review comment from steps 3 and 4 in the section for the relevant file group.
 
 ## Sample Issues to Flag:
 
@@ -135,3 +137,4 @@ middleware already verifies the presence of an organization and user, the handle
 }
 ```
 
+Note that the review-guide files are gitignored, so you should not expect them to show up in VCS.

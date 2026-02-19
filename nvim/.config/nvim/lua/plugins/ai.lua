@@ -401,6 +401,7 @@ return {
   {
     "coder/claudecode.nvim",
     name = "claudecode.nvim",
+    enabled = false,
     dir = "~/Documents/src/claudecode.nvim",
     dependencies = { "folke/snacks.nvim" },
     opts = {
@@ -475,24 +476,43 @@ return {
     end,
     event = "VeryLazy",
     keys = {
-      { "<leader>a", nil, desc = "AI/Claude Code" },
-      { "<leader>at", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude" },
+      -- { "<leader>a", nil, desc = "AI/Claude Code" },
+      -- { "<leader>at", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude" },
+      -- { "<leader>as", "<cmd>ClaudeCodeAdd %:p<cr>", mode = "n", desc = "Add current buffer" },
+      -- { "<leader>as", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude" },
+
       { "<C-,>", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude" },
       -- { "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude" },
       -- { "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude" },
       -- { "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
       -- { "<leader>am", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select Claude model" },
-      { "<leader>as", "<cmd>ClaudeCodeAdd %:p<cr>", mode = "n", desc = "Add current buffer" },
-      { "<leader>as", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude" },
-      {
-        "<leader>as",
-        "<cmd>ClaudeCodeTreeAdd<cr>",
-        desc = "Add file",
-        ft = { "NvimTree", "neo-tree", "oil", "minifiles", "netrw" },
+      -- {
+      --   "<leader>as",
+      --   "<cmd>ClaudeCodeTreeAdd<cr>",
+      --   desc = "Add file",
+      --   ft = { "NvimTree", "neo-tree", "oil", "minifiles", "netrw" },
+      -- },
+      -- -- Diff management
+      -- { "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
+      -- { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
+    },
+  },
+  {
+    "dimfeld/codex.nvim",
+    enabled = true,
+    dependencies = { "folke/snacks.nvim" },
+    event = "VeryLazy",
+    dir = "~/Documents/projects/codex.nvim",
+    keys = {
+      { "<leader>a", nil, desc = "AI/Codex" },
+      { "<leader>at", "<cmd>Codex<cr>", desc = "Toggle Codex" },
+      { "<leader>as", "<cmd>CodexHere<cr>", mode = "n", desc = "Add current selection" },
+      { "<leader>as", ":'<,'>CodexHere<cr>", mode = "v", desc = "Add current buffer" },
+    },
+    opts = {
+      codex = {
+        args = { "--model", "gpt-5.3-codex-spark" },
       },
-      -- Diff management
-      { "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
-      { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
     },
   },
   {

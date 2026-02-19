@@ -46,6 +46,15 @@ return {
       },
     },
     config = function(_, opts)
+      local actions = require("diffview.actions")
+      opts.keymaps = {
+        view = {
+          { "n", "<F1>", actions.review_mark_file, { desc = "Mark the current file as reviewed" } },
+        },
+        file_panel = {
+          { "n", "<F1>", actions.review_mark_file, { desc = "Mark the current file as reviewed" } },
+        },
+      }
       require("diffview").setup(opts)
 
       require("config.telescope_commandbar").add_commands({

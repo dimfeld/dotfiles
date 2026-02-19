@@ -4,9 +4,9 @@ allowed-tools: Bash(git log:*), Bash(git show:*), Bash(git diff:*), Bash(jj stat
 argument-hint: [extra context]
 ---
 
-Read review-guide.md and thoroughly review the files and changes mentioned in the report. Once done, add
-your findings to review-guide.md in a new "Second Pass Review" section while preserving all existing content. The file will contain review notes from another
-reviewer and we do not want to lose those.
+Read review-guide.md and thoroughly review the files and changes mentioned in the report. Once done, add your findings to review-guide.md, with each finding in the section for the relevant file group. Preserve all existing content and review notes. The file will contain review notes from another reviewer and we do not want to lose those.
+
+Note that review-guide.md is gitignored, so you should not expect it to show up in VCS.
 
 ## Sample Issues to Flag:
 

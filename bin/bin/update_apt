@@ -25,8 +25,8 @@ if [ -f "$(which brew)" ]; then
   brew upgrade || true
 fi
 
-if [ -f "$(which chisel)" ]; then
-  chisel update
+if [ -f "$(which devin)" ]; then
+  devin update
 fi
 
 

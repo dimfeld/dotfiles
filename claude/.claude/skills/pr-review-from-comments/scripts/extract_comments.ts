@@ -16,6 +16,11 @@ interface ExtractedComment {
   adjacentOriginalLineNumber: number | null;
 }
 
+function escapeFilename(filename: string): string {
+  // Escape brackets to prevent glob pattern interpretation
+  return filename.replace(/\[/g, "\\[").replace(/\]/g, "\\]");
+}
+
 async function runCommand(args: string[]): Promise<string> {
   const proc = Bun.spawn(args, { stdout: "pipe", stderr: "pipe" });
   const output = await new Response(proc.stdout).text();
@@ -40,7 +45,7 @@ async function getModifiedFiles(): Promise<string[]> {
 }
 
 async function parseDiff(file: string): Promise<DiffLine[]> {
-  const output = await runCommand(["jj", "diff", "--color-words", file]);
+  const output = await runCommand(["jj", "diff", "--color-words", escapeFilename(file)]);
   const lines: DiffLine[] = [];
 
   for (const line of output.split("\n")) {
