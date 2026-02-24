@@ -11,6 +11,8 @@
   - `jj commit -m "message"` - Create a commit with the specified message (you do not need to "add" files first)
   - `jj git push` - Push changes to the remote Git repository
 
+  Committing with `jj` creates a new empty commit on top. This is normal and does not need to be handled specially.
+
   When referencing specific files in jj commands, you need to escape brackets [ and ] with backslashes e.g. \\[ and \\].
 
 - When using absolute paths, make sure to write `dimfeld` as the user name not `dimfield`

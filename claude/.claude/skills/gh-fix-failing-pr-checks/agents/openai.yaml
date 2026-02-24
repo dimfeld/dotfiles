@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fix Failing PR Checks"
+  short_description: "Inspect and fix failing GitHub PR checks"
+  default_prompt: "Use $gh-fix-failing-pr-checks to inspect a pull request, identify failing checks via the GitHub API, and fix them using any context I provide."

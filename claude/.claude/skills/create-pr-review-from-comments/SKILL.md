@@ -9,10 +9,12 @@ Find the current jj branch name using: `jj log -r 'latest(heads(ancestors(@) & r
 
 Then use `gh pr list --head <branch-name>` to get the number of the PR.
 
+IMPORTANT NOTE: ALL SCRIPTS ARE RELATIVE TO THE SKILL.md file path but you must run them from the repository directory.
+
 Run the extract_comments.ts script to find all AI comments in modified files:
 
 ```bash
-~/.claude/skills/create-pr-review-from-comments/scripts/extract_comments.ts
+bun scripts/extract_comments.ts
 ```
 
 This script will output each comment with:
@@ -51,5 +53,5 @@ Finally, separately ask for a review body (main message) to be included with the
 Generate an object of type Input, save it as JSON to a temporary file, and pass it to scripts/create_review.ts.
 
 ```bash
-GITHUB_TOKEN=$(gh auth token) ~/.claude/skills/pr-review-from-comments/scripts/create_review.ts <tempfile>
+GITHUB_TOKEN=$(gh auth token) bun scripts/create_review.ts <tempfile>
 ```

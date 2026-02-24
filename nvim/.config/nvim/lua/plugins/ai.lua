@@ -511,7 +511,7 @@ return {
     },
     opts = {
       codex = {
-        args = { "--model", "gpt-5.3-codex-spark" },
+        args = { "--model", "gpt-5.3-codex-spark", "-c", "model_reasoning_effort=high" },
       },
     },
   },

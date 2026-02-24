@@ -1,6 +1,8 @@
 ---
-description: Commit changes, push to remote, and create a PR
+name: commit-push-pr
+description: Commit changes, push to remote, and create a PR skill
 allowed-tools: Bash(jj status:*), Bash(jj bookmark:*), Bash(jj commit:*), Bash(jj git push:*), Bash(jj log:*), Bash(jj diff:*), Bash(gh pr:*), Bash(tr:*)
+disable-model-invocation: true
 argument-hint: [extra context]
 ---
 
@@ -86,3 +88,4 @@ closing issues.
 - The base branch is main by default and in the above examples, but use a different branch if there are instructions below that indicate a different base branch.
 
 $ARGUMENTS
+

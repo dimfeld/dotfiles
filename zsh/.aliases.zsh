@@ -61,7 +61,7 @@ alias wind="/Users/dimfeld/.codeium/windsurf/bin/windsurf-next"
 
 alias aws-whoami='aws sts get-caller-identity'
 
-alias tim="~/Documents/projects/llmutils/dist/tim.js"
+alias tim="~/Documents/projects/llmutils/dist/tim"
 alias timd="~/Documents/projects/llmutils/src/tim/tim.ts"
 alias timl="./src/tim/tim.ts"
 # Not using prepare anymore since coding agents got better.
@@ -149,18 +149,18 @@ function codexprj() {
 }
 
 alias codex="codexprj"
-alias codexs="codexprj --model gpt-5.3-codex-spark"
+alias codexs="codexprj --model gpt-5.3-codex-spark -c model_reasoning_effort=high"
 alias codexhigh="codexprj -c model_reasoning_effort=high"
 alias codexfa="codexprj --full-auto"
 alias codexyolo="codexprj --dangerously-bypass-approvals-and-sandbox"
 
-function rm-codex-plan() {
-  codex --model gpt-5.3 -c model_reasoning_effort=high "$(tim prompts generate-plan $@)"
+function tim-codex-plan() {
+  codex --model gpt-5.4 -c model_reasoning_effort=high "$(tim prompts generate-plan $@)"
 }
 
 function new-from-linear() {
   tim import "$@" && \
-    jj bookmark create "$1" -r@ && \
+    jj bookmark create $(tim branch-name --latest) -r@ && \
     jj commit -m 'import from linear'
 }
 
