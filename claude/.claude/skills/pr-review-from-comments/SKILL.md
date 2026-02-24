@@ -12,7 +12,7 @@ Then use `gh pr list --head <branch-name>` to get the number of the PR.
 Run the extract_comments.ts script to find all AI comments in modified files:
 
 ```bash
-~/.claude/skills/pr-review-from-comments/scripts/extract_comments.ts
+~/.claude/skills/create-pr-review-from-comments/scripts/extract_comments.ts
 ```
 
 This script will output each comment with:
