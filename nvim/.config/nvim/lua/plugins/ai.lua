@@ -502,7 +502,7 @@ return {
     enabled = true,
     dependencies = { "folke/snacks.nvim" },
     event = "VeryLazy",
-    dir = "~/Documents/projects/codex.nvim",
+    -- dir = "~/Documents/projects/codex.nvim",
     keys = {
       { "<leader>a", nil, desc = "AI/Codex" },
       { "<leader>at", "<cmd>Codex<cr>", desc = "Toggle Codex" },
@@ -510,6 +510,7 @@ return {
       { "<leader>as", ":'<,'>CodexHere<cr>", mode = "v", desc = "Add current buffer" },
     },
     opts = {
+      focus_existing_on_here = true,
       codex = {
         args = { "--model", "gpt-5.3-codex-spark", "-c", "model_reasoning_effort=high" },
       },

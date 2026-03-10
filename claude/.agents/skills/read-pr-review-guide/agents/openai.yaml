@@ -1,0 +1,4 @@
+interface:
+  display_name: "Read PR Review Guide"
+  short_description: "Continue reviewing from review-guide.md"
+  default_prompt: "Use $read-pr-review-guide to read review-guide.md, inspect the referenced changes, and append findings in the relevant sections."

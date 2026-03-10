@@ -103,7 +103,8 @@ function claudegr() {
   (
   cdgr
   baseclaude "$@"
-  printf '\e[?1004l';
+  # printf '\e[?1004l';
+  # printf '\e[>0u'
   )
 }
 
@@ -116,13 +117,15 @@ function claudeprj() {
     cd $(dirname "$DIR")
   fi
   baseclaude "$@"
-  printf '\e[?1004l';
+  # printf '\e[>0u'
+  # printf '\e[?1004l';
   )
 }
 
 function claudecwd() {
   baseclaude "$@"
-  printf '\e[?1004l';
+  # printf '\e[>0u'
+  # printf '\e[?1004l';
 }
 
 alias claude="claudeprj --model opus"
@@ -152,6 +155,7 @@ function codexprj() {
 
 alias codex="codexprj"
 alias codexs="codexprj --model gpt-5.3-codex-spark -c model_reasoning_effort=high"
+alias codexm="codexprj --model gpt-5.4-mini"
 alias codexhigh="codexprj -c model_reasoning_effort=high"
 alias codexfa="codexprj --full-auto"
 alias codexyolo="codexprj --dangerously-bypass-approvals-and-sandbox"

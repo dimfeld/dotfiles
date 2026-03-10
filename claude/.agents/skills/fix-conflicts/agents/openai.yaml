@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fix Conflicts"
+  short_description: "Resolve merge or rebase conflicts carefully"
+  default_prompt: "Use $fix-conflicts to inspect the current jj conflicts, resolve them with context from history, and stop only if a resolution is ambiguous."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Save Progress"
+  short_description: "Write a resumable current_progress.md checkpoint"
+  default_prompt: "Use $save-progress to write a detailed current_progress.md checkpoint for the current task, status, decisions, and next steps."

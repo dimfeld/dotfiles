@@ -96,7 +96,10 @@ function jj-squash-after() {
 }
 alias jjsa='jj-squash-after'
 
-alias jj-squash-branch='jj squash -f "branch($(jjpb))" -t $(jjpb)'
+function jj-squash-branch() {
+  REV=${1:-$(jjpb)}
+  jj squash -f "branch($REV)" -t $REV
+}
 alias jjsb='jj-squash-branch'
 
 alias jj-track-current='jj bookmark track $(jjpb)'

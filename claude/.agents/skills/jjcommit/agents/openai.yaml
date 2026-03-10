@@ -1,0 +1,4 @@
+interface:
+  display_name: "JJ Commit"
+  short_description: "Create a jj commit with a solid message"
+  default_prompt: "Use $jjcommit to inspect the current changes and create a jj commit with an appropriate message."

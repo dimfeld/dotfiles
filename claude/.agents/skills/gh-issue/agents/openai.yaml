@@ -1,0 +1,4 @@
+interface:
+  display_name: "GitHub Issue"
+  short_description: "Read a GitHub issue and plan the work"
+  default_prompt: "Use $gh-issue to load the specified GitHub issue and comments, summarize the request, and create a plan to address it."

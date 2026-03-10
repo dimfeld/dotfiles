@@ -10,6 +10,16 @@ local function configure_lsp_servers()
     --   includeInlayFunctionLikeReturnTypeHints = false,
     --   includeInlayEnumMemberValueHints = true,
     -- },
+    inlayHints = {
+      parameterNames = {
+        enabled = false,
+      },
+      parameterTypes = { enabled = false },
+      variableTypes = { enabled = false },
+      propertyDeclarationTypes = { enabled = false },
+      functionLikeReturnTypes = { enabled = false },
+      enumMemberValues = { enabled = false },
+    },
     updateImportsOnFileMove = { enabled = "always" },
     suggest = {
       completeFunctionCalls = true,

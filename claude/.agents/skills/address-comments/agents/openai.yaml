@@ -1,0 +1,4 @@
+interface:
+  display_name: "Address Comments"
+  short_description: "Resolve AI review comments in repo files"
+  default_prompt: "Use $address-comments to find AI review comments in this repo, fix them, remove the markers, and validate the changes."

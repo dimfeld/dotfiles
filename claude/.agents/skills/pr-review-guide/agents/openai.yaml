@@ -1,0 +1,4 @@
+interface:
+  display_name: "PR Review Guide"
+  short_description: "Generate and use a pull request review guide"
+  default_prompt: "Use $pr-review-guide to analyze this branch, group the changed files, write review-guide.md and review-guide.json, and add review findings."

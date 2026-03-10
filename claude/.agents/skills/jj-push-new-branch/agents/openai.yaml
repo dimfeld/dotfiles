@@ -1,0 +1,4 @@
+interface:
+  display_name: "JJ Push New Branch"
+  short_description: "Commit work and push a new jj bookmark"
+  default_prompt: "Use $jj-push-new-branch to commit any pending work, create a good new bookmark name, and push it to GitHub."

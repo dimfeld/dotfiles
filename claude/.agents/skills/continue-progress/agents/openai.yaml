@@ -1,0 +1,4 @@
+interface:
+  display_name: "Continue Progress"
+  short_description: "Resume work from current_progress.md"
+  default_prompt: "Use $continue-progress to read current_progress.md, restore context, and continue the work from the recorded next steps."

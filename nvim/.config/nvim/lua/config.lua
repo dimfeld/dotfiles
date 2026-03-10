@@ -152,6 +152,11 @@ end, {
 -- Map ; to : in case I don't press Shift quickly enough
 vim.keymap.set("n", ";", ":", {})
 -- # Buffer Navigation --
+vim.keymap.set("n", "<leader>sw", function()
+  vim.wo.wrap = not vim.wo.wrap
+end, {
+  desc = "Toggle word wrapping",
+})
 
 -- Hides buffers instead of closing them
 vim.o.hidden = true

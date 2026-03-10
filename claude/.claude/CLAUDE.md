@@ -19,6 +19,8 @@
 
 - When you encounter test failures, you must not `git stash` and then run again to see if they were pre-existing.
 
+- Occasionally a `jj` command will fail to "acquire lock for index file". In this case do not try to delete the lock file, just try again and it should work.
+
 ## Removing Files
 
 My `rm` command is aliased to `rm -i`. This means that you need to use `rm -f` to remove files.
