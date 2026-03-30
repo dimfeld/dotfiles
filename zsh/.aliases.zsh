@@ -55,9 +55,8 @@ function apply-pb-diff() {
 
 alias cps="gh copilot suggest -t shell"
 
-alias wind="/Users/dimfeld/.codeium/windsurf/bin/windsurf-next"
-
-alias zs='zellij --session'
+alias za='zellij attach --create'
+alias zl='zellij list-sessions'
 
 # AWS
 
