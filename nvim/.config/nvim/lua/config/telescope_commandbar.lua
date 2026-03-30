@@ -24,7 +24,8 @@ local entry_display = require("telescope.pickers.entry_display")
 --- @type CursorRange
 M.current_cursor = nil
 
-function runLspPrefixAction(prefix)
+--- @param prefix string
+local runLspPrefixAction = function(prefix)
   -- local current_ft = vim.bo.filetype
   -- if current_ft == "typescript" then
   --   vim.cmd("TSToolsOrganizeImports")

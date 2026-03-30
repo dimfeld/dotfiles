@@ -11,8 +11,19 @@ return {
     build = ":TSUpdate",
     opts = {
       ensure_installed = {
+        "c",
+        "go",
+        "hcl",
+        "html",
+        "javascript",
+        "json",
+        "json5",
+        "lua",
+        "markdown",
+        "python",
         "rust",
         "svelte",
+        "toml",
         "typescript",
       },
       context_commentstring = {
