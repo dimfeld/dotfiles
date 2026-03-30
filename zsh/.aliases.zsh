@@ -165,8 +165,7 @@ function tim-codex-plan() {
 
 function new-from-linear() {
   tim import "$@" && \
-    jj bookmark create $(tim branch-name --latest) -r@ && \
-    jj commit -m 'import from linear'
+    jj bookmark create $(tim branch-name --latest) -r@
 }
 
 # wezterm

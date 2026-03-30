@@ -229,18 +229,20 @@ local function on_attach(buffer, client)
     return
   end
 
-  if client.supports_method("textDocument/inlayHint") or client.server_capabilities.inlayHintProvider then
+  if client:supports_method("textDocument/inlayHint") or client.server_capabilities.inlayHintProvider then
     vim.lsp.inlay_hint.enable(true)
   end
 
-  vim.lsp.codelens.refresh()
+  vim.lsp.codelens.enable(true, { bufnr = buffer })
 
   if not vim.b._first_lsp_attached then
     vim.b._first_lsp_attached = true
 
     vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
       buffer = buffer,
-      callback = vim.lsp.codelens.refresh,
+      callback = function()
+        vim.lsp.codelens.enable(true, { bufnr = buffer })
+      end,
     })
   end
 
@@ -331,7 +333,7 @@ return {
         -- },
         -- No need for this now that we have virtual_lines
         jump = {
-          float = false,
+          -- float = false,
         },
         severity_sort = true,
       })

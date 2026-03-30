@@ -2,9 +2,11 @@ return {
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
     cond = not vim.g.vscode,
+    branch = "main",
   },
   {
     "nvim-treesitter/nvim-treesitter",
+    branch = "main",
     cond = not vim.g.vscode,
     build = ":TSUpdate",
     opts = {
@@ -86,7 +88,7 @@ return {
       vim.o.foldexpr = "nvim_treesitter#foldexpr()"
     end,
     config = function(_, opts)
-      require("nvim-treesitter.configs").setup(opts)
+      require("nvim-treesitter").setup(opts)
       vim.o.foldlevel = 99
       vim.o.foldenable = false
     end,
