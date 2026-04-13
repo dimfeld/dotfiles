@@ -1,7 +1,4 @@
 local git_helpers = require("lib.git")
-local window_helpers = require("lib.window")
-local path = require("plenary.path")
-local format_util = require("formatter.util")
 
 vim.o.mousemodel = "extend"
 
@@ -132,20 +129,6 @@ vim.api.nvim_create_autocmd("FileType", {
 
 -- Don't give completion messages like 'match 1 of 2' or 'The only match'
 vim.opt.shortmess:append("cs")
-
----- AI Assistants
-
-vim.keymap.set("n", "<leader>lf", function()
-  require("commands.llm").fill_holes()
-end, {
-  desc = "LLM fill-in",
-})
-
-vim.keymap.set({ "n", "v" }, "<leader>la", function()
-  require("commands.llm").ask_and_fill_holes()
-end, {
-  desc = "LLM ask",
-})
 
 ---- Editor Commands
 
@@ -331,7 +314,6 @@ vim.api.nvim_create_autocmd("BufWritePost", {
   end,
 })
 
----- Telescope
 require("config.snacks_commandbar").setup()
 
 ---- Theme

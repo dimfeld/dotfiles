@@ -1,5 +1,4 @@
 local cmdbar = require("config.snacks_commandbar")
-local builtin = require("telescope.builtin")
 
 vim.api.nvim_create_user_command("Gd", ":Gvdiffsplit!", {})
 vim.api.nvim_create_user_command("Gadd", ":Git add %", {})
@@ -60,5 +59,4 @@ cmdbar.add_commands({
       vim.cmd("Gvdiffsplit!")
     end,
   },
-  { name = "Git Status", category = "Git", action = builtin.git_status },
 })

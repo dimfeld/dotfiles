@@ -385,16 +385,4 @@ return {
       "MunifTanjim/nui.nvim",
     },
   },
-
-  -- Nicer replacement for builtin input and select
-  {
-    "stevearc/dressing.nvim",
-    cond = not vim.g.vscode,
-    dependencies = { "nvim-telescope/telescope.nvim" },
-    event = "VeryLazy",
-    opts = {
-      -- Using noice for input
-      input = { enabled = false },
-    },
-  },
 }
