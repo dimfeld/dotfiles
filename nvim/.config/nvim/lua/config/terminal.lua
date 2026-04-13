@@ -1,4 +1,4 @@
-local cmdbar = require("config.telescope_commandbar")
+local cmdbar = require("config.snacks_commandbar")
 
 local toggleterm = require("toggleterm")
 local toggleterm_open_mapping = [[<C-\>]]

@@ -1,4 +1,4 @@
-local cmdbar = require("config.telescope_commandbar")
+local cmdbar = require("config.snacks_commandbar")
 local builtin = require("telescope.builtin")
 
 vim.api.nvim_create_user_command("Gd", ":Gvdiffsplit!", {})

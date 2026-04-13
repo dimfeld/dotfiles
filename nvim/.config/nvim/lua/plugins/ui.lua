@@ -1,5 +1,5 @@
 -- Status line configuration
-local cmdbar = require("config.telescope_commandbar")
+local cmdbar = require("config.snacks_commandbar")
 
 local status_filename = {
   "filename",

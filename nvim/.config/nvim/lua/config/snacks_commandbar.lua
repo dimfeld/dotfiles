@@ -1,14 +1,8 @@
 local M = {}
 
 local window = require("lib.window")
-local telescope = require("telescope")
 local builtin = require("telescope.builtin")
-local pickers = require("telescope.pickers")
-local finders = require("telescope.finders")
-local conf = require("telescope.config").values
-local actions = require("telescope.actions")
-local action_state = require("telescope.actions.state")
-local entry_display = require("telescope.pickers.entry_display")
+local SnacksPicker = require("snacks.picker")
 
 --- @class ActionOpts
 --- @field cursor CursorRange
@@ -26,12 +20,6 @@ M.current_cursor = nil
 
 --- @param prefix string
 local runLspPrefixAction = function(prefix)
-  -- local current_ft = vim.bo.filetype
-  -- if current_ft == "typescript" then
-  --   vim.cmd("TSToolsOrganizeImports")
-  --   return
-  -- end
-
   for _, client in ipairs(vim.lsp.get_clients()) do
     local ac1 = (
       client.server_capabilities
@@ -61,7 +49,6 @@ local runLspPrefixAction = function(prefix)
           apply = true,
         })
 
-        -- client:exec_cmd({ command = "source.organizeImports", arguments = { vim.uri_from_bufnr(0) } })
         return
       end
     end
@@ -75,7 +62,6 @@ M.commands = {
     category = "LS",
     filetype = "typescript",
     action = function()
-      -- runLspPrefixAction("source.removeUnusedImports")
       runLspPrefixAction("source.organizeImports")
     end,
   },
@@ -96,8 +82,6 @@ M.commands = {
       runLspPrefixAction("source.addMissingImports")
     end,
   },
-  -- { name = "Format document", category = "LS", coc_cmd = "editor.action.formatDocument" },
-  -- { name = "Format selection", category = "LS", coc_cmd = "editor.action.formatSelection" },
   {
     name = "Rename symbol",
     category = "LS",
@@ -112,10 +96,6 @@ M.commands = {
       vim.lsp.buf.definition()
     end,
   },
-  -- { name = "Go to Definition", category = "LS", coc_cmd = "editor.action.goToDeclaration" },
-  -- { name = "Go to Implementation", category = "LS", coc_cmd = "editor.action.goToImplementation" },
-  -- { name = "Go to Type Definition", category = "LS", coc_cmd = "editor.action.goToTypeDefinition" },
-  -- { name = "Go to References", category = "LS", coc_cmd = "editor.action.goToReferences" },
   {
     name = "Restart Svelte LS",
     category = "LS",
@@ -123,12 +103,6 @@ M.commands = {
       vim.cmd("LspRestart svelte")
     end,
   },
-  -- {
-  --   name = "Reload Rust Analyzer Workspace",
-  --   category = "LS",
-  --   filetype = "rust",
-  --   coc_cmd = "rust-analyzer.reloadWorkspace",
-  -- },
   {
     name = "Restart LS",
     category = "LS",
@@ -143,8 +117,6 @@ M.commands = {
       vim.cmd("LspRestart ts_ls")
     end,
   },
-  -- { name = "Reload Typescript Project", category = "LS", coc_cmd = "tsserver.reloadProjects" },
-  -- { name = "Show LS Output", category = "LS", coc_cmd = "workspace.showOutput" },
 
   {
     name = "Copy Buffer Path to Clipboard",
@@ -171,7 +143,6 @@ M.commands = {
       local saved_hl = vim.fn.getreg("/")
       local cmd = opts.cursor.start.line .. "," .. opts.cursor.stop.line .. [[s/\S/pub &/e]]
       vim.cmd(cmd)
-      -- The `s` command updates the highlight, so restore whatever was there before.
       vim.fn.setreg("/", saved_hl)
     end,
   },
@@ -179,7 +150,7 @@ M.commands = {
     name = "View Undo Tree",
     category = "Editing",
     action = function()
-      require("telescope").extensions.undo.undo()
+      SnacksPicker.undo()
     end,
   },
 
@@ -207,65 +178,6 @@ M.commands = {
     action = function(opts)
       vim.cmd(M.build_range_prefix(opts.cursor) .. "d_")
     end,
-  },
-
-  {
-    name = "Call LLM without Operation",
-    category = "AI",
-    action = function()
-      require("commands.llm").fill_holes({
-        cursor = M.current_cursor,
-      })
-    end,
-  },
-
-  {
-    name = "Ask LLM",
-    category = "AI",
-    action = function()
-      require("commands.llm").ask_and_fill_holes({
-        cursor = M.current_cursor,
-      })
-    end,
-  },
-
-  {
-    name = "Set Default Model",
-    category = "AI",
-    action = function()
-      vim.ui.input({
-        prompt = "Model: ",
-      }, function(model)
-        if not model then
-          return
-        end
-
-        require("commands.llm").set_default_model(model)
-      end)
-    end,
-  },
-
-  {
-    name = "Set Avante Model",
-    category = "AI",
-    action = function()
-      vim.cmd("AvanteModels")
-    end,
-  },
-
-  {
-    name = "rmfilter on current buffer",
-    category = "AI",
-    action = vim.schedule_wrap(function()
-      require("commands.rmfilter").ask_rmfilter()
-    end),
-  },
-  {
-    name = "Apply rmfilter edits",
-    category = "AI",
-    action = vim.schedule_wrap(function()
-      require("commands.rmfilter").apply_edits()
-    end),
   },
 
   {
@@ -300,142 +212,129 @@ M.add_commands = function(commands)
   end
 end
 
-local function showCommonCommandsPicker(opts)
-  -- Grab the current cursor here since we'll lose any visual selection once the picker opens.
+--- @param command_ft string | string[] | nil
+--- @param filetype string
+--- @return boolean
+local function matches_filetype(command_ft, filetype)
+  if command_ft == nil then
+    return true
+  end
+
+  if type(command_ft) == "string" then
+    return command_ft == filetype or (filetype == "svelte" and command_ft == "typescript")
+  end
+
+  for _, ft in ipairs(command_ft) do
+    if matches_filetype(ft, filetype) then
+      return true
+    end
+  end
+
+  return false
+end
+
+--- @param command_id string
+--- @param filetype string
+--- @return boolean
+local function matches_lsp_command(command_id, filetype)
+  if vim.startswith(command_id, "rust-analyzer.") == 1 then
+    return filetype == "rust"
+  elseif vim.startswith(command_id, "pyright.") then
+    return filetype == "python"
+  elseif vim.startswith(command_id, "python.") then
+    return filetype == "python"
+  elseif vim.startswith(command_id, "svelte.") then
+    return filetype == "svelte"
+  elseif vim.startswith(command_id, "_typescript.") then
+    return false
+  elseif vim.startswith(command_id, "typescript.") or vim.startswith(command_id, "javascript.") then
+    if filetype ~= "typescript" and filetype ~= "javascript" and filetype ~= "svelte" then
+      return false
+    end
+
+    if
+      ((filetype == "typescript" or filetype == "svelte") and vim.startswith(command_id, "javascript"))
+      or (filetype == "javascript" and vim.startswith(command_id, "typescript"))
+    then
+      return false
+    end
+  end
+
+  return true
+end
+
+local function show_common_commands_picker(opts)
   M.current_cursor = window.get_cursor_range()
 
   opts = opts or {}
 
   local filetype = vim.bo.filetype
   local clients = vim.lsp.get_clients({ bufnr = 0 })
-  local lsp_commands = {}
+  local these_commands = {}
+
   for _, client in ipairs(clients) do
     local client_seen_cmds = {}
-    for command, _ in pairs(client.commands) do
-      if not client_seen_cmds[command] then
+    for command, _ in pairs(client.commands or {}) do
+      if not client_seen_cmds[command] and matches_lsp_command(command, filetype) then
         client_seen_cmds[command] = true
-
         local name = "[" .. client.name .. "] " .. command
-        table.insert(lsp_commands, {
+        these_commands[#these_commands + 1] = {
           name = name,
           id = command,
           category = "LS",
           action = function()
             client:exec_cmd({ command = command, title = name, arguments = { M.current_cursor } }, { bufnr = 0 })
           end,
-        })
+        }
       end
     end
 
     local command_provider = client.server_capabilities.executeCommandProvider or {}
-    local this_commands = command_provider.commands or {}
-    for _, command in ipairs(this_commands) do
-      if not client_seen_cmds[command] then
+    for _, command in ipairs(command_provider.commands or {}) do
+      if not client_seen_cmds[command] and matches_lsp_command(command, filetype) then
+        client_seen_cmds[command] = true
         local name = "[" .. client.name .. "] " .. command
-        table.insert(lsp_commands, {
+        these_commands[#these_commands + 1] = {
           name = name,
           id = command,
           category = "LS",
           action = function()
             client:exec_cmd({ command = command, title = name, arguments = { M.current_cursor } }, { bufnr = 0 })
           end,
-        })
+        }
       end
     end
   end
 
-  local longest_command_name = 0
-  local these_commands = {}
-  for i, command in ipairs(lsp_commands) do
-    local id = command.id
-
-    if vim.startswith(id, "rust-analyzer.") == 1 and filetype ~= "rust" then
-      goto continue
-    elseif vim.startswith(id, "pyright.") and filetype ~= "python" then
-      goto continue
-    elseif vim.startswith(id, "python.") and filetype ~= "python" then
-      goto continue
-    elseif vim.startswith(id, "svelte.") and filetype ~= "svelte" then
-      goto continue
-    elseif vim.startswith(id, "_typescript.") then
-      -- Internal commands for code actions
-      goto continue
-    elseif vim.startswith(id, "typescript.") or vim.startswith(id, "javascript.") then
-      if filetype ~= "typescript" and filetype ~= "javascript" and filetype ~= "svelte" then
-        goto continue
-      end
-
-      if
-        ((filetype == "typescript" or filetype == "svelte") and vim.startswith(id, "javascript"))
-        or (filetype == "javascript" and vim.startswith(id, "typescript"))
-      then
-        goto continue
-      end
+  for _, command in ipairs(M.commands) do
+    if matches_filetype(command.filetype, filetype) then
+      these_commands[#these_commands + 1] = command
     end
-
-    these_commands[#these_commands + 1] = command
-    if #command.name > longest_command_name then
-      longest_command_name = #command.name
-    end
-
-    ::continue::
   end
 
-  for i, command in ipairs(M.commands) do
-    if command.filetype ~= nil and filetype ~= command.filetype then
-      if filetype == "svelte" and command.filetype == "typescript" then
-      -- allow this
-      else
-        goto continue_2
+  SnacksPicker.select(these_commands, {
+    prompt = "Common commands",
+    format_item = function(item, supports_chunks)
+      if not supports_chunks then
+        return string.format("%s  %s", item.name, item.category)
       end
+
+      return {
+        { item.name },
+        { "  " },
+        { item.category, "SnacksPickerComment" },
+      }
+    end,
+    snacks = vim.tbl_deep_extend("force", {
+      layout = { preset = "select" },
+    }, opts.snacks or {}),
+  }, function(selection)
+    if not selection then
+      return
     end
 
-    these_commands[#these_commands + 1] = command
-    if #command.name > longest_command_name then
-      longest_command_name = #command.name
-    end
-
-    ::continue_2::
-  end
-
-  local displayer = entry_display.create({
-    separator = " ",
-    items = {
-      { width = longest_command_name + 2 },
-      { remaining = true },
-    },
-  })
-
-  pickers
-    .new(opts, {
-      prompt_title = "Common commands",
-      finder = finders.new_table({
-        results = these_commands,
-        entry_maker = function(entry)
-          return {
-            value = entry,
-            display = function(ent)
-              return displayer({
-                ent.value.name,
-                { ent.value.category, "TelescopeResultsComment" },
-              })
-            end,
-            ordinal = entry.name,
-          }
-        end,
-      }),
-      sorter = conf.generic_sorter(opts),
-      attach_mappings = function(prompt_bufnr, map)
-        map("i", "<CR>", function()
-          actions.close(prompt_bufnr)
-          local selection = action_state.get_selected_entry(prompt_bufnr)
-
-          selection.value.action({ cursor = M.current_cursor })
-        end)
-        return true
-      end,
-    })
-    :find()
+    selection.action({ cursor = M.current_cursor })
+  end)
 end
 
 --- @param cursor CursorRange
@@ -457,8 +356,8 @@ M.restore_selection = function(cursor)
 end
 
 M.setup = function()
-  vim.keymap.set("n", "<leader>k", showCommonCommandsPicker, { desc = "Open command bar" })
-  vim.keymap.set("v", "<leader>k", showCommonCommandsPicker, { desc = "Open command bar" })
+  vim.keymap.set("n", "<leader>k", show_common_commands_picker, { desc = "Open command bar" })
+  vim.keymap.set("v", "<leader>k", show_common_commands_picker, { desc = "Open command bar" })
 end
 
 return M

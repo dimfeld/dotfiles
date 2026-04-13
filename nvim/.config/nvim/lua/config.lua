@@ -332,7 +332,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 })
 
 ---- Telescope
-require("config.telescope_commandbar").setup()
+require("config.snacks_commandbar").setup()
 
 ---- Theme
 require("config.theme")

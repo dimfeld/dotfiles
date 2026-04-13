@@ -57,7 +57,7 @@ return {
       }
       require("diffview").setup(opts)
 
-      require("config.telescope_commandbar").add_commands({
+      require("config.snacks_commandbar").add_commands({
         {
           name = "Diff View vs. Local",
           category = "Diff",

@@ -1,6 +1,6 @@
 local M = {}
 
-local cmdbar = require('config.telescope_commandbar')
+local cmdbar = require("config.snacks_commandbar")
 
 local cody = require('sg.cody.commands')
 local pickers = require('telescope.pickers')

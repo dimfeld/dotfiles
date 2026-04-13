@@ -1,4 +1,4 @@
-local cmdbar = require("config.telescope_commandbar")
+local cmdbar = require("config.snacks_commandbar")
 
 -- local completion_assistant = "copilot"
 local completion_assistant = vim.env.COMPLETION_ASSISTANT or "codeium.nvim"
@@ -507,7 +507,9 @@ return {
       { "<leader>a", nil, desc = "AI/Codex" },
       { "<leader>at", "<cmd>Codex<cr>", desc = "Toggle Codex" },
       { "<leader>as", "<cmd>CodexHere<cr>", mode = "n", desc = "Add current selection" },
-      { "<leader>as", ":'<,'>CodexHere<cr>", mode = "v", desc = "Add current buffer" },
+      { "<leader>as", ":'<,'>CodexHere<cr>", mode = "v", desc = "Add current selection" },
+      { "<leader>am", "<cmd>CodexHere mini<cr>", mode = "n", desc = "Add current selection" },
+      { "<leader>am", ":'<,'>CodexHere mini<cr>", mode = "v", desc = "Add current selection" },
     },
     opts = {
       focus_existing_on_here = true,
