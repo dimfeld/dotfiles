@@ -62,19 +62,90 @@ return {
     ---@field styles? table<string, snacks.win.Config>
     ---@field win? snacks.win.Config
     ---@field words? snacks.words.Config
-    opts = {
-      notifier = {
+    opts = function(_, opts)
+      opts = opts or {}
+
+      opts.notifier = vim.tbl_deep_extend("force", opts.notifier or {}, {
         enabled = true,
         timeout = 5000,
         top_down = false,
-      },
-      bigfile = { enabled = true },
-      quickfile = { enabled = true },
-      words = { enabled = true },
-      statuscolumn = {
+      })
+      opts.bigfile = vim.tbl_deep_extend("force", opts.bigfile or {}, { enabled = true })
+      opts.quickfile = vim.tbl_deep_extend("force", opts.quickfile or {}, { enabled = true })
+      opts.words = vim.tbl_deep_extend("force", opts.words or {}, { enabled = true })
+      opts.statuscolumn = vim.tbl_deep_extend("force", opts.statuscolumn or {}, {
         enabled = false,
-      },
-    },
+      })
+      opts.picker = vim.tbl_deep_extend("force", opts.picker or {}, {
+        sources = {
+          explorer = {
+            auto_close = true,
+            focus = "input",
+            jump = { close = true },
+            layout = {
+              preset = "default",
+              preview = true,
+            },
+          },
+        },
+        win = {
+          input = {
+            keys = {
+              ["<M-Up>"] = "explorer_up",
+              ["<D-Down>"] = { "history_forward", mode = { "i", "n" } },
+              ["<D-Up>"] = { "history_back", mode = { "i", "n" } },
+              ["<C-u>"] = false,
+              ["<C-y>"] = { "yank_paths", mode = { "i", "n" }, desc = "Yank selected paths" },
+            },
+          },
+          list = {
+            keys = {
+              ["<BS>"] = "explorer_up",
+              ["<M-Up>"] = "explorer_up",
+              ["l"] = "confirm",
+              ["h"] = "explorer_close", -- close directory
+              ["a"] = "explorer_add",
+              ["d"] = "explorer_del",
+              ["r"] = "explorer_rename",
+              ["c"] = "explorer_copy",
+              ["m"] = "explorer_move",
+              ["o"] = "explorer_open", -- open with system application
+              ["P"] = "toggle_preview",
+              ["y"] = { "explorer_yank", mode = { "n", "x" } },
+              ["<C-y>"] = { "yank_paths", mode = { "n", "x" }, desc = "Yank selected paths" },
+              ["p"] = "explorer_paste",
+              ["u"] = "explorer_update",
+              ["<c-c>"] = "tcd",
+              ["<leader>/"] = "picker_grep",
+              ["<c-t>"] = "terminal",
+              ["."] = "explorer_focus",
+              ["I"] = "toggle_ignored",
+              ["H"] = "toggle_hidden",
+              ["Z"] = "explorer_close_all",
+              ["]g"] = "explorer_git_next",
+              ["[g"] = "explorer_git_prev",
+              ["]d"] = "explorer_diagnostic_next",
+              ["[d"] = "explorer_diagnostic_prev",
+              ["]w"] = "explorer_warn_next",
+              ["[w"] = "explorer_warn_prev",
+              ["]e"] = "explorer_error_next",
+              ["[e"] = "explorer_error_prev",
+            },
+          },
+        },
+        actions = vim.tbl_extend("force", opts.picker and opts.picker.actions or {}, {
+          yank_paths = function(picker)
+            require("config.snacks_pickers").yank_selected_paths(picker)
+          end,
+        }),
+      })
+
+      return opts
+    end,
+    config = function(_, opts)
+      require("snacks").setup(opts)
+      require("config.snacks_pickers").setup()
+    end,
     init = function()
       vim.api.nvim_create_autocmd("User", {
         pattern = "VeryLazy",

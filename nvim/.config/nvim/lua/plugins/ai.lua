@@ -5,12 +5,9 @@ local completion_assistant = vim.env.COMPLETION_ASSISTANT or "codeium.nvim"
 if vim.g.vscode then
   completion_assistant = ""
 end
--- local completion_assistant = "sourcegraph"
 -- local completion_assistant = "supermaven"
 
 return {
-  { "sourcegraph/sg.nvim", cond = completion_assistant == "sourcegraph" },
-
   {
     "github/copilot.vim",
     cond = completion_assistant == "copilot",
