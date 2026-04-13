@@ -1,12 +1,11 @@
 ---
 name: read-pr-review-guide
 description: Read a PR review guide and review the code. Use when `review-guide.md` already exists and Codex should follow that guide, inspect the referenced changes, and append findings without overwriting prior notes.
----
-
 allowed-tools: Bash(git log:*), Bash(git show:*), Bash(git diff:*), Bash(jj status:*), Bash(jj bookmark:*), Bash(jj log:*), Bash(jj diff:*), Bash(gh pr:*), Bash(tr:*)
 argument-hint: [extra context]
+---
 
-Read review-guide.md and thoroughly review the files and changes mentioned in the report. Once done, add your findings to review-guide.md, with each finding in the section for the relevant file group. Preserve all existing content and review notes. The file will contain review notes from another reviewer and we do not want to lose those.
+Read review-guide.json and thoroughly review the files and changes mentioned in the file. Once done, read review-guide.md and add your review findings to it, with each finding in the section for the relevant file group. Preserve all existing content and review notes in the review guide. The file will contain review notes from another reviewer and we do not want to lose those.
 
 Note that review-guide.md is gitignored, so you should not expect it to show up in VCS.
 

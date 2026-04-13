@@ -1,3 +1,14 @@
+function nvim() {
+  local arg="$1"
+  if [[ "$arg" =~ '^(.+):([0-9]+)(-[0-9]+)?$' ]]; then
+    local file="${match[1]}"
+    local line1="${match[2]}"
+    command nvim "+${line1}" "$file"
+  else
+    command nvim "$@"
+  fi
+}
+
 alias vi='nvim'
 alias mv='mv -iv'
 alias rm='rm -iv'

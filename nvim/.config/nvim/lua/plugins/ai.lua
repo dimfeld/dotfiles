@@ -511,6 +511,14 @@ return {
     },
     opts = {
       focus_existing_on_here = true,
+      presets = {
+        mini = {
+          args = { "--model", "gpt-5.4-mini" },
+        },
+        spark = {
+          args = { "--model", "gpt-5.3-codex-spark", "-c", "model_reasoning_effort=high" },
+        },
+      },
       codex = {
         args = { "--model", "gpt-5.3-codex-spark", "-c", "model_reasoning_effort=high" },
       },

@@ -233,17 +233,19 @@ local function on_attach(buffer, client)
     vim.lsp.inlay_hint.enable(true)
   end
 
-  vim.lsp.codelens.enable(true, { bufnr = buffer })
+  if vim.fn.has("nvim-0.12.1") == 1 then
+    vim.lsp.codelens.enable(true, { bufnr = buffer })
 
-  if not vim.b._first_lsp_attached then
-    vim.b._first_lsp_attached = true
+    if not vim.b._first_lsp_attached then
+      vim.b._first_lsp_attached = true
 
-    vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
-      buffer = buffer,
-      callback = function()
-        vim.lsp.codelens.enable(true, { bufnr = buffer })
-      end,
-    })
+      vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+        buffer = buffer,
+        callback = function()
+          vim.lsp.codelens.enable(true, { bufnr = buffer })
+        end,
+      })
+    end
   end
 
   if client.name == "svelte" then

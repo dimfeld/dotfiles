@@ -28,7 +28,7 @@ First, understand the current state of the repository:
 
 1d. The commit history on the branch:
 
-!`jj log -r 'main::@' --summary`
+!`jj log -r 'latest(ancestors(trunk()) & ancestors(@))::@' --summary`
 
 ## Step 2: Review Changes
 
@@ -36,15 +36,15 @@ If you have just generated a detailed summary of the branch, then skip this step
 
 The files that will be included in the PR are:
 
-!`jj diff -f main -s | grep '^[MA]' | nl`
+!`jj diff -f 'latest(ancestors(trunk()) & ancestors(@))' -s | grep '^[MA]' | nl`
 
-Group this list into chunks (by functional area if possible) and use parallel subagents to analyse the diffs, reading the files and also using `jj diff -f main <filename>` for each
+Group this list into chunks (by functional area if possible) and use parallel subagents to analyse the diffs, reading the files and also using `jj diff -f latest(ancestors(trunk()) & ancestors(@)) <filename>` for each
 one to get the diff. Make sure that every file is assigned to a chunk; we don't want to miss any files.
 
 Make sure to go into detail about each file that has major changes related to the task and what changes are in those files.
 
-When looking through the files, see if there is a plan file that might reference an issue tracker URL or issue. If so,
-surface it for later so it can be included in the PR title and description.
+If the branch starts with a number, it may be a `tim` plan. Use `tim show <number>` to get the plan details, which
+may include relevant issue tracker URL, title, and so on.
 
 ## Step 3: Commit New Changes (if needed)
 

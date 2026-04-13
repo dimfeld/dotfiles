@@ -31,7 +31,7 @@ alias jjblr="jj bookmark list --sort committer-date-"
 function jj-fetch-and-new() {
   BRANCH=${1:-$(jjpb)}
   # Try to do "new" twice, occasionally we get concurrent checkout errors
-  jj git fetch && (jj new $BRANCH || jj new $BRANCH)
+  jj git fetch && (jj bookmark track $BRANCH || jj bookmark track $BRANCH) && (jj new $BRANCH || jj new $BRANCH)
 }
 alias jjfn=jj-fetch-and-new
 alias jjfm='jj git fetch --branch main'

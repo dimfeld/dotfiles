@@ -1,10 +1,9 @@
 ---
 name: pr-review-guide
 description: Generate a PR review guide. Use when a branch needs a detailed walkthrough for review and Codex should group the changed files, write `review-guide.md` and `review-guide.json`, then perform the review and add findings to the guide.
----
-
 allowed-tools: Bash(git log:*), Bash(git show:*), Bash(git diff:*), Bash(jj status:*), Bash(jj bookmark:*), Bash(jj log:*), Bash(jj diff:*), Bash(gh pr:*), Bash(tr:*), Write(review-guide.md), Write(review-guide.json)
 argument-hint: [extra context]
+---
 
 This branch contains a pull request that has been implemented by another engineer. I now need to review those changes.
 
