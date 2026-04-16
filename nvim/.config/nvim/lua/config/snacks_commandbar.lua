@@ -326,6 +326,7 @@ local function show_common_commands_picker(opts)
       }
     end,
     snacks = vim.tbl_deep_extend("force", {
+      hidden = { "preview" },
       layout = { preset = "select" },
     }, opts.snacks or {}),
   }, function(selection)

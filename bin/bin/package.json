@@ -11,6 +11,7 @@
     "@libpdf/core": "^0.3.4",
     "change-case": "^5.4.4",
     "clipboardy": "^4.0.0",
+    "devalue": "^5.7.1",
     "package-up": "^5.0.0"
   }
 }

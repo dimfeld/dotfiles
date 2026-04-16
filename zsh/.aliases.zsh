@@ -107,7 +107,7 @@ elif [ -d ~/projects/llmutils ]; then
   LLMUTILS_DIR=~/projects/llmutils
 fi
 
-alias baseclaude="ANTHROPIC_API_KEY= CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=true CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1 claude --plugin-dir ${LLMUTILS_DIR}/claude-plugin"
+alias baseclaude="ANTHROPIC_API_KEY= CLAUDE_CODE_NO_FLICKER=1 CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=true CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1 claude --plugin-dir ${LLMUTILS_DIR}/claude-plugin"
 
 function claudegr() {
   (

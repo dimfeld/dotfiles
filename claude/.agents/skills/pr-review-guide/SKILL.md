@@ -19,6 +19,8 @@ Make sure to go into detail about each file that has major changes related to th
 
 Once you have the diffs, generate a guide to help me walk through the pull request, grouping the files into functional areas and noting which are major parts of the change and which are perfunctory changes such as just adding a new member to an object whose type was updated or renaming functions and fields. The guide should be able to walk me step by step through reviewing the changes.
 
+Each section in the guide must include the relevant diffs in a unified diff format code block. Use ` ```unified-diff ` blocks for these. Include all changed lines for the files in that section, so that I can read the diff inline without needing to look at the files separately.
+
 Generate your report using markdown with section headers. Do not commit it.
 
 1. Once you have this guide generated, also write it to `review-guide.md`. 

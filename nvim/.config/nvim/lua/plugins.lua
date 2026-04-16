@@ -77,33 +77,48 @@ return {
         enabled = false,
       })
       opts.picker = vim.tbl_deep_extend("force", opts.picker or {}, {
-        layout = {
-          reverse = true,
-          layout = {
-            box = "horizontal",
-            width = 0.8,
-            min_width = 120,
-            height = 0.8,
-            {
-              box = "vertical",
-              border = true,
-              title = "{title} {live} {flags}",
-              { win = "list", border = "none" },
-              { win = "input", height = 1, border = "top" },
-            },
-            { win = "preview", title = "{preview}", border = true, width = 0.5 },
-          },
+        ui_select = true,
+        matcher = {
+          frecency = true,
         },
+        layout = function(source)
+          if source == "select" then
+            return "select"
+          end
+
+          return {
+            reverse = true,
+            layout = {
+              box = "horizontal",
+              width = 0.8,
+              min_width = 120,
+              height = 0.8,
+              {
+                box = "vertical",
+                border = true,
+                title = "{title} {live} {flags}",
+                { win = "list", border = "none" },
+                { win = "input", height = 1, border = "top" },
+              },
+              { win = "preview", title = "{preview}", border = true, width = 0.5 },
+            },
+          }
+        end,
         sources = {
           explorer = {
             auto_close = true,
             focus = "input",
+            tree = false,
+            watch = false,
             jump = { close = true },
             layout = {
               preset = "default",
               preview = true,
               reverse = false,
             },
+          },
+          select = {
+            layout = { preset = "select" },
           },
         },
         win = {
@@ -118,6 +133,8 @@ return {
           },
           list = {
             keys = {
+              ["<Home>"] = "list_top",
+              ["<End>"] = "list_bottom",
               ["<BS>"] = "explorer_up",
               ["<M-Up>"] = "explorer_up",
               ["l"] = "confirm",
