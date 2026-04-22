@@ -2,14 +2,20 @@ local M = {}
 
 local git_repo_cache = {}
 
+--- @param path string
+--- @return string
+local function normalize_path(path)
+  return vim.fn.fnamemodify(path, ":p"):gsub("/$", "")
+end
+
 --- @param path string|nil
 --- @return string
 local function repo_search_dir(path)
   if path and path ~= "" then
-    return vim.fn.fnamemodify(path, ":p:h")
+    return normalize_path(vim.fn.fnamemodify(path, ":h"))
   end
 
-  return vim.fn.getcwd()
+  return normalize_path(vim.fn.getcwd())
 end
 
 --- @param path string|nil
@@ -20,7 +26,7 @@ M.repo_info = function(path)
   local jj_dir = vim.fn.finddir(".jj", dir .. ";")
   if jj_dir ~= "" then
     return {
-      root = vim.fn.fnamemodify(jj_dir, ":h"),
+      root = normalize_path(dir .. "/" .. jj_dir .. "/.."),
       vcs = "jj",
     }
   end
@@ -29,7 +35,7 @@ M.repo_info = function(path)
   local git_root = vim.fn.trim(git_result.stdout or "")
   if git_result.code == 0 and git_root ~= "" then
     return {
-      root = git_root,
+      root = normalize_path(git_root),
       vcs = "git",
     }
   end
@@ -43,7 +49,7 @@ end
 --- @param path string
 --- @return string|nil
 M.repo_relative_path = function(path)
-  local abs_path = vim.fn.fnamemodify(path, ":p")
+  local abs_path = normalize_path(path)
   local repo = M.repo_info(abs_path)
   if repo.root == "" then
     return nil
