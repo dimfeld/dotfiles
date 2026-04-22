@@ -10,28 +10,19 @@ vim.keymap.set("n", "dgr", "&diff ? ':diffget //3<CR>' : ''", { expr = true, des
 -- vim.keymap.set("n", "dg", ":diffget", { expr = true, desc = "Get diff" })
 vim.keymap.set("n", "dgo", ":diffget", { expr = true, desc = "Get diff" })
 
+--- @param repo_path string
 --- @param revision string
-local function show_file_at_revision(revision)
-  local buf_path = vim.api.nvim_buf_get_name(0)
-  if buf_path == "" then
-    vim.notify("Current buffer has no file path", vim.log.levels.ERROR)
-    return
-  end
-
-  local repo = git.repo_info(buf_path)
-  if not repo.vcs then
-    vim.notify("Current buffer is not inside a jj or git repository", vim.log.levels.ERROR)
-    return
-  end
-
-  local repo_path = git.repo_relative_path(buf_path)
-  if not repo_path then
-    vim.notify("Current file is not inside the repository root", vim.log.levels.ERROR)
-    return
+--- @param repo_root string
+--- @param vcs "jj"|"git"
+--- @param filetype string|nil
+local function show_file_at_revision(repo_path, revision, repo_root, vcs, filetype)
+  local current_filetype = filetype or vim.bo.filetype
+  if current_filetype == "" then
+    current_filetype = vim.filetype.match({ filename = repo_path }) or ""
   end
 
   local command
-  if repo.vcs == "jj" then
+  if vcs == "jj" then
     command = { "jj", "file", "show", "-r", revision, repo_path }
   else
     command = { "git", "show", string.format("%s:%s", revision, repo_path) }
@@ -39,7 +30,7 @@ local function show_file_at_revision(revision)
 
   local result = vim
     .system(command, {
-      cwd = repo.root,
+      cwd = repo_root,
       text = true,
     })
     :wait()
@@ -58,7 +49,6 @@ local function show_file_at_revision(revision)
     table.remove(lines, #lines)
   end
 
-  local current_filetype = vim.bo.filetype
   vim.cmd("tabnew")
 
   local target_buf = vim.api.nvim_get_current_buf()
@@ -75,15 +65,53 @@ local function show_file_at_revision(revision)
 end
 
 vim.api.nvim_create_user_command("FileRevision", function(opts)
-  if opts.args == "" then
-    vim.notify("Usage: FileRevision <revision>", vim.log.levels.ERROR)
+  if #opts.fargs == 0 or #opts.fargs > 2 then
+    vim.notify("Usage: FileRevision <revision> or FileRevision <repo-path> <revision>", vim.log.levels.ERROR)
     return
   end
 
-  show_file_at_revision(vim.trim(opts.args))
+  local repo_path
+  local revision
+  local repo_lookup_path = vim.api.nvim_buf_get_name(0)
+  local repo
+  local filetype
+
+  if #opts.fargs == 1 then
+    revision = opts.fargs[1]
+    if repo_lookup_path == "" then
+      vim.notify("Current buffer has no file path", vim.log.levels.ERROR)
+      return
+    end
+
+    repo = git.repo_info(repo_lookup_path)
+    if not repo.vcs then
+      vim.notify("Current buffer is not inside a jj or git repository", vim.log.levels.ERROR)
+      return
+    end
+
+    repo_path = git.repo_relative_path(repo_lookup_path)
+    if not repo_path then
+      vim.notify("Current file is not inside the repository root", vim.log.levels.ERROR)
+      return
+    end
+
+    filetype = vim.bo.filetype
+  else
+    repo_path = opts.fargs[1]
+    revision = opts.fargs[2]
+    filetype = vim.filetype.match({ filename = repo_path }) or ""
+
+    repo = git.repo_info(repo_lookup_path ~= "" and repo_lookup_path or nil)
+    if not repo.vcs then
+      vim.notify("Current directory is not inside a jj or git repository", vim.log.levels.ERROR)
+      return
+    end
+  end
+
+  show_file_at_revision(repo_path, revision, repo.root, repo.vcs, filetype)
 end, {
-  nargs = 1,
-  desc = "Open the current file as it existed at a jj revset or git revision",
+  nargs = "+",
+  desc = "Open the current file at a revision, or open <repo-path> at <revision>",
 })
 
 cmdbar.add_commands({
