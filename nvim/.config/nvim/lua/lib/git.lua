@@ -23,10 +23,14 @@ end
 M.repo_info = function(path)
   local dir = repo_search_dir(path)
 
-  local jj_dir = vim.fn.finddir(".jj", dir .. ";")
-  if jj_dir ~= "" then
+  local jj_result = vim.system({ "jj", "root" }, {
+    cwd = dir,
+    text = true,
+  }):wait()
+  local jj_root = vim.trim(jj_result.stdout or "")
+  if jj_result.code == 0 and jj_root ~= "" then
     return {
-      root = normalize_path(dir .. "/" .. jj_dir .. "/.."),
+      root = normalize_path(jj_root),
       vcs = "jj",
     }
   end
