@@ -5,7 +5,7 @@ local git_repo_cache = {}
 --- @param path string
 --- @return string
 local function normalize_path(path)
-  return vim.fn.fnamemodify(path, ":p"):gsub("/$", "")
+  return vim.fs.normalize(vim.fn.fnamemodify(path, ":p")):gsub("/$", "")
 end
 
 --- @param path string|nil
