@@ -37,10 +37,12 @@ local function show_file_at_revision(revision)
     command = { "git", "show", string.format("%s:%s", revision, repo_path) }
   end
 
-  local result = vim.system(command, {
-    cwd = repo.root,
-    text = true,
-  }):wait()
+  local result = vim
+    .system(command, {
+      cwd = repo.root,
+      text = true,
+    })
+    :wait()
 
   if result.code ~= 0 then
     local error = vim.trim(result.stderr or "")
