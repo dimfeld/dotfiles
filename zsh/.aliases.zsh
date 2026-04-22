@@ -114,7 +114,7 @@ function claudegr() {
   cdgr
   baseclaude "$@"
   # printf '\e[?1004l';
-  # printf '\e[>0u'
+  # printf '\e[=1u'
   )
 }
 

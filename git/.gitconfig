@@ -26,6 +26,7 @@
 
 [delta]
   features = line-numbers gruvbox-dark relative-paths
+  navigate = true
 
 ; [url "ssh://git@github.com/"]
 ;     insteadOf = https://github.com/

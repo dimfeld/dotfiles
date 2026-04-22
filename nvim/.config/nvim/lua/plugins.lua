@@ -88,6 +88,7 @@ return {
 
           return {
             reverse = true,
+            cycle = true,
             layout = {
               box = "horizontal",
               width = 0.8,
@@ -129,6 +130,18 @@ return {
               ["<D-Up>"] = { "history_back", mode = { "i", "n" } },
               ["<C-u>"] = false,
               ["<C-y>"] = { "yank_paths", mode = { "i", "n" }, desc = "Yank selected paths" },
+              ["<c-a>"] = false, -- use default edit behavior for c-a
+              ["H"] = { "toggle_hidden", mode = { "n" } },
+              ["I"] = { "toggle_ignored", mode = { "n" } },
+              ["M"] = { "toggle_modified", mode = { "n" } },
+              ["a"] = { "explorer_add", mode = { "n" } },
+              ["d"] = { "explorer_del", mode = { "n" } },
+              ["r"] = { "explorer_rename", mode = { "n" } },
+              ["c"] = { "explorer_copy", mode = { "n" } },
+              ["m"] = { "explorer_move", mode = { "n" } },
+              ["o"] = { "explorer_open", mode = { "n" } }, -- open with system application
+              ["p"] = { "toggle_preview", mode = { "n" } },
+              ["P"] = { "toggle_preview", mode = { "n" } },
             },
           },
           list = {
@@ -155,7 +168,11 @@ return {
               ["<c-t>"] = "terminal",
               ["."] = "explorer_focus",
               ["I"] = "toggle_ignored",
+              ["<C-i>"] = { "toggle_ignored", mode = { "n", "i" } },
               ["H"] = "toggle_hidden",
+              ["<C-h>"] = { "toggle_hidden", mode = { "n", "i" } },
+              ["M"] = "toggle_modified",
+              ["<C-m>"] = { "toggle_modified", mode = { "n", "i" } },
               ["Z"] = "explorer_close_all",
               ["]g"] = "explorer_git_next",
               ["[g"] = "explorer_git_prev",
