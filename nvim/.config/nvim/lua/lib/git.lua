@@ -2,6 +2,61 @@ local M = {}
 
 local git_repo_cache = {}
 
+--- @param path string|nil
+--- @return string
+local function repo_search_dir(path)
+  if path and path ~= "" then
+    return vim.fn.fnamemodify(path, ":p:h")
+  end
+
+  return vim.fn.getcwd()
+end
+
+--- @param path string|nil
+--- @return { root: string, vcs: "jj"|"git"|nil }
+M.repo_info = function(path)
+  local dir = repo_search_dir(path)
+
+  local jj_dir = vim.fn.finddir(".jj", dir .. ";")
+  if jj_dir ~= "" then
+    return {
+      root = vim.fn.fnamemodify(jj_dir, ":h"),
+      vcs = "jj",
+    }
+  end
+
+  local git_result = vim.system({ "git", "-C", dir, "rev-parse", "--show-toplevel" }, { text = true }):wait()
+  local git_root = vim.fn.trim(git_result.stdout or "")
+  if git_result.code == 0 and git_root ~= "" then
+    return {
+      root = git_root,
+      vcs = "git",
+    }
+  end
+
+  return {
+    root = "",
+    vcs = nil,
+  }
+end
+
+--- @param path string
+--- @return string|nil
+M.repo_relative_path = function(path)
+  local abs_path = vim.fn.fnamemodify(path, ":p")
+  local repo = M.repo_info(abs_path)
+  if repo.root == "" then
+    return nil
+  end
+
+  local prefix = repo.root .. "/"
+  if vim.startswith(abs_path, prefix) then
+    return abs_path:sub(#prefix + 1)
+  end
+
+  return nil
+end
+
 -- Return the top level directory of the current git repo
 --- @return string
 M.git_repo_toplevel = function()
@@ -11,14 +66,7 @@ M.git_repo_toplevel = function()
     return cached
   end
 
-  local top_level = vim.fn.trim(vim.system({ "git", "rev-parse", "--show-toplevel" }, { text = true }):wait().stdout)
-
-  if top_level == "" then
-    local jjDir = vim.fn.finddir(".jj", ".;")
-    if jjDir ~= "" then
-      top_level = vim.fn.fnamemodify(jjDir, ":h")
-    end
-  end
+  local top_level = M.repo_info().root
 
   git_repo_cache[cwd] = top_level
   return top_level
