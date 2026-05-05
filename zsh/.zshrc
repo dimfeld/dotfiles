@@ -316,7 +316,9 @@ setopt APPEND_HISTORY        # append to history file (Default)
 setopt HIST_NO_STORE         # Don't store history commands
 setopt HIST_REDUCE_BLANKS    # Remove superfluous blanks from each command line being added to the history.
 
-setopt +o nomatch
+# Paths with globs that match nothing are treated as verbatim paths. This mostly comes up in web projects with paths
+# containing brackets
+unsetopt nomatch
 
 if (( $+commands[tag] )); then
   tag() { command tag "$@"; source ${TAG_ALIAS_FILE:-/tmp/tag_aliases} 2>/dev/null }
@@ -428,5 +430,3 @@ zinit light zsh-users/zsh-autosuggestions
 # Added by Windsurf - Next
 export PATH="/Users/dimfeld/.codeium/windsurf/bin:$PATH"
 
-# Added by Antigravity
-export PATH="/Users/dimfeld/.antigravity/antigravity/bin:$PATH"

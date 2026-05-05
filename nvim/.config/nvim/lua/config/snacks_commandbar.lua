@@ -327,7 +327,7 @@ local function show_common_commands_picker(opts)
     end,
     snacks = vim.tbl_deep_extend("force", {
       hidden = { "preview" },
-      layout = { preset = "select" },
+      layout = { preset = "select", cycle = true },
     }, opts.snacks or {}),
   }, function(selection)
     if not selection then

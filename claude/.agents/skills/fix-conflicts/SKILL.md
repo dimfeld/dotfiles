@@ -23,10 +23,25 @@ When jj reports "2-sided conflict including 1 deletion", be especially careful. 
 
 The commit labels (`parents of rebased revision`, `rebased revision`, `rebase destination`) can be ambiguous. Do **not** assume the empty block is always "the other branch." Instead, reason from the PR/commit intent:
 
-- If **our branch** is deleting the file (e.g. removing a tRPC module), then the `%%%%%%%` block is showing **main's modifications** and the empty `+++++++` is **our deletion**.
-- In this case, simply deleting the file is wrong if main added meaningful changes. Instead, **apply the substance of main's changes to wherever our branch moved the code** (e.g. the service file that replaced the deleted tRPC procedure).
+There are two cases — both require you to **find where the code moved** rather than blindly keeping or discarding the file:
 
-When a file deletion conflict involves migrated code, always check git history to see what the other side changed in that file, then apply those changes to the new location.
+### Case 1: Our branch deleted the file, main modified it
+
+- If **our branch** is deleting the file (e.g. removing a tRPC module and replacing it with service functions), then the `%%%%%%%` block shows **main's modifications** and the empty `+++++++` is **our deletion**.
+- Simply deleting the file is wrong if main added meaningful changes. Instead, **apply the substance of main's changes to wherever our branch moved the code** (e.g. the service file that replaced the deleted tRPC procedure).
+
+### Case 2: Main deleted the file, our branch modified it
+
+- If **main** deleted or restructured the file (e.g. migrating tRPC procedures to service functions), and **our branch** added changes to it, then the `%%%%%%%` block shows **our modifications** and the empty `+++++++` is **main's deletion**.
+- Simply recreating the file is wrong — main deleted it intentionally. Instead, **find the service functions or new files that main introduced as replacements, and apply our changes there**.
+- Verify by checking whether the file actually exists in the current repo state (e.g. `ls` the directory, `grep` for function names in the package's `src/services/`). If the directory the conflicted file lives in doesn't otherwise exist, that's a strong signal main deleted/moved the whole thing.
+
+### General rule for both cases
+
+When a file deletion conflict involves migrated code, always:
+1. Check the repo structure to understand what replaced the deleted file.
+2. Read the conflicted diff to understand exactly what changes need to be applied.
+3. Apply those changes to the new location rather than restoring the old file.
 
 ## jj squash
 

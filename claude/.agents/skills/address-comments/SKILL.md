@@ -1,9 +1,9 @@
 ---
 name: address-comments
 description: Address AI review comments in source files. Use when repository files contain AI review markers and Codex should locate them, implement the requested fixes, remove the markers, and validate the changes.
+argument-hint: [paths to search (optional)]
 ---
 
-argument-hint: [paths to search (optional)]
 
 You are addressing review comments that already exist inside the repository's source files.
 

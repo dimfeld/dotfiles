@@ -166,12 +166,14 @@ function codexprj() {
 alias codex="codexprj"
 alias codexs="codexprj --model gpt-5.3-codex-spark -c model_reasoning_effort=high"
 alias codexm="codexprj --model gpt-5.4-mini"
-alias codexhigh="codexprj -c model_reasoning_effort=high"
+alias codexlow="codexprj --model gpt-5.5 -c model_reasoning_effort=low"
+alias codexhigh="codexprj --model gpt-5.5 -c model_reasoning_effort=high"
+alias codexxhigh="codexprj --model gpt-5.5 -c model_reasoning_effort=xhigh"
 alias codexfa="codexprj --full-auto"
 alias codexyolo="codexprj --dangerously-bypass-approvals-and-sandbox"
 
 function tim-codex-plan() {
-  codex --model gpt-5.4 -c model_reasoning_effort=high "$(tim prompts generate-plan $@)"
+  codex --model gpt-5.5 -c model_reasoning_effort=high "$(tim prompts generate-plan $@)"
 }
 
 function new-from-linear() {

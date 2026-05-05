@@ -75,16 +75,6 @@ return {
     config = function(_, opts)
       require("codeium").setup(opts)
       require("codeium.virtual_text").set_statusbar_refresh(require("lualine").refresh)
-
-      cmdbar.add_commands({
-        {
-          name = "Codeium Chat",
-          category = "AI",
-          action = function()
-            vim.cmd("Codeium Chat")
-          end,
-        },
-      })
     end,
   },
   {
@@ -263,6 +253,9 @@ return {
         mini = {
           args = { "--model", "gpt-5.4-mini" },
         },
+        minimal = {
+          args = { "--model", "gpt-5.5", "-c", "model_reasoning_effort=minimal" },
+        },
         spark = {
           args = { "--model", "gpt-5.3-codex-spark", "-c", "model_reasoning_effort=high" },
         },
@@ -271,5 +264,31 @@ return {
         args = { "--model", "gpt-5.3-codex-spark", "-c", "model_reasoning_effort=high" },
       },
     },
+    config = function(_, opts)
+      cmdbar.add_commands({
+        {
+          name = "Codex GPT 5.4 Mini",
+          category = "AI",
+          action = function()
+            vim.cmd("CodexHere mini")
+          end,
+        },
+        {
+          name = "Codex GPT 5.5 Minimal",
+          category = "AI",
+          action = function()
+            vim.cmd("CodexHere minimal")
+          end,
+        },
+        {
+          name = "Codex GPT 5.3 Spark",
+          category = "AI",
+          action = function()
+            vim.cmd("CodexHere spark")
+          end,
+        },
+      })
+      require("codex").setup(opts)
+    end,
   },
 }
