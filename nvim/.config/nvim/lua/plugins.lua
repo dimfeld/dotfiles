@@ -46,6 +46,12 @@ return {
   { "nvim-neotest/nvim-nio", lazy = true },
 
   {
+    "nvim-telescope/telescope-file-browser.nvim",
+    cond = not vim.g.vscode,
+    dependencies = { "nvim-telescope/telescope.nvim" },
+  },
+
+  {
     "folke/snacks.nvim",
     priority = 1000,
     cond = true,

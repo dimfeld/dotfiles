@@ -293,6 +293,24 @@ local function files_in_dir(dir, opts)
   SnacksPicker.files(picker_dir_opts(dir, opts))
 end
 
+local function open_file_browser()
+  if vim.g.file_browser_provider == "snacks" then
+    SnacksPicker.explorer({
+      cwd = buffer_dir(),
+      ignored = not use_git_ignore,
+    })
+    return
+  end
+
+  local telescope = require("telescope")
+  telescope.load_extension("file_browser")
+  telescope.extensions.file_browser.file_browser({
+    cwd = buffer_dir(),
+    respect_gitignore = false,
+    no_ignore = true,
+  })
+end
+
 function M.setup()
   vim.api.nvim_create_user_command("BrowseGitIgnore", function()
     use_git_ignore = not use_git_ignore
@@ -362,12 +380,7 @@ function M.setup()
     })
   end, { desc = "Grep for current string in Git Repo" })
 
-  vim.keymap.set("n", "<leader>n", function()
-    SnacksPicker.explorer({
-      cwd = buffer_dir(),
-      ignored = not use_git_ignore,
-    })
-  end, { desc = "File Browser" })
+  vim.keymap.set("n", "<leader>n", open_file_browser, { desc = "File Browser" })
 
   vim.keymap.set("n", "<leader>v", function()
     SnacksPicker.treesitter()
