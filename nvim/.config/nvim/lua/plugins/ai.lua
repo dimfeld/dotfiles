@@ -253,8 +253,8 @@ return {
         mini = {
           args = { "--model", "gpt-5.4-mini" },
         },
-        minimal = {
-          args = { "--model", "gpt-5.5", "-c", "model_reasoning_effort=minimal" },
+        codexlow = {
+          args = { "--model", "gpt-5.5", "-c", "model_reasoning_effort=low" },
         },
         spark = {
           args = { "--model", "gpt-5.3-codex-spark", "-c", "model_reasoning_effort=high" },
@@ -274,10 +274,10 @@ return {
           end,
         },
         {
-          name = "Codex GPT 5.5 Minimal",
+          name = "Codex GPT 5.5 Low",
           category = "AI",
           action = function()
-            vim.cmd("CodexHere minimal")
+            vim.cmd("CodexHere codexlow")
           end,
         },
         {
