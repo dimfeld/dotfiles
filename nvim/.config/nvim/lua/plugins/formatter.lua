@@ -1,12 +1,13 @@
 vim.env.PRETTIERD_LOCAL_PRETTIER_ONLY = "true"
 
-local prettier_config_files = {
-  ".prettierrc",
-  ".prettierrc.js",
-  ".prettierrc.json",
-  "prettier.config.js",
-  "prettier.config.cjs",
-}
+local function resolve_oxfmt_exe(config_dirname)
+  local local_oxfmt = config_dirname .. "/node_modules/.bin/oxfmt"
+  if vim.uv.fs_stat(local_oxfmt) ~= nil then
+    return local_oxfmt
+  end
+
+  return "oxfmt"
+end
 
 local function prettier_etc()
   local format_util = require("formatter.util")
@@ -37,9 +38,20 @@ local function prettier_etc()
   local config_dirname = vim.fs.dirname(found)
   local is_oxfmt = found:find("oxfmtrc", 1, true) ~= nil or found:find("oxfmt.config.ts", 1, true) ~= nil
 
+  if is_oxfmt then
+    return {
+      exe = resolve_oxfmt_exe(config_dirname),
+      args = { "--stdin-filepath", format_util.escape_path(current_path) },
+      cwd = config_dirname,
+      stdin = true,
+      no_append = true,
+      ignore_exitcode = false,
+    }
+  end
+
   return {
-    exe = is_oxfmt and "oxfmt" or "prettierd",
-    args = is_oxfmt and { "--stdin-filepath", format_util.escape_path(current_path) } or { format_util.escape_path(current_path) },
+    exe = "prettierd",
+    args = { format_util.escape_path(current_path) },
     cwd = config_dirname,
     stdin = true,
     no_append = true,
