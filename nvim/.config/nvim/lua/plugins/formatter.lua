@@ -8,14 +8,21 @@ local prettier_config_files = {
   "prettier.config.cjs",
 }
 
-local oxfmt_config_files = {
-  ".oxfmtrc.json",
-  ".oxfmtrc.jsonc",
-  "oxfmt.config.ts",
-}
+local function prettier_etc()
+  local format_util = require("formatter.util")
+  local current_path = format_util.get_current_buffer_file_path()
+  local current_dir = vim.fs.dirname(current_path)
 
-local function find_config_file(config_files, current_dir)
-  local found_config = vim.fs.find(config_files, {
+  local found_config = vim.fs.find({
+    ".oxfmtrc.json",
+    ".oxfmtrc.jsonc",
+    "oxfmt.config.ts",
+    ".prettierrc",
+    ".prettierrc.js",
+    ".prettierrc.json",
+    "prettier.config.js",
+    "prettier.config.cjs",
+  }, {
     path = current_dir,
     upward = true,
     type = "file",
@@ -23,38 +30,16 @@ local function find_config_file(config_files, current_dir)
   })
 
   local _, found = next(found_config)
-  return found
-end
-
-local function prettier_etc()
-  local format_util = require("formatter.util")
-  local current_path = format_util.get_current_buffer_file_path()
-  local current_dir = vim.fs.dirname(current_path)
-
-  local oxfmt_config = find_config_file(oxfmt_config_files, current_dir)
-  if oxfmt_config ~= nil then
-    local config_dirname = vim.fs.dirname(oxfmt_config)
-
-    return {
-      exe = "oxfmt",
-      args = { "--stdin-filepath", format_util.escape_path(current_path) },
-      cwd = config_dirname,
-      stdin = true,
-      no_append = true,
-      ignore_exitcode = false,
-    }
-  end
-
-  local found = find_config_file(prettier_config_files, current_dir)
   if found == nil then
     return nil
   end
 
   local config_dirname = vim.fs.dirname(found)
+  local is_oxfmt = found:find("oxfmtrc", 1, true) ~= nil or found:find("oxfmt.config.ts", 1, true) ~= nil
 
   return {
-    exe = "prettierd",
-    args = { format_util.escape_path(current_path) },
+    exe = is_oxfmt and "oxfmt" or "prettierd",
+    args = is_oxfmt and { "--stdin-filepath", format_util.escape_path(current_path) } or { format_util.escape_path(current_path) },
     cwd = config_dirname,
     stdin = true,
     no_append = true,
