@@ -1,0 +1,215 @@
+#!/usr/bin/env bun
+import { cp, mkdtemp, mkdir, readdir, rm, stat, writeFile } from "fs/promises";
+import { basename, dirname, join, resolve } from "path";
+import { tmpdir } from "os";
+
+type RepoPath = {
+  owner: string;
+  repo: string;
+  ref: string;
+  path: string;
+};
+
+let tokenPromise: Promise<string | undefined> | undefined;
+
+function usage(): never {
+  console.error("Usage: dlgit https://github.com/owner/repo/tree/ref/path [directory]");
+  process.exit(2);
+}
+
+async function githubToken(): Promise<string | undefined> {
+  if (process.env.GITHUB_TOKEN) {
+    return process.env.GITHUB_TOKEN;
+  }
+  if (process.env.GH_TOKEN) {
+    return process.env.GH_TOKEN;
+  }
+
+  tokenPromise ??= (async () => {
+    const proc = Bun.spawn(["gh", "auth", "token"], {
+      stdout: "pipe",
+      stderr: "ignore",
+    });
+    const [status, output] = await Promise.all([
+      proc.exited,
+      new Response(proc.stdout).text(),
+    ]);
+
+    if (status !== 0) {
+      return undefined;
+    }
+
+    return output.trim() || undefined;
+  })();
+
+  return tokenPromise;
+}
+
+async function githubHeaders(): Promise<HeadersInit> {
+  const headers: Record<string, string> = {
+    "User-Agent": "dlgit",
+    Accept: "application/vnd.github+json",
+  };
+
+  const token = await githubToken();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  return headers;
+}
+
+function parseGitHubUrl(input: string): { owner: string; repo: string; segments: string[] } {
+  let url: URL;
+  try {
+    url = new URL(input);
+  } catch {
+    usage();
+  }
+
+  if (url.hostname !== "github.com" && url.hostname !== "www.github.com") {
+    throw new Error("Expected a github.com URL");
+  }
+
+  const parts = url.pathname.split("/").filter(Boolean).map(decodeURIComponent);
+  if (parts.length < 4 || parts[2] !== "tree") {
+    throw new Error("Expected a GitHub tree URL like https://github.com/owner/repo/tree/ref/path");
+  }
+
+  return {
+    owner: parts[0],
+    repo: parts[1].replace(/\.git$/, ""),
+    segments: parts.slice(3),
+  };
+}
+
+async function branchExists(owner: string, repo: string, ref: string): Promise<boolean> {
+  const encodedRef = encodeURIComponent(ref);
+  const url = `https://api.github.com/repos/${owner}/${repo}/branches/${encodedRef}`;
+  const response = await fetch(url, { headers: await githubHeaders() });
+  if (response.status === 404) {
+    return false;
+  }
+  if (!response.ok) {
+    throw new Error(`GitHub API request failed: ${response.status} ${response.statusText}`);
+  }
+  return true;
+}
+
+async function tagExists(owner: string, repo: string, ref: string): Promise<boolean> {
+  const encodedRef = encodeURIComponent(ref);
+  const url = `https://api.github.com/repos/${owner}/${repo}/git/matching-refs/tags/${encodedRef}`;
+  const response = await fetch(url, { headers: await githubHeaders() });
+  if (response.status === 404) {
+    return false;
+  }
+  if (!response.ok) {
+    throw new Error(`GitHub API request failed: ${response.status} ${response.statusText}`);
+  }
+
+  const tags = await response.json() as Array<{ ref?: string }>;
+  return tags.some((tag) => tag.ref === `refs/tags/${ref}`);
+}
+
+async function resolveRefAndPath(owner: string, repo: string, segments: string[]): Promise<RepoPath> {
+  for (let i = segments.length; i >= 1; i--) {
+    const ref = segments.slice(0, i).join("/");
+
+    if (await branchExists(owner, repo, ref)) {
+      return { owner, repo, ref, path: segments.slice(i).join("/") };
+    }
+
+    if (await tagExists(owner, repo, ref)) {
+      return { owner, repo, ref, path: segments.slice(i).join("/") };
+    }
+  }
+
+  throw new Error("Could not resolve the branch or tag in the GitHub URL");
+}
+
+async function downloadArchive(repoPath: RepoPath, archivePath: string): Promise<void> {
+  const archiveUrl = `https://api.github.com/repos/${repoPath.owner}/${repoPath.repo}/tarball/${encodeURIComponent(repoPath.ref)}`;
+  const response = await fetch(archiveUrl, { headers: await githubHeaders() });
+
+  if (!response.ok || !response.body) {
+    throw new Error(`Archive download failed: ${response.status} ${response.statusText}`);
+  }
+
+  await writeFile(archivePath, response.body);
+}
+
+async function extractArchive(archivePath: string, targetDir: string): Promise<void> {
+  const proc = Bun.spawn(["tar", "-xzf", archivePath, "-C", targetDir], {
+    stdout: "inherit",
+    stderr: "inherit",
+  });
+
+  const status = await proc.exited;
+  if (status !== 0) {
+    throw new Error(`tar exited with status ${status}`);
+  }
+}
+
+async function copyDirectoryContents(sourceDir: string, destinationDir: string): Promise<void> {
+  await mkdir(destinationDir, { recursive: true });
+
+  for (const entry of await readdir(destinationDir)) {
+    await rm(join(destinationDir, entry), { recursive: true, force: true });
+  }
+
+  for (const entry of await readdir(sourceDir)) {
+    await cp(join(sourceDir, entry), join(destinationDir, entry), {
+      recursive: true,
+      preserveTimestamps: true,
+    });
+  }
+}
+
+async function main(): Promise<void> {
+  const [url, directory] = Bun.argv.slice(2);
+  if (!url) {
+    usage();
+  }
+
+  const parsed = parseGitHubUrl(url);
+  const repoPath = await resolveRefAndPath(parsed.owner, parsed.repo, parsed.segments);
+  const defaultDirectory = basename(repoPath.path) || repoPath.repo;
+  const destinationDir = resolve(directory ?? defaultDirectory);
+
+  const tempDir = await mkdtemp(join(tmpdir(), "dlgit-"));
+  try {
+    const archivePath = join(tempDir, "repo.tar.gz");
+    const extractDir = join(tempDir, "extract");
+    await mkdir(extractDir);
+
+    await downloadArchive(repoPath, archivePath);
+    await extractArchive(archivePath, extractDir);
+
+    const [rootEntry] = await readdir(extractDir);
+    if (!rootEntry) {
+      throw new Error("Archive was empty");
+    }
+
+    const sourceDir = join(extractDir, rootEntry, repoPath.path);
+    const sourceStats = await stat(sourceDir).catch(() => null);
+    if (!sourceStats?.isDirectory()) {
+      throw new Error(`Path not found in archive, or is not a directory: ${repoPath.path}`);
+    }
+
+    const destinationStats = await stat(destinationDir).catch(() => null);
+    if (destinationStats && !destinationStats.isDirectory()) {
+      throw new Error(`Destination exists and is not a directory: ${destinationDir}`);
+    }
+
+    await mkdir(dirname(destinationDir), { recursive: true });
+    await copyDirectoryContents(sourceDir, destinationDir);
+    console.log(`Synced ${repoPath.owner}/${repoPath.repo}/${repoPath.path} to ${destinationDir}`);
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
+}
+
+main().catch((error) => {
+  console.error(error instanceof Error ? error.message : error);
+  process.exit(1);
+});
