@@ -11,7 +11,7 @@ A prototype is **throwaway code that answers a question**. The question decides 
 
 If the user's context is just a number, assume it is a tim plan id and run `tim show --full <number>` before choosing a prototype branch. Use that plan text as the source of truth for the question being answered.
 
-If the tim plan or the passed context includes any reference to a Linear issue, such as an issue ID or URL, read the issue before prototyping. Also inspect any documents linked from the issue itself or from its Linear project, because those documents often contain the product constraints and prior decisions the prototype needs to respect.
+If the tim plan or the passed context includes any reference to a Linear issue, such as an issue ID or URL, read the issue before prototyping. Also inspect any documents linked from the issue itself or from its Linear project, because those documents often contain the product constraints and prior decisions the prototype needs to respect. The Linear document list command matches projects only by slug, not project name; when you only have the project name, first resolve the slug with `linear project list --json | jq -r '.nodes[] | select(.name | test("<PROJECT NAME>";"i")) | "\(.name)\t\(.slugId)"'`.
 
 ## Pick a branch
 
