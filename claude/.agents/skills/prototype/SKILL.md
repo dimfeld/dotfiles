@@ -13,6 +13,8 @@ If the user's context is just a number, assume it is a tim plan id and run `tim 
 
 If the tim plan or the passed context includes any reference to a Linear issue, such as an issue ID or URL, read the issue before prototyping. Also inspect any documents linked from the issue itself or from its Linear project, because those documents often contain the product constraints and prior decisions the prototype needs to respect. The Linear document list command matches projects only by slug, not project name; when you only have the project name, first resolve the slug with `linear project list --json | jq -r '.nodes[] | select(.name | test("<PROJECT NAME>";"i")) | "\(.name)\t\(.slugId)"'`.
 
+Before building, determine whether the prototype enhances an existing feature or explores a wholly new surface. For an existing feature, inspect the current implementation and user flow before choosing the prototype shape, especially for UI prototypes. The prototype should build on the existing behavior and constraints rather than replacing them from memory.
+
 ## Pick a branch
 
 Identify which question is being answered — from the user's prompt, the surrounding code, or by asking if the user is around:
@@ -29,7 +31,8 @@ The two branches produce very different artifacts — getting this wrong wastes 
 3. **No persistence by default.** State lives in memory. Persistence is the thing the prototype is _checking_, not something it should depend on. If the question explicitly involves a database, hit a scratch DB or a local file with a clear "PROTOTYPE — wipe me" name.
 4. **Skip the polish.** No tests, no error handling beyond what makes the prototype _runnable_, no abstractions. The point is to learn something fast and then delete it.
 5. **Surface the state.** After every action (logic) or on every variant switch (UI), print or render the full relevant state so the user can see what changed.
-6. **Delete or absorb when done.** When the prototype has answered its question, either delete it or fold the validated decision into the real code — don't leave it rotting in the repo.
+6. **Preserve existing functionality unless told otherwise.** When a prototype enhances an existing feature, each variant should retain the feature's current essential capabilities and workflows unless the plan explicitly calls for removing or changing them. Radical UI changes are allowed, but they must carry forward the important behavior, controls, data visibility, and edge states from the existing implementation.
+7. **Delete or absorb when done.** When the prototype has answered its question, either delete it or fold the validated decision into the real code — don't leave it rotting in the repo.
 
 ## When done
 
