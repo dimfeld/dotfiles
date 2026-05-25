@@ -18,6 +18,17 @@ alias jjgp='jj git push'
 alias jjgf='jj git fetch'
 alias jjpb="jj log -r 'latest(heads(ancestors(@) & bookmarks()), 1)' --limit 1 --no-graph --ignore-working-copy -T local_bookmarks | tr -d '*'"
 
+function jj-push-tracked-confirm() {
+  jj git push --tracked --dry-run || return
+
+  printf "Push tracked bookmarks? [y/N] "
+  read -r reply
+  if [[ "$reply" == [Yy] ]]; then
+    jj git push --tracked
+  fi
+}
+alias jjgpt='jj-push-tracked-confirm'
+
 alias copydiff="jj diff --from 'trunk()' | pbcopy"
 
 function jj-track-bookmark-and-new() {
@@ -123,4 +134,3 @@ function jj-rebase-main() {
 alias jj-base-commit="jj log -r 'heads(::@ & ::main)' --no-graph -T 'commit_id'"
 
 alias jjpc='jj git push --bookmark $(jjpb)'
-
