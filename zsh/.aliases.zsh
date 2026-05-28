@@ -138,7 +138,7 @@ function claudecwd() {
   # printf '\e[?1004l';
 }
 
-alias claude="claudeprj --model opus"
+alias claude="claudeprj --model claude-opus-4-6"
 alias claudes="claudeprj --model sonnet"
 alias claudeh="claudeprj --model haiku"
 
@@ -171,6 +171,10 @@ alias codexhigh="codexprj --model gpt-5.5 -c model_reasoning_effort=high"
 alias codexxhigh="codexprj --model gpt-5.5 -c model_reasoning_effort=xhigh"
 alias codexfa="codexprj --full-auto"
 alias codexyolo="codexprj --dangerously-bypass-approvals-and-sandbox"
+
+function shelp() {
+  echo "$@" | codex exec --skip-git-repo-check --model gpt-5.3-codex-spark --ephemeral -c model_reasoning_effort=low --sandbox read-only
+}
 
 function tim-codex-plan() {
   codex --model gpt-5.5 -c model_reasoning_effort=high "$(tim prompts generate-plan $@)"

@@ -8,16 +8,25 @@ if [ -f "$(which apt-get)" ]; then
 fi
 
 deactivate &> /dev/null || true
-pnpm --global update -L
+# Commented out until https://github.com/pnpm/pnpm/issues/11798 is fixed
+# pnpm --global update -L
 rustup update stable
-cargo install-update --all
+cargo install-update --all --cooldown 7d
+
+WEEKAGO=
+# MacOS use date -v-7d, Linux use date -I -d "7 days ago"
+if [ $(uname -s) = "Darwin" ]; then
+  WEEKAGO=$(date -I -v-7d)
+else
+  WEEKAGO=$(date -I -d "7 days ago")
+fi
 
 if [ -f "$(which pipx)" ]; then
   pipx upgrade-all
 fi
 
 if [ -f "$(which uv)" ]; then
-  uv tool update --all
+  uv tool update --all --exclude-newer ${WEEKAGO}
 fi
 
 if [ -f "$(which brew)" ]; then

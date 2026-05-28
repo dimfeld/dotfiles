@@ -1,0 +1,4 @@
+interface:
+  display_name: "JJ Update Stack"
+  short_description: "Rebase and repair stacked jj branches"
+  default_prompt: "Use $jj-update-stack to rebase my stacked jj branches after updating the base branch."

@@ -4,8 +4,9 @@ email = "daniel@imfeld.dev"
 
 [ui]
 pager = "delta"
-# diff.tool = "delta"
+# pager = ["hunk", "pager"]
 diff-formatter = ":git"
+# diff.tool = "delta"
 default-command = "log"
 diff-editor = ":builtin"
 merge-editor = "diffconflicts"
@@ -18,6 +19,7 @@ merge-editor = "diffconflicts"
 # remote_bookmarks = "yellow"
 
 [remotes.origin]
+auto-track-bookmarks = 'di/*'
 auto-track-created-bookmarks = '~glob:"t/*"'
 
 [aliases]

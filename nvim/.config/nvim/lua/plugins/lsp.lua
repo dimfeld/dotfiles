@@ -194,6 +194,16 @@ local function configure_lsp_servers()
     },
   })
 
+  -- disable Svelte for now since oxlint doesn't support it well yet
+  vim.lsp.config("oxlint", {
+    filetypes = {
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact",
+    },
+  })
+
   -- The order of initialization is important here because it determines the order in which code actions show up
   -- when more than one LS has actions.
   vim.lsp.enable({
@@ -203,6 +213,7 @@ local function configure_lsp_servers()
     "tsgo",
     "cssls",
     "eslint",
+    "oxlint",
     "gopls",
     "html",
     "jsonls",

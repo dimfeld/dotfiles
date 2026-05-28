@@ -31,7 +31,7 @@ The two branches produce very different artifacts — getting this wrong wastes 
 3. **No persistence by default.** State lives in memory. Persistence is the thing the prototype is _checking_, not something it should depend on. If the question explicitly involves a database, hit a scratch DB or a local file with a clear "PROTOTYPE — wipe me" name.
 4. **Skip the polish.** No tests, no error handling beyond what makes the prototype _runnable_, no abstractions. The point is to learn something fast and then delete it.
 5. **Surface the state.** After every action (logic) or on every variant switch (UI), print or render the full relevant state so the user can see what changed.
-6. **Preserve existing functionality unless told otherwise.** When a prototype enhances an existing feature, each variant should retain the feature's current essential capabilities and workflows unless the plan explicitly calls for removing or changing them. Radical UI changes are allowed, but they must carry forward the important behavior, controls, data visibility, and edge states from the existing implementation.
+6. **Preserve existing functionality unless told otherwise.** When a prototype enhances an existing feature, each variant should retain the feature's current essential capabilities and workflows unless the plan explicitly calls for removing or changing them. Radical UI changes are allowed if they are true improvements, but they must carry forward the important behavior, controls, data visibility, and edge states from the existing implementation.
 7. **Delete or absorb when done.** When the prototype has answered its question, either delete it or fold the validated decision into the real code — don't leave it rotting in the repo.
 
 ## When done

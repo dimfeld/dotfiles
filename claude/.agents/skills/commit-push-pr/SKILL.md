@@ -53,6 +53,8 @@ may include relevant issue tracker URL, title, and so on.
    - Includes bullet points explaining what was added/changed
    - Does not include "Generated with Claude Code" or "Co-Authored-By" lines
 
+   Then move the bookmark to the new commit using `jj bookmark move <branch-name> -t@-`
+
 3b. If all changes are already committed on the branch, proceed to step 4.
 
 
