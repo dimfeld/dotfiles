@@ -1,0 +1,6 @@
+interface:
+  display_name: "Address PR Comments"
+  short_description: "Resolve PR review comments"
+
+policy:
+  allow_implicit_invocation: false

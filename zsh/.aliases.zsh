@@ -143,7 +143,7 @@ function claudecwd() {
   # printf '\e[?1004l';
 }
 
-alias claude="claudeprj --model claude-opus-4-6"
+alias claude="claudeprj --model claude-opus-4-8"
 alias claudes="claudeprj --model sonnet"
 alias claudeh="claudeprj --model haiku"
 
