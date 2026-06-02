@@ -73,8 +73,13 @@ alias zl='zellij list-sessions'
 
 alias aws-whoami='aws sts get-caller-identity'
 
-alias tim="~/Documents/projects/llmutils/dist/tim"
-alias timd="~/Documents/projects/llmutils/src/tim/tim.ts"
+if [ -d "~/Documents/projects/llmutils" ]; then
+  export TIM_DIR=~/Documents/projects/llmutils
+else
+  export TIM_DIR=~/projects/llmutils
+fi
+alias tim="$TIM_DIR/dist/tim"
+alias timd="$TIM_DIR/src/tim/tim.ts"
 alias timl="./src/tim/tim.ts"
 # Not using prepare anymore since coding agents got better.
 # function tim-prep-and-run() {
