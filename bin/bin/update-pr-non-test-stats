@@ -8,6 +8,12 @@ type PullRequest = {
   body: string | null;
 };
 
+type DiffStatSummary = {
+  files: number;
+  insertions: number;
+  deletions: number;
+};
+
 function usage(): never {
   console.error(`Usage: update-pr-non-test-stats [--head <branch>] [--base <revset>]
 
@@ -123,13 +129,61 @@ async function nonTestDiffStat(base: string): Promise<string> {
   return output.trimEnd();
 }
 
+function parseDiffStatSummary(stat: string): DiffStatSummary | null {
+  const totals = stat
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .at(-1);
+
+  if (!totals) {
+    return null;
+  }
+
+  const match = totals.match(/^(\d+) files? changed(?:, (\d+) insertions?\(\+\))?(?:, (\d+) deletions?\(-\))?$/);
+  const files = match?.[1];
+  if (!files) {
+    return null;
+  }
+
+  return {
+    files: Number(files),
+    insertions: Number(match[2] ?? 0),
+    deletions: Number(match[3] ?? 0),
+  };
+}
+
+function pluralize(count: number, singular: string, plural = `${singular}s`): string {
+  return `${count} ${count === 1 ? singular : plural}`;
+}
+
+function summaryLine(stat: string): string {
+  const summary = parseDiffStatSummary(stat);
+  if (!summary) {
+    return '`Non-test file changes`';
+  }
+
+  return [
+    `\`${pluralize(summary.files, 'file')}\``,
+    `\`+${summary.insertions}\``,
+    `\`-${summary.deletions}\``,
+  ].join(' ');
+}
+
 function statsBlock(stat: string): string {
   return `${START_MARKER}
-### Non-test diff stat
+### Non-test changes
+
+${summaryLine(stat)}
+
+<details>
+<summary>File breakdown</summary>
 
 \`\`\`
 ${stat}
 \`\`\`
+
+</details>
 ${END_MARKER}`;
 }
 
