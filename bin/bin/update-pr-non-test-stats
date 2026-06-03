@@ -2,6 +2,7 @@
 
 const START_MARKER = '<!-- non-test-diff-stat:start -->';
 const END_MARKER = '<!-- non-test-diff-stat:end -->';
+const COLLAPSE_STAT_LINE_THRESHOLD = 15;
 
 type PullRequest = {
   number: number;
@@ -131,20 +132,34 @@ function summaryLine(stat: string): string {
     .at(-1) ?? 'Non-test file changes';
 }
 
+function statLineCount(stat: string): number {
+  return stat.split('\n').filter((line) => line.trim()).length;
+}
+
+function fileBreakdown(stat: string): string {
+  const fencedStat = `\`\`\`
+${stat}
+\`\`\``;
+
+  if (statLineCount(stat) < COLLAPSE_STAT_LINE_THRESHOLD) {
+    return fencedStat;
+  }
+
+  return `<details>
+<summary>File breakdown</summary>
+
+${fencedStat}
+
+</details>`;
+}
+
 function statsBlock(stat: string): string {
   return `${START_MARKER}
-### Non-test changes
+### Non-test change stats
 
 ${summaryLine(stat)}
 
-<details>
-<summary>File breakdown</summary>
-
-\`\`\`
-${stat}
-\`\`\`
-
-</details>
+${fileBreakdown(stat)}
 ${END_MARKER}`;
 }
 
