@@ -9,6 +9,10 @@ type PullRequest = {
   body: string | null;
 };
 
+type PullRequestLookup =
+  | { found: true; pr: PullRequest }
+  | { found: false };
+
 function usage(): never {
   console.error(`Usage: update-pr-non-test-stats [--head <branch>] [--base <revset>]
 
@@ -105,18 +109,18 @@ async function currentHead(): Promise<string> {
   return bookmarks[0];
 }
 
-async function getPullRequest(head: string): Promise<PullRequest> {
+async function getPullRequest(head: string): Promise<PullRequestLookup> {
   const output = await run(['gh', 'pr', 'list', '--head', head, '--state', 'open', '--limit', '2', '--json', 'number,body']);
   const prs = JSON.parse(output) as PullRequest[];
 
   if (prs.length === 0) {
-    throw new Error(`No open GitHub PR found for head branch "${head}".`);
+    return { found: false };
   }
   if (prs.length > 1) {
     throw new Error(`Found multiple open GitHub PRs for head branch "${head}".`);
   }
 
-  return prs[0];
+  return { found: true, pr: prs[0] };
 }
 
 async function nonTestDiffStat(base: string): Promise<string> {
@@ -213,7 +217,13 @@ function updateBody(body: string, stat: string): string {
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
   const head = args.head ?? (await currentHead());
-  const pr = await getPullRequest(head);
+  const lookup = await getPullRequest(head);
+  if (!lookup.found) {
+    console.log(`No open GitHub PR found for head branch "${head}". Nothing to update.`);
+    return;
+  }
+
+  const pr = lookup.pr;
   const stat = await nonTestDiffStat(args.base);
   const body = updateBody(pr.body ?? '', stat);
 
