@@ -73,7 +73,7 @@ alias zl='zellij list-sessions'
 
 alias aws-whoami='aws sts get-caller-identity'
 
-if [ -d "~/Documents/projects/llmutils" ]; then
+if [ -d ~/Documents/projects/llmutils ]; then
   export TIM_DIR=~/Documents/projects/llmutils
 else
   export TIM_DIR=~/projects/llmutils

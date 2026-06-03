@@ -29,6 +29,7 @@ lst = ['log', '-n', '20', '-r', 'this']
 bm = ['bookmark', 'move']
 bc = ['bookmark', 'create']
 
+
 z = ["fuzzy_bookmark"]
 za = ["bookmark", "list", "-a"]
 fuzzy_bookmark = ["util", "exec", "--", "sh", "-c", """
@@ -39,6 +40,9 @@ else
 fi
 """, ""]
 
+[fileset-aliases]
+"non-test" = 'all() ~ (glob:"**/*.spec.*" | glob:"**/*.test.*")'
+
 [revset-aliases]
 this = "ancestors(@)"
 "branch(name)" = "(ancestors(name) | children(name)) ~ ancestors(main)"
@@ -47,6 +51,7 @@ branch = "branch(@)"
 "stacked(name)" = "name:: ~ name"
 "s(name)" = "stacked(name)"
 stacked = "stacked(@)"
+stack_base = "latest(heads(bookmarks() & ancestors(@--)) | fork_point(@ | main), 1)"
 
 [templates]
 draft_commit_description = '''
@@ -75,4 +80,3 @@ merge-args = [
     "-c", "JJDiffConflicts!", "$output", "$base", "$left", "$right",
 ]
 merge-tool-edits-conflict-markers = true
-

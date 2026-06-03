@@ -223,6 +223,7 @@ local function configure_lsp_servers()
     "tailwindcss",
     "terraformls",
     "yamlls",
+    "bashls",
     -- "harper_ls",
   })
 end
@@ -351,6 +352,11 @@ return {
         severity_sort = true,
       })
     end,
+  },
+
+  {
+    "mason-org/mason.nvim",
+    opts = {},
   },
 
   {

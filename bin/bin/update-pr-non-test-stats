@@ -95,7 +95,7 @@ async function currentHead(): Promise<string> {
 
   const bookmarks = output
     .split('\n')
-    .map((line) => line.trim())
+    .map((line) => line.trim().replace(/\*$/, ''))
     .filter(Boolean)
     .filter((line) => !line.includes('@'));
 

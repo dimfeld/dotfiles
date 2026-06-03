@@ -8,8 +8,7 @@ if [ -f "$(which apt-get)" ]; then
 fi
 
 deactivate &> /dev/null || true
-# Commented out until https://github.com/pnpm/pnpm/issues/11798 is fixed
-# pnpm --global update -L
+pnpm --global update -L
 rustup update stable
 cargo install-update --all --cooldown 7d
 

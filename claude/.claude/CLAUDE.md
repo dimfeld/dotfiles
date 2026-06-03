@@ -21,6 +21,12 @@
 
 - Occasionally a `jj` command will fail to "acquire lock for index file". In this case do not try to delete the lock file, just try again and it should work.
 
+- when creating a PR, use `jj diff non-test --stat -f BASE_REV` to get changed line counts for the PR. `non-test` is a
+  special fileset I have defined.
+
+- We have a jj revset `stack_base` which resolves to the commit that is the base of the current branch, whether stacked
+  or on trunk. You can use this for any jj diff or log command when you want to just get changes on the current branch.
+
 ## Removing Files
 
 My `rm` command is aliased to `rm -i`. This means that you need to use `rm -f` to remove files.
