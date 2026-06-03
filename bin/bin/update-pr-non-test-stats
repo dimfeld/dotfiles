@@ -219,7 +219,8 @@ async function main(): Promise<void> {
   const head = args.head ?? (await currentHead());
   const lookup = await getPullRequest(head);
   if (!lookup.found) {
-    console.log(`No open GitHub PR found for head branch "${head}". Nothing to update.`);
+    console.error(`No open GitHub PR found for head branch "${head}". Nothing to update.`);
+    process.exitCode = 1;
     return;
   }
 
