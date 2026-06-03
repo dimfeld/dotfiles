@@ -124,21 +124,29 @@ async function nonTestDiffStat(base: string): Promise<string> {
   return output.trimEnd();
 }
 
-function summaryLine(stat: string): string {
+function statLines(stat: string): string[] {
   return stat
     .split('\n')
     .map((line) => line.trim())
-    .filter(Boolean)
-    .at(-1) ?? 'Non-test file changes';
+    .filter(Boolean);
+}
+
+function summaryLine(stat: string): string {
+  return statLines(stat).at(-1) ?? 'Non-test file changes';
 }
 
 function statLineCount(stat: string): number {
-  return stat.split('\n').filter((line) => line.trim()).length;
+  return statLines(stat).length;
 }
 
 function fileBreakdown(stat: string): string {
+  const breakdown = statLines(stat).slice(0, -1).join('\n');
+  if (!breakdown) {
+    return '';
+  }
+
   const fencedStat = `\`\`\`
-${stat}
+${breakdown}
 \`\`\``;
 
   if (statLineCount(stat) < COLLAPSE_STAT_LINE_THRESHOLD) {
