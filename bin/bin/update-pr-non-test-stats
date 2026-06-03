@@ -1,0 +1,187 @@
+#!/usr/bin/env bun
+
+const START_MARKER = '<!-- non-test-diff-stat:start -->';
+const END_MARKER = '<!-- non-test-diff-stat:end -->';
+
+type PullRequest = {
+  number: number;
+  body: string | null;
+};
+
+function usage(): never {
+  console.error(`Usage: update-pr-non-test-stats [--head <branch>] [--base <revset>]
+
+Updates the current branch's GitHub PR description with:
+  jj diff --stat non-test -f <revset>
+
+The stats block is inserted before the second "##" Markdown section, or at the
+end if the body has fewer than two "##" sections. Existing marked output is
+replaced in place.`);
+  process.exit(2);
+}
+
+function parseArgs(argv: string[]): { head: string | null; base: string } {
+  let head: string | null = null;
+  let base = 'stack_base';
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
+    if (arg === '--help' || arg === '-h') {
+      usage();
+    }
+    if (arg === '--head') {
+      const value = argv[index + 1];
+      if (!value) usage();
+      head = value;
+      index += 1;
+      continue;
+    }
+    if (arg === '--base') {
+      const value = argv[index + 1];
+      if (!value) usage();
+      base = value;
+      index += 1;
+      continue;
+    }
+
+    console.error(`Unexpected argument: ${arg}`);
+    usage();
+  }
+
+  return { head, base };
+}
+
+async function run(args: string[], options: { input?: string } = {}): Promise<string> {
+  const proc = Bun.spawn(args, {
+    stdin: options.input == null ? 'ignore' : 'pipe',
+    stdout: 'pipe',
+    stderr: 'pipe',
+  });
+
+  if (options.input != null) {
+    proc.stdin.write(options.input);
+    proc.stdin.end();
+  }
+
+  const [exitCode, stdout, stderr] = await Promise.all([
+    proc.exited,
+    new Response(proc.stdout).text(),
+    new Response(proc.stderr).text(),
+  ]);
+
+  if (exitCode !== 0) {
+    throw new Error(`${args.join(' ')} failed with exit ${exitCode}\n${stderr.trim()}`);
+  }
+
+  return stdout;
+}
+
+async function currentHead(): Promise<string> {
+  const template = 'bookmarks.join("\\n") ++ "\\n"';
+  const output = await run([
+    'jj',
+    'log',
+    '-r',
+    'heads(::@ & bookmarks())',
+    '--no-graph',
+    '-T',
+    template,
+  ]);
+
+  const bookmarks = output
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .filter((line) => !line.includes('@'));
+
+  if (bookmarks.length === 0) {
+    throw new Error('Could not find a jj bookmark for the current stack. Pass --head <branch>.');
+  }
+  if (bookmarks.length > 1) {
+    throw new Error(`Found multiple jj bookmarks for the current stack. Pass --head explicitly.\n${bookmarks.join('\n')}`);
+  }
+
+  return bookmarks[0];
+}
+
+async function getPullRequest(head: string): Promise<PullRequest> {
+  const output = await run(['gh', 'pr', 'list', '--head', head, '--state', 'open', '--limit', '2', '--json', 'number,body']);
+  const prs = JSON.parse(output) as PullRequest[];
+
+  if (prs.length === 0) {
+    throw new Error(`No open GitHub PR found for head branch "${head}".`);
+  }
+  if (prs.length > 1) {
+    throw new Error(`Found multiple open GitHub PRs for head branch "${head}".`);
+  }
+
+  return prs[0];
+}
+
+async function nonTestDiffStat(base: string): Promise<string> {
+  const output = await run(['jj', 'diff', '--stat', 'non-test', '-f', base]);
+  return output.trimEnd();
+}
+
+function statsBlock(stat: string): string {
+  return `${START_MARKER}
+\`\`\`diff
+${stat}
+\`\`\`
+${END_MARKER}`;
+}
+
+function replaceExistingBlock(body: string, block: string): string | null {
+  const startIndex = body.indexOf(START_MARKER);
+  const endIndex = body.indexOf(END_MARKER);
+
+  if (startIndex === -1 && endIndex === -1) {
+    return null;
+  }
+  if (startIndex === -1 || endIndex === -1 || endIndex < startIndex) {
+    throw new Error('Found an incomplete or malformed non-test diff stat marker block in the PR body.');
+  }
+
+  const afterEnd = endIndex + END_MARKER.length;
+  return `${body.slice(0, startIndex)}${block}${body.slice(afterEnd)}`;
+}
+
+function secondSectionIndex(body: string): number {
+  const headingPattern = /^##(?:\s|$)/gm;
+  headingPattern.exec(body);
+  const secondMatch = headingPattern.exec(body);
+  return secondMatch?.index ?? -1;
+}
+
+function insertBeforeSecondSection(body: string, block: string): string {
+  const index = secondSectionIndex(body);
+  if (index === -1) {
+    const trimmed = body.trimEnd();
+    return trimmed ? `${trimmed}\n\n${block}\n` : `${block}\n`;
+  }
+
+  const before = body.slice(0, index).trimEnd();
+  const after = body.slice(index).trimStart();
+  return `${before}\n\n${block}\n\n${after}`;
+}
+
+function updateBody(body: string, stat: string): string {
+  const block = statsBlock(stat);
+  return replaceExistingBlock(body, block) ?? insertBeforeSecondSection(body, block);
+}
+
+async function main(): Promise<void> {
+  const args = parseArgs(process.argv.slice(2));
+  const head = args.head ?? (await currentHead());
+  const pr = await getPullRequest(head);
+  const stat = await nonTestDiffStat(args.base);
+  const body = updateBody(pr.body ?? '', stat);
+
+  await run(['gh', 'pr', 'edit', String(pr.number), '--body-file', '-'], { input: body });
+  console.log(`Updated PR #${pr.number} for ${head}.`);
+}
+
+main().catch((error) => {
+  console.error(error instanceof Error ? error.message : error);
+  process.exit(1);
+});
