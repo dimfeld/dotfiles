@@ -268,7 +268,7 @@ local function on_attach(buffer, client)
       group = augroup,
       pattern = { "*.js", "*.ts", "*.mjs", "*.mts", "*.cjs", "*.cts" },
       callback = function(ctx)
-        client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.match })
+        client:notify("$/onDidChangeTsOrJsFile", { uri = ctx.match })
       end,
     })
   end

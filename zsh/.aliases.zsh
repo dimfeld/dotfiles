@@ -164,16 +164,16 @@ function codexprj() {
   else
     cd $(dirname "$DIR")
   fi
-  AGENT=1 codex "$@"
+  AGENT=1 codex -c service_tier=fast "$@"
   )
 }
 
 alias codex="codexprj"
-alias codexs="codexprj --model gpt-5.3-codex-spark -c model_reasoning_effort=high"
-alias codexm="codexprj --model gpt-5.4-mini"
-alias codexlow="codexprj --model gpt-5.5 -c model_reasoning_effort=low"
-alias codexhigh="codexprj --model gpt-5.5 -c model_reasoning_effort=high"
-alias codexxhigh="codexprj --model gpt-5.5 -c model_reasoning_effort=xhigh"
+alias codexs="codexprj --model gpt-5.6-luna -c model_reasoning_effort=low"
+alias codexm="codexprj --model gpt-5.6-luna -c model_reasoning_effort=medium"
+alias codexlow="codexprj --model gpt-5.6-terra -c model_reasoning_effort=low"
+alias codexhigh="codexprj --model gpt-5.6-sol -c model_reasoning_effort=high"
+alias codexxhigh="codexprj --model gpt-5.6-sol -c model_reasoning_effort=xhigh"
 alias codexfa="codexprj --full-auto"
 alias codexyolo="codexprj --dangerously-bypass-approvals-and-sandbox"
 

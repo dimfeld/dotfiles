@@ -1,3 +1,5 @@
+# together completions
+fpath=(/Users/dimfeld/.zsh/completions $fpath)
 #set -x
 # zmodload zsh/zprof
 export NVM_LAZY_LOAD=true

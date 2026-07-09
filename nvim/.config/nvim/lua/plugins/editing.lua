@@ -85,9 +85,7 @@ return {
           name = "Diffview Review Guide",
           category = "Git",
           action = function()
-            local commit_id = vim.fn.system("jj log -r 'heads(::@ & ::main)' --no-graph -T 'commit_id'")
-            commit_id = vim.trim(commit_id)
-            vim.cmd("DiffviewOpenJson review-guide.json " .. commit_id)
+            vim.cmd("DiffviewOpenJson review-guide.json stack_base")
           end,
         },
         {

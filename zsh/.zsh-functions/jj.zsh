@@ -17,6 +17,8 @@ alias jjpush='jj git push'
 alias jjgp='jj git push'
 alias jjgf='jj git fetch'
 alias jjpb="jj log -r 'latest(heads(ancestors(@) & bookmarks()), 1)' --limit 1 --no-graph --ignore-working-copy -T local_bookmarks | tr -d '*'"
+alias jjlf="jj log -rfull"
+alias jjlt="jj lt"
 
 function jj-push-tracked-confirm() {
   jj git push --tracked --dry-run || return
@@ -76,7 +78,7 @@ function jj-merge-main() {
     return
   fi
   jj git fetch -b main && \
-  jj new $BOOKMARK main && \
+  jj new main $BOOKMARK && \
   jj b m $BOOKMARK -t@ && \
   jj commit -m 'merge main'
 }
@@ -98,7 +100,7 @@ function jj-squash-into() {
   TO=${1}
   UP_TO=${2:-@}
 
-  jj squash -t "${TO} & ancestors(${UP_TO})" -f "${TO}..${UP_TO}"
+  jj squash -t "${TO} & ancestors(${UP_TO})" -f "${TO}::${UP_TO}"
 }
 alias jjsi='jj-squash-into'
 
@@ -129,6 +131,17 @@ function jj-restack-from() {
 
 function jj-rebase-main() {
   jj git fetch -b main && jj rebase -d main
+}
+
+function jj-rebase-merged-stack() {
+  if [ $# -ne 1 ]; then
+    echo "Usage: jj-rebase-merged-stack <bookmark>"
+    return 1
+  fi
+
+  jj git fetch -b main && \
+    jj rebase -r "$1+::" -d main && \
+    jj git fetch -b "$1"
 }
 
 alias jj-base-commit="jj log -r 'heads(::@ & ::main)' --no-graph -T 'commit_id'"

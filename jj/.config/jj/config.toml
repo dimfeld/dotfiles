@@ -28,6 +28,7 @@ ls = ['log', '-n', '20']
 lst = ['log', '-n', '20', '-r', 'this']
 bm = ['bookmark', 'move']
 bc = ['bookmark', 'create']
+sq = ['squash']
 
 
 z = ["fuzzy_bookmark"]
@@ -41,9 +42,13 @@ fi
 """, ""]
 
 [fileset-aliases]
-"non-test" = 'all() ~ (glob:"**/*.spec.*" | glob:"**/*.test.*")'
+"non-test" = 'all() ~ (glob:"**/*.spec.*" | glob:"**/*.test.*" | prefix-glob:"**/*_test_*" | prefix-glob:"**/*_fixture*")'
+
+[revsets]
+log = "roots(fork_point(@ | trunk())..@):: | fork_point(@ | trunk())::trunk()"
 
 [revset-aliases]
+full = "present(@) | ancestors(immutable_heads().., 2) | trunk()"
 this = "ancestors(@)"
 "branch(name)" = "(ancestors(name) | children(name)) ~ ancestors(main)"
 "b(name)" = "branch(name)"

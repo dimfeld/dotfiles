@@ -242,49 +242,51 @@ return {
     keys = {
       { "<leader>a", nil, desc = "AI/Codex" },
       { "<leader>at", "<cmd>Codex<cr>", desc = "Toggle Codex" },
-      { "<leader>as", "<cmd>CodexHere<cr>", mode = "n", desc = "Add current selection" },
-      { "<leader>as", ":'<,'>CodexHere<cr>", mode = "v", desc = "Add current selection" },
-      { "<leader>am", "<cmd>CodexHere mini<cr>", mode = "n", desc = "Add current selection" },
-      { "<leader>am", ":'<,'>CodexHere mini<cr>", mode = "v", desc = "Add current selection" },
+      { "<leader>as", "<cmd>CodexHere luna<cr>", mode = "n", desc = "Add current selection" },
+      { "<leader>as", ":'<,'>CodexHere luna<cr>", mode = "v", desc = "Add current selection" },
+      { "<leader>am", "<cmd>CodexHere terralog<cr>", mode = "n", desc = "Add current selection" },
+      { "<leader>am", ":'<,'>CodexHere terralog<cr>", mode = "v", desc = "Add current selection" },
+      { "<leader>ag", "<cmd>CodexHere<cr>", mode = "n", desc = "Add current selection" },
+      { "<leader>ag", ":'<,'>CodexHere<cr>", mode = "v", desc = "Add current selection" },
     },
     opts = {
       focus_existing_on_here = true,
       presets = {
-        mini = {
-          args = { "--model", "gpt-5.4-mini" },
+        luna = {
+          args = { "--model", "gpt-5.6-luna", "-c", "model_reasoning_effort=low", "-c", "service_tier=fast" },
         },
-        codexlow = {
-          args = { "--model", "gpt-5.5", "-c", "model_reasoning_effort=low" },
+        terralow = {
+          args = { "--model", "gpt-5.6-terra", "-c", "model_reasoning_effort=low", "-c", "service_tier=fast" },
         },
-        spark = {
-          args = { "--model", "gpt-5.3-codex-spark", "-c", "model_reasoning_effort=high" },
+        terramedium = {
+          args = { "--model", "gpt-5.6-terra", "-c", "model_reasoning_effort=medium", "-c", "service_tier=fast" },
         },
       },
       codex = {
-        args = { "--model", "gpt-5.3-codex-spark", "-c", "model_reasoning_effort=high" },
+        args = { "--model", "gpt-5.6-terra", "-c", "model_reasoning_effort=medium", "-c", "service_tier=fast" },
       },
     },
     config = function(_, opts)
       cmdbar.add_commands({
         {
-          name = "Codex GPT 5.4 Mini",
+          name = "Codex GPT 5.6 Luna",
           category = "AI",
           action = function()
-            vim.cmd("CodexHere mini")
+            vim.cmd("CodexHere luna")
           end,
         },
         {
-          name = "Codex GPT 5.5 Low",
+          name = "Codex GPT 5.6 Terra Low",
           category = "AI",
           action = function()
-            vim.cmd("CodexHere codexlow")
+            vim.cmd("CodexHere terralow")
           end,
         },
         {
-          name = "Codex GPT 5.3 Spark",
+          name = "Codex GPT 5.6 Terra Medium",
           category = "AI",
           action = function()
-            vim.cmd("CodexHere spark")
+            vim.cmd("CodexHere terramedium")
           end,
         },
       })

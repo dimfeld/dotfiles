@@ -53,3 +53,5 @@
 
 [include]
   path = ~/.gitconfig.local
+[diff]
+	algorithm = histogram

@@ -1,8 +1,13 @@
+## Code Exploration
+
+In addition to your normal tools, `ast-grep` is installed on this system so you can use it when appropriate to search
+the codebase.
+
 ## Source Control
 
 - A lot of my projects use the `jj` source control system. To commit, use `jj commit -m "..."`. There is no need to add files with `jj`; they are tracked automatically.
 
-- Every time you finish one or more items on your TODO list that involved changing files, make a commit. Use `jj` if it is enabled in the repository.
+- Every time you finish a user request, or one or more items on your TODO list that involved changing files, make a commit. Use `jj` if it is enabled in the repository.
 
 - Don't add comments about generated with Claude or Co-Authored-By Claude when writing commit messages
 
@@ -25,7 +30,7 @@
   special fileset I have defined.
 
 - We have a jj revset `stack_base` which resolves to the commit that is the base of the current branch, whether stacked
-  or on trunk. You can use this for any jj diff or log command when you want to just get changes on the current branch.
+  or on trunk. You can use this like `jj diff -f stack_base` or similar when you want to just get changes on the current branch.
 
 ## Removing Files
 

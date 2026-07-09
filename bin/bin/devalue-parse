@@ -5,4 +5,4 @@ let arg = process.argv[2];
 if(!arg) {
   arg = await Bun.stdin.text();
 }
-console.log(JSON.stringify(devalue.parse(arg), undefined, 2));
+console.dir(devalue.parse(arg), { depth: null });

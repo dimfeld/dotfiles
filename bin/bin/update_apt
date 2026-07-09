@@ -38,4 +38,8 @@ if [ -f "$(which devin)" ]; then
 fi
 
 
+if [ -f "$HOME/bin/update_apt.local" ]; then
+  "$HOME/bin/update_apt.local"
+fi
+
 nvim "+lua require('lazy').sync()"

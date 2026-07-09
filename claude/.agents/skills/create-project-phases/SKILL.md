@@ -38,6 +38,8 @@ Phases can also split the work horizontally, such as between front-end and back-
 
 At the end of the process, the user may ask you to add the created phases as issues in Linear or as "tim" plans with the using-tim skill. For Linear, ask which project the issues should be added to, and add each phase as a single issue. Ask the user if there should be a parent issue or not. For tim, create a single "epic" plan and then each phase as a plan below it. In both cases, set up dependencies between the issues/plans so that the order of work is clear.
 
+When wiring up dependencies, a child plan (or issue) may depend on at most one other child. Never give one two or more sibling dependencies — every plan needs a single branch it can base on that already contains all the changes it needs. If a later phase would otherwise depend on two or more earlier, otherwise-independent phases, chain those phases into one linear sequence instead, so each has exactly one predecessor.
+
 Each created issue or plan should have enough detail to explain the work to be done, the requirements for it,
 and suggested design patterns. The implementer will have access to the same repository you are looking at EXCEPT for the requirements document, so it is permitted to reference places in the codebase but any info from your generated plan document or the requirements document must be copied into the issue text.
 

@@ -28,7 +28,7 @@ First, understand the current state of the repository:
 
 1d. The commit history on the branch:
 
-!`jj log -r 'latest(ancestors(trunk()) & ancestors(@))::@' --summary`
+!`jj log -r 'stack_base::@' --summary`
 
 ## Step 2: Review Changes
 
@@ -36,7 +36,7 @@ If you have just generated a detailed summary of the branch, then skip this step
 
 The files that will be included in the PR are:
 
-!`jj diff -f 'latest(ancestors(trunk()) & ancestors(@))' -s | grep '^[MA]' | nl`
+!`jj diff -f stack_base -s | grep '^[MA]' | nl`
 
 Group this list into chunks (by functional area if possible) and use parallel subagents to analyse the diffs, reading the files and also using `jj diff -f latest(ancestors(trunk()) & ancestors(@)) <filename>` for each
 one to get the diff. Make sure that every file is assigned to a chunk; we don't want to miss any files.

@@ -56,11 +56,15 @@ function parseArgs(argv: string[]): { head: string | null; base: string } {
   return { head, base };
 }
 
-async function run(args: string[], options: { input?: string } = {}): Promise<string> {
+async function run(
+  args: string[],
+  options: { input?: string; cwd?: string } = {},
+): Promise<string> {
   const proc = Bun.spawn(args, {
     stdin: options.input == null ? 'ignore' : 'pipe',
     stdout: 'pipe',
     stderr: 'pipe',
+    cwd: options.cwd,
   });
 
   if (options.input != null) {
@@ -81,7 +85,11 @@ async function run(args: string[], options: { input?: string } = {}): Promise<st
   return stdout;
 }
 
-async function currentHead(): Promise<string> {
+async function repositoryRoot(): Promise<string> {
+  return (await run(['jj', 'root'])).trim();
+}
+
+async function currentHead(cwd: string): Promise<string> {
   const template = 'bookmarks.join("\\n") ++ "\\n"';
   const output = await run([
     'jj',
@@ -91,7 +99,7 @@ async function currentHead(): Promise<string> {
     '--no-graph',
     '-T',
     template,
-  ]);
+  ], { cwd });
 
   const bookmarks = output
     .split('\n')
@@ -109,8 +117,10 @@ async function currentHead(): Promise<string> {
   return bookmarks[0];
 }
 
-async function getPullRequest(head: string): Promise<PullRequestLookup> {
-  const output = await run(['gh', 'pr', 'list', '--head', head, '--state', 'open', '--limit', '2', '--json', 'number,body']);
+async function getPullRequest(head: string, cwd: string): Promise<PullRequestLookup> {
+  const output = await run(['gh', 'pr', 'list', '--head', head, '--state', 'open', '--limit', '2', '--json', 'number,body'], {
+    cwd,
+  });
   const prs = JSON.parse(output) as PullRequest[];
 
   if (prs.length === 0) {
@@ -123,8 +133,8 @@ async function getPullRequest(head: string): Promise<PullRequestLookup> {
   return { found: true, pr: prs[0] };
 }
 
-async function nonTestDiffStat(base: string): Promise<string> {
-  const output = await run(['jj', 'diff', '--stat', 'non-test', '-f', base]);
+async function nonTestDiffStat(base: string, cwd: string): Promise<string> {
+  const output = await run(['jj', 'diff', '--stat', 'non-test', '-f', base], { cwd });
   return output.trimEnd();
 }
 
@@ -216,8 +226,9 @@ function updateBody(body: string, stat: string): string {
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
-  const head = args.head ?? (await currentHead());
-  const lookup = await getPullRequest(head);
+  const cwd = await repositoryRoot();
+  const head = args.head ?? (await currentHead(cwd));
+  const lookup = await getPullRequest(head, cwd);
   if (!lookup.found) {
     console.error(`No open GitHub PR found for head branch "${head}". Nothing to update.`);
     process.exitCode = 1;
@@ -225,10 +236,10 @@ async function main(): Promise<void> {
   }
 
   const pr = lookup.pr;
-  const stat = await nonTestDiffStat(args.base);
+  const stat = await nonTestDiffStat(args.base, cwd);
   const body = updateBody(pr.body ?? '', stat);
 
-  await run(['gh', 'pr', 'edit', String(pr.number), '--body-file', '-'], { input: body });
+  await run(['gh', 'pr', 'edit', String(pr.number), '--body-file', '-'], { input: body, cwd });
   console.log(`Updated PR #${pr.number} for ${head}.`);
 }
 
