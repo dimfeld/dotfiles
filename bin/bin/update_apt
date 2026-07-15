@@ -30,7 +30,7 @@ fi
 
 if [ -f "$(which brew)" ]; then
   # Sometimes brew returns a failure exit code when nothing actually failed
-  brew upgrade || true
+  brew upgrade --yes || true
 fi
 
 if [ -f "$(which devin)" ]; then
