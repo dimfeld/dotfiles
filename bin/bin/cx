@@ -1,0 +1,98 @@
+#!/usr/bin/env bun
+
+const models = {
+  sol: 'gpt-5.6-sol',
+  terra: 'gpt-5.6-terra',
+  luna: 'gpt-5.6-luna',
+} as const;
+
+const efforts = ['low', 'medium', 'high', 'xhigh'] as const;
+
+type ModelName = keyof typeof models;
+type Effort = (typeof efforts)[number];
+
+const usage = `Usage: cx <model> <effort> [codex arguments...]
+       cx <model-prefix><effort-prefix> [codex arguments...]
+
+Models:  sol, terra, luna
+Efforts: low, medium, high, xhigh
+
+Examples:
+  cx sol high
+  cx s h
+  cx sh
+  cx tx --resume`;
+
+function uniquePrefix<T extends string>(input: string, choices: readonly T[]): T | undefined {
+  const matches = choices.filter((choice) => choice.startsWith(input.toLowerCase()));
+  return matches.length === 1 ? matches[0] : undefined;
+}
+
+function parseCompact(input: string): { model: ModelName; effort: Effort } | undefined {
+  const normalized = input.toLowerCase();
+
+  for (let splitAt = 1; splitAt < normalized.length; splitAt++) {
+    const model = uniquePrefix(normalized.slice(0, splitAt), Object.keys(models) as ModelName[]);
+    const effort = uniquePrefix(normalized.slice(splitAt), efforts);
+
+    if (model && effort) {
+      return { model, effort };
+    }
+  }
+
+  return undefined;
+}
+
+function parseSelection(args: string[]): {
+  model: ModelName;
+  effort: Effort;
+  codexArgs: string[];
+} {
+  const modelInput = args[0];
+  const effortInput = args[1];
+  const model = modelInput
+    ? uniquePrefix(modelInput, Object.keys(models) as ModelName[])
+    : undefined;
+  const effort = effortInput ? uniquePrefix(effortInput, efforts) : undefined;
+
+  if (model && effort) {
+    return { model, effort, codexArgs: args.slice(2) };
+  }
+
+  const compact = args[0] ? parseCompact(args[0]) : undefined;
+  if (compact) {
+    return { ...compact, codexArgs: args.slice(1) };
+  }
+
+  console.error(usage);
+  process.exit(2);
+}
+
+const args = Bun.argv.slice(2);
+if (args.length === 0 || args[0] === '-h' || args[0] === '--help') {
+  console.log(usage);
+  process.exit(args.length === 0 ? 2 : 0);
+}
+
+const { model, effort, codexArgs } = parseSelection(args);
+const codexPath = Bun.which('codex');
+
+if (!codexPath) {
+  console.error('cx: codex was not found in PATH');
+  process.exit(127);
+}
+
+process.execve(
+  codexPath,
+  [
+    'codex',
+    '--model',
+    models[model],
+    '-c',
+    `model_reasoning_effort=${effort}`,
+    '-c',
+    'service_tier=fast',
+    ...codexArgs,
+  ],
+  process.env,
+);
