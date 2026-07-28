@@ -78,7 +78,7 @@ if [ -d ~/Documents/projects/llmutils ]; then
 else
   export TIM_DIR=~/projects/llmutils
 fi
-alias tim="$TIM_DIR/dist/tim"
+# alias tim="$TIM_DIR/dist/tim"
 alias timd="$TIM_DIR/src/tim/tim.ts"
 alias timl="./src/tim/tim.ts"
 # Not using prepare anymore since coding agents got better.
@@ -143,7 +143,7 @@ function claudecwd() {
   # printf '\e[?1004l';
 }
 
-alias claude="claudeprj --model claude-opus-4-8"
+alias claude="claudeprj --model opus"
 alias claudes="claudeprj --model sonnet"
 alias claudeh="claudeprj --model haiku"
 

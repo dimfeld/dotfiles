@@ -267,26 +267,33 @@ return {
       },
     },
     config = function(_, opts)
+      local run_codex = function(setting, ctx)
+        if ctx.cursor and ctx.cursor.visual then
+          vim.cmd(ctx.cursor.start.line .. "," .. ctx.cursor.stop.line .. "CodexHere " .. setting)
+        else
+          vim.cmd("CodexHere " .. setting)
+        end
+      end
       cmdbar.add_commands({
         {
           name = "Codex GPT 5.6 Luna",
           category = "AI",
-          action = function()
-            vim.cmd("CodexHere luna")
+          action = function(opts)
+            run_codex("luna", opts)
           end,
         },
         {
           name = "Codex GPT 5.6 Terra Low",
           category = "AI",
-          action = function()
-            vim.cmd("CodexHere terralow")
+          action = function(opts)
+            run_codex("terralow", opts)
           end,
         },
         {
           name = "Codex GPT 5.6 Terra Medium",
           category = "AI",
-          action = function()
-            vim.cmd("CodexHere terramedium")
+          action = function(opts)
+            run_codex("terramedium", opts)
           end,
         },
       })

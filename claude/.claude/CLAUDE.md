@@ -1,7 +1,6 @@
-## Code Exploration
+## General Rules
 
-In addition to your normal tools, `ast-grep` is installed on this system so you can use it when appropriate to search
-the codebase.
+- When writing responses to the user, reviewing code, generating documentation, or otherwise writing text for humans to read, use ASD-STE100 Simplified Technical English.
 
 ## Source Control
 

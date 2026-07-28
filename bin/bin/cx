@@ -82,6 +82,14 @@ if (!codexPath) {
   process.exit(127);
 }
 
+const gitRootResult = Bun.spawnSync(['git', 'rev-parse', '--show-toplevel'], {
+  stdout: 'pipe',
+  stderr: 'ignore',
+});
+if (gitRootResult.success) {
+  process.chdir(new TextDecoder().decode(gitRootResult.stdout).trim());
+}
+
 process.execve(
   codexPath,
   [
