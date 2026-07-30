@@ -65,12 +65,6 @@ function jj-update-branch() {
 }
 alias jjub=jj-update-branch
 
-function jjbct() {
-  REV=$1
-  shift
-  jj bookmark create $REV "$@" && jj bookmark track $REV
-}
-
 function jj-merge-main() {
   BOOKMARK=${1:-$(jjpb)}
   if [ "$BOOKMARK" = "main" ]; then
@@ -78,7 +72,7 @@ function jj-merge-main() {
     return
   fi
   jj git fetch -b main && \
-  jj new main $BOOKMARK && \
+  jj new $BOOKMARK main && \
   jj b m $BOOKMARK -t@ && \
   jj commit -m 'merge main'
 }
@@ -115,6 +109,10 @@ function jj-squash-branch() {
 }
 alias jjsb='jj-squash-branch'
 
+function jj-squash-single-stack() {
+  jj squash -f$1..$2 -t $2
+}
+
 alias jj-track-current='jj bookmark track $(jjpb)'
 alias jjbtc='jj bookmark track $(jjpb)'
 
@@ -129,18 +127,23 @@ function jj-restack-from() {
   jj git fetch -b main && jj rebase -r "$BOOKMARK" -d main
 }
 
-function jj-rebase-main() {
-  jj git fetch -b main && jj rebase -d main
-}
-
 function jj-rebase-merged-stack() {
   if [ $# -ne 1 ]; then
     echo "Usage: jj-rebase-merged-stack <bookmark>"
     return 1
   fi
 
-  jj git fetch -b main && \
-    jj rebase -r "$1+::" -d main && \
+  jj git fetch -b main || return
+
+  REBASING_BOOKMARKS=$(jj log -r "$1+:: & bookmarks()" --no-graph --ignore-working-copy -T 'local_bookmarks ++ "\n"' | sed '/^$/d')
+  if [ -n "$REBASING_BOOKMARKS" ]; then
+    echo "Rebasing bookmarks:"
+    echo "$REBASING_BOOKMARKS"
+  else
+    echo "No bookmarks found in rebase range."
+  fi
+
+  jj rebase -r "$1+::" -d main && \
     jj git fetch -b "$1"
 }
 
