@@ -6,7 +6,7 @@ const models = {
   luna: 'gpt-5.6-luna',
 } as const;
 
-const efforts = ['low', 'medium', 'high', 'xhigh'] as const;
+const efforts = ['low', 'medium', 'high', 'xhigh', 'max'] as const;
 
 type ModelName = keyof typeof models;
 type Effort = (typeof efforts)[number];
@@ -15,7 +15,7 @@ const usage = `Usage: cx <model> <effort> [codex arguments...]
        cx <model-prefix><effort-prefix> [codex arguments...]
 
 Models:  sol, terra, luna
-Efforts: low, medium, high, xhigh
+Efforts: low, medium, high, xhigh, max
 
 Examples:
   cx sol high
@@ -25,6 +25,9 @@ Examples:
 
 function uniquePrefix<T extends string>(input: string, choices: readonly T[]): T | undefined {
   const matches = choices.filter((choice) => choice.startsWith(input.toLowerCase()));
+  if(matches.length === 2 && matches.includes('medium') && matches.includes('max')) {
+    return 'medium';
+  }
   return matches.length === 1 ? matches[0] : undefined;
 }
 
