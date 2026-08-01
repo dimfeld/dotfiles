@@ -84,8 +84,6 @@ closing issues.
      - Summary section with bullet points
      - "Closes <issue-number>" if the PR addresses an issue. For Linear-style issues make sure to include the prefix, e.g. DF-123
      - Changes section listing what was modified
-     - Test plan section with checkboxes for manual testing steps
-     - Mark automated tests as checked if they've passed
    - Note that commits marked "Finish batch tasks iteration" are just related to updating planning documents, not actual code changes
    - Do not include "Generated with Claude Code" or "Co-Authored-By" lines
 

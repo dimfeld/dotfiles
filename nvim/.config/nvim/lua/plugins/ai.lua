@@ -242,21 +242,21 @@ return {
     keys = {
       { "<leader>a", nil, desc = "AI/Codex" },
       { "<leader>at", "<cmd>Codex<cr>", desc = "Toggle Codex" },
-      { "<leader>as", "<cmd>CodexHere luna<cr>", mode = "n", desc = "Add current selection" },
-      { "<leader>as", ":'<,'>CodexHere luna<cr>", mode = "v", desc = "Add current selection" },
-      { "<leader>am", "<cmd>CodexHere terralow<cr>", mode = "n", desc = "Add current selection" },
-      { "<leader>am", ":'<,'>CodexHere terralow<cr>", mode = "v", desc = "Add current selection" },
+      { "<leader>as", "<cmd>CodexHere lunalow<cr>", mode = "n", desc = "Add current selection" },
+      { "<leader>as", ":'<,'>CodexHere lunalow<cr>", mode = "v", desc = "Add current selection" },
+      { "<leader>am", "<cmd>CodexHere lunahigh<cr>", mode = "n", desc = "Add current selection" },
+      { "<leader>am", ":'<,'>CodexHere lunahigh<cr>", mode = "v", desc = "Add current selection" },
       { "<leader>ag", "<cmd>CodexHere<cr>", mode = "n", desc = "Add current selection" },
       { "<leader>ag", ":'<,'>CodexHere<cr>", mode = "v", desc = "Add current selection" },
     },
     opts = {
       focus_existing_on_here = true,
       presets = {
-        luna = {
+        lunalow = {
           args = { "--model", "gpt-5.6-luna", "-c", "model_reasoning_effort=low", "-c", "service_tier=fast" },
         },
-        terralow = {
-          args = { "--model", "gpt-5.6-terra", "-c", "model_reasoning_effort=low", "-c", "service_tier=fast" },
+        lunahigh = {
+          args = { "--model", "gpt-5.6-luna", "-c", "model_reasoning_effort=high", "-c", "service_tier=fast" },
         },
         terramedium = {
           args = { "--model", "gpt-5.6-terra", "-c", "model_reasoning_effort=medium", "-c", "service_tier=fast" },
@@ -276,17 +276,17 @@ return {
       end
       cmdbar.add_commands({
         {
-          name = "Codex GPT 5.6 Luna",
+          name = "Codex GPT 5.6 Luna Low",
           category = "AI",
           action = function(opts)
-            run_codex("luna", opts)
+            run_codex("lunalow", opts)
           end,
         },
         {
-          name = "Codex GPT 5.6 Terra Low",
+          name = "Codex GPT 5.6 Luna High",
           category = "AI",
           action = function(opts)
-            run_codex("terralow", opts)
+            run_codex("lunahigh", opts)
           end,
         },
         {
