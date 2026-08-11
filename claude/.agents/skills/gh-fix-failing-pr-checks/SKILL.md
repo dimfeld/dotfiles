@@ -1,6 +1,7 @@
 ---
 name: gh-fix-failing-pr-checks
 description: Investigates and fixes failing GitHub pull request checks by querying the GitHub API through the gh CLI, inspecting workflow runs and logs, making code changes, and verifying the likely fix locally. Use when the user asks to fix failing CI on a PR, investigate red GitHub checks, repair a broken pull request build, or review a PR with optional guidance about how the fixes should be approached.
+disable-model-invocation: true
 ---
 
 # GH Fix Failing PR Checks
