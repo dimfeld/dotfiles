@@ -37,6 +37,10 @@ if [ -f "$(which devin)" ]; then
   devin update
 fi
 
+if command -v atuin >/dev/null 2>&1; then
+  atuin update
+fi
+
 
 if [ -f "$HOME/bin/update_apt.local" ]; then
   "$HOME/bin/update_apt.local"

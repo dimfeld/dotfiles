@@ -430,3 +430,9 @@ zinit ice wait lucid atload'_zsh_autosuggest_start'
 zinit light zsh-users/zsh-autosuggestions
 
 
+
+if [ -f "$HOME/.atuin/bin/env" ]; then
+  . "$HOME/.atuin/bin/env"
+
+  eval "$(atuin init zsh)"
+fi
