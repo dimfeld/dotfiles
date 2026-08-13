@@ -86,6 +86,7 @@ closing issues.
      - Changes section listing what was modified
    - Note that commits marked "Finish batch tasks iteration" are just related to updating planning documents, not actual code changes
    - Do not include "Generated with Claude Code" or "Co-Authored-By" lines
+   - Do not run tests or do other verification; your only job is to create the draft PR.
 
 ## Notes
 
