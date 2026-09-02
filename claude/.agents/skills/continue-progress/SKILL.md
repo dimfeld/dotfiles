@@ -1,6 +1,7 @@
 ---
 name: continue-progress
 description: Read current_progress.md and continue from there. Use when a project has a `current_progress.md` checkpoint and Codex should restore the saved context, resume the next steps, and keep the file updated while working.
+disable-model-invocation: true
 ---
 
 Please read the `current_progress.md` file from the project root directory and continue the work from where it was left off.
