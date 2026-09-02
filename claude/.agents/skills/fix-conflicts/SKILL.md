@@ -47,4 +47,6 @@ When a file deletion conflict involves migrated code, always:
 ## jj squash
 
 When you use `jj squash` as part of this process, do not give it any arguments since the squash message will overwrite
-the original commit message.
+the original commit message. When squashing, be very careful to not squash two pre-existing commits together. Only squash if
+the "working copy" commit as shown by `jj status` is the new commit with "no description set".
+

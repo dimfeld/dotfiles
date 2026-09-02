@@ -20,6 +20,15 @@ local function configure_lsp_servers()
       functionLikeReturnTypes = { enabled = false },
       enumMemberValues = { enabled = false },
     },
+    referencesCodeLens = {
+      enabled = false,
+      showOnAllFunctions = false,
+    },
+    implementationsCodeLens = {
+      enabled = false,
+      showOnInterfaceMethods = false,
+      showOnAllClassMethods = false,
+    },
     updateImportsOnFileMove = { enabled = "always" },
     suggest = {
       completeFunctionCalls = true,
@@ -103,10 +112,11 @@ local function configure_lsp_servers()
     },
   })
 
-  vim.lsp.config("tsgo", {
+  vim.lsp.config("tsc", {
     settings = {
       typescript = ts_server_settings,
       javascript = ts_server_settings,
+      ["js/ts"] = ts_server_settings,
       complete_function_calls = true,
     },
   })
@@ -210,7 +220,7 @@ local function configure_lsp_servers()
     "svelte",
     -- "vtsls",
     -- "ts_ls",
-    "tsgo",
+    "tsc",
     "cssls",
     "eslint",
     "oxlint",
