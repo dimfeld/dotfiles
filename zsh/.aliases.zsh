@@ -144,7 +144,7 @@ function claudecwd() {
 }
 
 alias claude="claudeprj --model opus"
-alias claudef="claudeprj --model fable"
+alias claudef="claudeprj --model fable --effort low"
 alias claudes="claudeprj --model sonnet"
 alias claudeh="claudeprj --model haiku"
 
