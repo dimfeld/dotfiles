@@ -168,6 +168,37 @@ function aws_login() {
     echo "AWS_PROFILE has been set to $profile"
 }
 
+function az_login() {
+    local tenant="$1"
+    local token
+
+    if ! command -v az &> /dev/null; then
+        echo "Azure CLI is not installed or is not on PATH." >&2
+        return 1
+    fi
+
+    if [[ -n "$tenant" ]]; then
+        echo "Logging in to Azure tenant: $tenant"
+        az login --tenant "$tenant" || return 1
+    else
+        echo "Logging in to Azure"
+        az login || return 1
+    fi
+
+    token=$(az account get-access-token --resource-type ms-graph --query accessToken -o tsv) || {
+        echo "Could not get a Microsoft Graph access token." >&2
+        return 1
+    }
+
+    if [[ -z "$token" ]]; then
+        echo "Azure CLI returned an empty Microsoft Graph access token." >&2
+        return 1
+    fi
+
+    export AZURE_GRAPH_TOKEN="$token"
+    echo "AZURE_GRAPH_TOKEN has been set"
+}
+
 
 function aws_set_profile() {
     local profile
@@ -428,4 +459,3 @@ zinit ice wait lucid
 zi light Aloxaf/fzf-tab
 zinit ice wait lucid atload'_zsh_autosuggest_start'
 zinit light zsh-users/zsh-autosuggestions
-
