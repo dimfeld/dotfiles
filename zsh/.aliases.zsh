@@ -220,3 +220,5 @@ alias timwp="tim workspace push"
 alias cl='chisel -p'
 
 alias diff-review-guide='nvim "+edit review-guide.md" "+DiffviewOpenJson review-guide.json $(jj-base-commit)"'
+
+alias activate-espressif="source ~/.espressif/tools/activate_idf_v6.1.sh"
