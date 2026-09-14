@@ -459,3 +459,7 @@ zinit ice wait lucid
 zi light Aloxaf/fzf-tab
 zinit ice wait lucid atload'_zsh_autosuggest_start'
 zinit light zsh-users/zsh-autosuggestions
+
+# >>> Codex installer >>>
+export PATH="/home/dimfeld/.local/bin:$PATH"
+# <<< Codex installer <<<

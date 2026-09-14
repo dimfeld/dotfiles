@@ -2,9 +2,8 @@
 
 const models = {
   astra: 'gpt-6-astra',
-  sol: 'gpt-5.6-sol',
-  terra: 'gpt-5.6-terra',
-  luna: 'gpt-5.6-luna',
+  sol: 'gpt-6-sol',
+  luna: 'gpt-6-luna',
 } as const;
 
 const efforts = ['low', 'medium', 'high', 'xhigh', 'max'] as const;
