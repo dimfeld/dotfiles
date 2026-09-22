@@ -144,7 +144,11 @@ function jj-rebase-merged-stack() {
   fi
 
   jj rebase -r "$1+::" -d main && \
-    jj git fetch -b "$1"
+  jj git fetch -b "$1"
+}
+
+function jjrb() {
+  jj rebase -d @- -b $1
 }
 
 alias jj-base-commit="jj log -r 'heads(::@ & ::main)' --no-graph -T 'commit_id'"

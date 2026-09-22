@@ -15,6 +15,9 @@ For each conflict, examine each side and the commits lower in the commit tree th
 
 Before you make an edit, describe your reasoning to the user. If it is not clear to you how a conflict should be resolved, stop and ask me what to do, and I will try to provide guidance or resolve it myself. 
 
+When you are all done, repeat the decisions you made to the user so they can easily find the reasoning if they missed it
+the first time.
+
 ## Modify-vs-delete conflicts
 
 When jj reports "2-sided conflict including 1 deletion", be especially careful. The format is:
