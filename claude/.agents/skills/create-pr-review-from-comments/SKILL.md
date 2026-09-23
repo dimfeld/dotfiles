@@ -9,7 +9,7 @@ Find the current jj branch name using: `jj log -r 'latest(heads(ancestors(@) & r
 
 Then use `gh pr list --head <branch-name>` to get the number of the PR.
 
-IMPORTANT NOTE: ALL SCRIPTS ARE RELATIVE TO THE SKILL.md file path but you must run them from the repository directory.
+Script paths below are relative to this skill's directory, but run them with the repository as the working directory.
 
 Run the extract_comments.ts script to find all AI comments in modified files:
 

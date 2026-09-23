@@ -3,19 +3,7 @@ name: create-project-phases
 description: Create a set of phases for a large project
 ---
 
-Please analyze the referenced requirements document (or Linear issue) and the codebase. Your task is to:
-
-1. Use your tools to explore the codebase and understand the existing code structure
-2. Identify which files would need to be created or modified to implement this feature
-3. Think about how to break this down into logical phases and tasks
-4. Consider dependencies between different parts of the implementation
-5. Identify any potential challenges or considerations
-
-For now, please:
-- Explore the relevant parts of the codebase
-- Understand the existing patterns and conventions
-- Identify the key files and components that will be involved
-- Think deeply about the best approach to implement this feature
+Analyze the referenced requirements document (or Linear issue) and the codebase. Learn the existing patterns and conventions, identify the files and components the feature touches, and note the dependencies between parts of the work and any likely challenges.
 
 Update the given requirements document (or create a new one) to track your progress and suggested plan.
 

@@ -9,53 +9,13 @@ Read review-guide.json and thoroughly review the files and changes mentioned in 
 
 Note that review-guide.md is gitignored, so you should not expect it to show up in VCS.
 
-## Sample Issues to Flag:
+## Review priorities
 
-### Code Correctness (HIGH PRIORITY)
-- Logic errors or incorrect algorithms
-- Race conditions or concurrency issues
-- Incorrect error handling or missing error cases
-- Off-by-one errors, boundary condition failures
-- Null pointer exceptions or undefined access
-- Resource leaks (files, connections, memory)
-- Incorrect type usage or unsafe type assertions
-- Catching errors and just printing a log message (which will likely not be seen in production). Errors should be bubbled up, especially unexpected errors.
+Correctness, security, and test quality come first. Project-convention and performance issues come second. In addition to the usual categories, flag these:
 
-### Security Vulnerabilities (HIGH PRIORITY)
-- Path traversal vulnerabilities (filesystem only. Object stores like S3 are not vulnerable to this)
-- SQL injection or command injection risks
-- Unsafe deserialization
-- Missing input validation or sanitization
-- Hardcoded secrets, API keys, or passwords
-- Unsafe file operations or permissions
-- Cross-site scripting (XSS) opportunities
+- Errors that are caught and only logged. Nobody reads those logs in production, so unexpected errors must propagate.
+- Path traversal on the local filesystem. Object-store keys (such as S3) are not vulnerable to it, so do not flag them.
+- Tests that pass without verifying the behavior they claim to cover, and missing tests for error paths and edge cases.
+- Deviation from established codebase patterns without a stated reason.
 
-### Project Violations (MEDIUM PRIORITY)
-- Deviation from established patterns without justification
-- Inconsistent code style or formatting
-- Improper imports or dependency usage
-- Wrong file organization or module structure
-- Missing required documentation or comments where mandated
-
-### Performance Issues (MEDIUM PRIORITY)
-- Inefficient algorithms (O(n²) where O(n) is possible)
-- Unnecessary file I/O or network calls
-- Memory waste or unbounded growth
-- Blocking operations on the main thread
-- Missing caching where it would significantly help
-
-### Testing Problems (HIGH PRIORITY)
-- Tests that don't test the actual implementation
-- Missing tests for error conditions and edge cases
-- Tests that pass but don't verify correct behavior
-- Flaky or non-deterministic tests
-- Tests with insufficient coverage of critical paths
-- Integration tests missing for complex workflows
-
-## Don't be too Pedantic
-
-Although you should be thorough in your review, you should not be too picky.
-
-- Do not mention code formatting issues--we have autoformatters for that.
-- When a function is wrapped in middleware, you can assume that the middleware is doing its job. For example, if the
-middleware already verifies the presence of an organization and user, the handler function inside the middleware does not need to check its presence again.
+Report the issues that a careful senior reviewer would raise, not nits. Do not report formatting; autoformatters handle it. When a function is wrapped in middleware, assume that the middleware does its job. For example, if the middleware already verifies the presence of an organization and user, the handler inside it does not need to check again.

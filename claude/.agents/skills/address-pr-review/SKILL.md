@@ -30,6 +30,6 @@ Ask the user for feedback on which review comments to address and how. If the us
 
 Do not mark review comments or threads resolved. Do not update the status of the issue or PR. Do not request or re-request reviews.
 
-Block comments are used when a review comment applies to multiple lines of code, to make it easier to see which code is being referenced. A single line comment may also apply to multiple lines of code; you infer from the comment and surrounding code what is desired. In both cases, consider all relevant information to make the proper change--your changes can update other related code if that is appropriate.
+A review comment can apply to more than the line it is attached to. Infer the intent from the comment and the surrounding code; your changes can update other related code if that is appropriate.
 
 When done, print the Github URL for the PR, but use `https://linear.review` as the domain instead of `https://github.com`.
