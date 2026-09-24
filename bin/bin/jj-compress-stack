@@ -1,0 +1,239 @@
+#!/usr/bin/env bun
+
+import { $ } from 'bun';
+import { createInterface } from 'node:readline/promises';
+import { parseArgs } from 'node:util';
+
+interface CliConfig {
+  baseBranch: string;
+  dryRun: boolean;
+}
+
+interface BookmarkCommit {
+  bookmark: string;
+  description: string;
+}
+
+interface SquashCommand {
+  args: string[];
+}
+
+function parseCliArgs(): CliConfig {
+  const { values, positionals } = parseArgs({
+    args: Bun.argv.slice(2),
+    allowPositionals: true,
+    options: {
+      'dry-run': {
+        type: 'boolean',
+        default: false,
+      },
+      help: {
+        type: 'boolean',
+        short: 'h',
+        default: false,
+      },
+    },
+  });
+
+  if (values.help || positionals.length !== 1) {
+    console.log(`
+Usage: jj-compress-stack [--dry-run] <base-branch>
+
+Builds one jj squash command for the base branch, then one for each bookmarked
+branch stacked on top of it. Commands are printed before execution and only run
+after interactive confirmation.
+
+Options:
+  --dry-run   Print commands without prompting or executing them
+  --help      Show this help message
+`);
+    process.exit(values.help ? 0 : 1);
+  }
+
+  const [baseBranch] = positionals;
+  if (!baseBranch) {
+    throw new Error('Expected a base branch.');
+  }
+
+  return {
+    baseBranch,
+    dryRun: values['dry-run'] === true,
+  };
+}
+
+function shellQuote(value: string): string {
+  if (/^[A-Za-z0-9_./:@%+=,-]+$/.test(value)) {
+    return value;
+  }
+
+  return `'${value.replaceAll("'", "'\\''")}'`;
+}
+
+function formatCommand(args: string[]): string {
+  return args.map(shellQuote).join(' ');
+}
+
+function formatCommandForDisplay(args: string[]): string {
+  return formatCommand(args).split('\n', 1)[0] ?? '';
+}
+
+function splitNulLine(line: string): string[] {
+  return line.split('\0');
+}
+
+async function getBookmarkCommit(revision: string): Promise<BookmarkCommit> {
+  const template = 'bookmarks.join(",") ++ "\\0" ++ description.first_line() ++ "\\n"';
+  const output = await $`jj log --no-graph -r ${revision} -T ${template}`.quiet().text();
+  const [bookmarksValue, description = ''] = splitNulLine(output.trimEnd());
+  const bookmarks = bookmarksValue
+    .split(',')
+    .map((bookmark) => bookmark.trim().replace(/\*$/, ''))
+    .filter(Boolean);
+
+  if (bookmarks.length === 0) {
+    throw new Error(`Revision "${revision}" does not resolve to a local bookmark.`);
+  }
+
+  if (bookmarks.length > 1 && !bookmarks.includes(revision)) {
+    throw new Error(
+      `Revision "${revision}" has multiple bookmarks (${bookmarks.join(
+        ', '
+      )}). Pass the specific bookmark name to use as the base.`
+    );
+  }
+
+  const bookmark = bookmarks.includes(revision) ? revision : bookmarks[0];
+  if (!bookmark) {
+    throw new Error(`Revision "${revision}" does not resolve to a local bookmark.`);
+  }
+
+  return {
+    bookmark,
+    description,
+  };
+}
+
+async function getStackedBookmarks(baseBranch: string): Promise<BookmarkCommit[]> {
+  const template = 'bookmarks.join(",") ++ "\\0" ++ description.first_line() ++ "\\n"';
+  const revset = `(${baseBranch}:: & bookmarks()) ~ ${baseBranch}`;
+  const output = await $`jj log --reversed --no-graph -r ${revset} -T ${template}`.quiet().text();
+
+  return output
+    .split('\n')
+    .filter(Boolean)
+    .flatMap((line) => {
+      const [bookmarksValue, description = ''] = splitNulLine(line);
+      const bookmarks = bookmarksValue
+        .split(',')
+        .map((bookmark) => bookmark.trim().replace(/\*$/, ''))
+        .filter(Boolean);
+
+      return bookmarks.map((bookmark) => ({
+        bookmark,
+        description,
+      }));
+    });
+}
+
+async function getCombinedDescription(revset: string): Promise<string> {
+  const template = 'description ++ "\\0"';
+  const output = await $`jj log --reversed --no-graph -r ${revset} -T ${template}`.quiet().text();
+  const descriptions = output
+    .split('\0')
+    .map((description) => description.trim())
+    .filter(Boolean);
+
+  return descriptions.join('\n\n');
+}
+
+async function buildCommands(
+  baseCommit: BookmarkCommit,
+  stackedBookmarks: BookmarkCommit[]
+): Promise<SquashCommand[]> {
+  const baseRevset = `trunk()..${baseCommit.bookmark}`;
+  const commands: SquashCommand[] = [
+    {
+      args: [
+        'jj',
+        'squash',
+        '-f',
+        baseRevset,
+        '-t',
+        baseCommit.bookmark,
+        '-m',
+        await getCombinedDescription(baseRevset),
+      ],
+    },
+  ];
+
+  let previousBranch = baseCommit.bookmark;
+  for (const stackedBookmark of stackedBookmarks) {
+    const revset = `${previousBranch}..${stackedBookmark.bookmark}`;
+    commands.push({
+      args: [
+        'jj',
+        'squash',
+        '-f',
+        revset,
+        '-t',
+        stackedBookmark.bookmark,
+        '-m',
+        await getCombinedDescription(revset),
+      ],
+    });
+    previousBranch = stackedBookmark.bookmark;
+  }
+
+  return commands;
+}
+
+async function confirmExecution(): Promise<boolean> {
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  try {
+    const answer = await rl.question('\nRun these commands? (y/N) ');
+    return answer.trim().toLowerCase() === 'y';
+  } finally {
+    rl.close();
+  }
+}
+
+async function runCommand(command: SquashCommand): Promise<void> {
+  await $`${command.args}`.quiet();
+}
+
+async function main(): Promise<void> {
+  const config = parseCliArgs();
+  const baseCommit = await getBookmarkCommit(config.baseBranch);
+  const stackedBookmarks = await getStackedBookmarks(baseCommit.bookmark);
+  const commands = await buildCommands(baseCommit, stackedBookmarks);
+
+  console.log(`Commands to run for stack based on ${baseCommit.bookmark}:\n`);
+  for (const command of commands) {
+    console.log(formatCommandForDisplay(command.args));
+  }
+
+  if (config.dryRun) {
+    return;
+  }
+
+  if (!(await confirmExecution())) {
+    console.log('Aborted.');
+    return;
+  }
+
+  for (const command of commands) {
+    console.log(`\nRunning: ${formatCommandForDisplay(command.args)}`);
+    await runCommand(command);
+  }
+}
+
+try {
+  await main();
+} catch (error) {
+  console.error(error instanceof Error ? error.message : error);
+  process.exit(1);
+}
