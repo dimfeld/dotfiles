@@ -253,17 +253,17 @@ return {
       focus_existing_on_here = true,
       presets = {
         lunalow = {
-          args = { "--model", "gpt-5.6-luna", "-c", "model_reasoning_effort=low", "-c", "service_tier=fast" },
+          args = { "--model", "gpt-6-luna", "-c", "model_reasoning_effort=low", "-c", "service_tier=fast" },
         },
         lunahigh = {
-          args = { "--model", "gpt-5.6-luna", "-c", "model_reasoning_effort=high", "-c", "service_tier=fast" },
+          args = { "--model", "gpt-6-luna", "-c", "model_reasoning_effort=high", "-c", "service_tier=fast" },
         },
-        terramedium = {
-          args = { "--model", "gpt-5.6-terra", "-c", "model_reasoning_effort=medium", "-c", "service_tier=fast" },
+        solmedium = {
+          args = { "--model", "gpt-6.1-sol", "-c", "model_reasoning_effort=medium", "-c", "service_tier=fast" },
         },
       },
       codex = {
-        args = { "--model", "gpt-5.6-terra", "-c", "model_reasoning_effort=medium", "-c", "service_tier=fast" },
+        args = { "--model", "gpt-6.1-sol", "-c", "model_reasoning_effort=medium", "-c", "service_tier=fast" },
       },
     },
     config = function(_, opts)
@@ -276,24 +276,24 @@ return {
       end
       cmdbar.add_commands({
         {
-          name = "Codex GPT 5.6 Luna Low",
+          name = "Codex GPT 6 Luna Low",
           category = "AI",
           action = function(opts)
             run_codex("lunalow", opts)
           end,
         },
         {
-          name = "Codex GPT 5.6 Luna High",
+          name = "Codex GPT 6 Luna High",
           category = "AI",
           action = function(opts)
             run_codex("lunahigh", opts)
           end,
         },
         {
-          name = "Codex GPT 5.6 Terra Medium",
+          name = "Codex GPT 6 Sol Medium",
           category = "AI",
           action = function(opts)
-            run_codex("terramedium", opts)
+            run_codex("solmedium", opts)
           end,
         },
       })
