@@ -109,6 +109,18 @@ function jj-squash-branch() {
 }
 alias jjsb='jj-squash-branch'
 
+# Squash the current branch into its common ancestor with STACK_TOP.
+function jj-squash-stack() {
+  if [[ -z "${STACK_TOP:-}" ]]; then
+    echo "Error: Set STACK_TOP to the top revision of the stack." >&2
+    return 1
+  fi
+
+  local base="fork_point(($STACK_TOP) | @)"
+  jj squash -f "${base}::@" -t "$base" "$@"
+}
+alias jjss='jj-squash-stack'
+
 function jj-squash-single-stack() {
   jj squash -f$1..$2 -t $2
 }

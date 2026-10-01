@@ -13,7 +13,9 @@ oldest commit and work upward from there.
 
 For each conflict, examine each side and the commits lower in the commit tree that modified the lines to get the context for each one.  Unless there's an obvious merge, these conflicts were likely caused by rebasing this branch on top of another (likely main), and so the conflicting changes from the other branch are probably on "main" somewhere. 
 
-Before you make an edit, describe your reasoning to the user. If it is not clear to you how a conflict should be resolved, stop and ask me what to do, and I will try to provide guidance or resolve it myself. 
+Before you make an edit, describe your reasoning to the user. If it is not clear to you how a conflict should be resolved, stop and ask me what to do, and the user will try to provide guidance or resolve it himself. 
+
+After you resolve conflicts in a commit, if there are more conflicts in descendant commits, fix those as well, unless the user directs otherwise. Any limit on rounds of fixing from other instructions to not apply in this case; each conflicted commit is essentially a new task here. Don't worry about "conflicting bookmarks" reported by JJ; those are a different issue and don't require any action from you.
 
 When you are all done, repeat the decisions you made to the user so they can easily find the reasoning if they missed it
 the first time.
