@@ -27,7 +27,8 @@ Read these before you start:
 9. **Run the checks, fix the problems, and run them again.** Expect the first sweep to find collisions, mostly at the ends of the motion range.
 10. **Look at renders** to find problems. Then confirm each problem with a number before you change anything.
 11. **Update the part cards.** Add a dated changelog entry to each card whose part changed, and update its "Design notes" and "Don't" sections.
-12. **Write a README** that gives the design summary, the changes from earlier designs with reasons, the provisional values, and what is not modelled. Give a verification report that lists only the checks you actually ran.
+12. **Update `hardware.py`** and run it to write `hardware.md` again (see "Hardware list").
+13. **Write a README** that gives the design summary, the changes from earlier designs with reasons, the provisional values, and what is not modelled. Give a verification report that lists only the checks you actually ran.
 
 ## Part cards
 
@@ -44,6 +45,17 @@ Each part module `parts/<name>.py` has a card `parts/<name>.md`, and the assembl
 - **One module that makes several parts** (for example, two rocker plates) can share one card. List each part in it.
 - Point the project's `AGENTS.md` at the cards, so that other agents read them before they edit.
 
+## Hardware list
+
+Keep the purchased parts in `hardware.py`, and generate `hardware.md` from it (the same pattern as `measurements.py`, where Python is the source and the Markdown is readable output).
+
+- **List every item:** the quantity, the full size (for example, "M3 x 16 socket head cap screw, ISO 4762"), where it goes, the card that describes the joint, and notes on fitting (for example, how far to tighten it).
+- **Calculate the screw lengths** from the same stack widths the model uses. Required length = grip + nut height + at least 2 threads past the nut, which a nylon-insert nut needs. Then choose the next stock length, and record the grip, the requirement, and the thread past the nut in a table.
+- **Build the assembly's screw proxies from these lengths and nut heights**, so the swept check covers the hardware you will buy. A longer screw or a thicker lock nut can cause a new collision.
+- **Have `check.py` fail if `hardware.md` is out of date**, and have `build.py` write it again.
+- **Rotating joints:** use nylon-insert lock nuts, tightened only until the end play is gone. Clamp a bearing inner race with metal spacers. Never use printed spacers.
+- **Record items that depend on parts outside the model** ("length = mounting plate thickness + 4 mm") instead of leaving them out.
+
 ## Required checks
 
 - Each printed part is a valid single solid with its lowest face on the bed.
@@ -57,6 +69,7 @@ Each part module `parts/<name>.py` has a card `parts/<name>.md`, and the assembl
 - **Swept interference** in small steps over the whole range, including the service position and the extreme adjustment setting. Check every pair of bodies in different motion groups. Check bodies in the same group once. Keep a list of intended contacts (for example, threads) and skip only those.
 - Minimum clearance, with the angle where it occurs, for each important pair. Use print clearance (about 0.5 mm) between moving printed parts.
 - Adjusters (stop screws and similar): the travel over the required range, the change per turn, that the screw stays inside the part at each end, and that it engages the nut or insert fully. Find the first contact over the full tip diameter, not only on the screw axis.
+- **Joints between regions of one printed part:** measure the cross-section area that carries the load (intersect the part with a thin slab), and set a minimum. A valid single solid is not proof of a strong joint. Two regions can be joined by a few square millimetres.
 - A list of the items that are "not checked", for human review: tool access that was not modelled, provisional dimensions, forces.
 
 ## Lessons from real work
@@ -66,6 +79,8 @@ Each part module `parts/<name>.py` has a card `parts/<name>.md`, and the assembl
 - **Sensitivity is a requirement.** A stop 4 mm from a pivot gave about 2 mm of gap change per screw turn, which is too coarse. Calculate mm per turn.
 - **Give each moving part its own plane.** Stack the parts along the axis (part, washer, plate, link, horn) and check each gap in the stack.
 - **Leave room for deformable parts.** A pinched tube flattens to about π·(OD−wall)/2 + wall wide. Design the anvil and the nearby parts for the flattened width, not for the OD.
+- **"One solid" passed while the joint was 6 mm².** A servo tray joined to a body by a short web and a rib touched the tray only at a corner. A section-area check caught it. The rib carried no load. Find the load path first, then put the material on it.
+- **Straps under a base lift the part** unless the base has a groove for them.
 - **Make horizontal holes in printed parts teardrops**, so they print without supports.
 
 ## Viewing
