@@ -271,6 +271,8 @@ Assemblies MUST be checked for unintended solid intersections.
 Intentional intersections or fits---such as press fits, threaded
 engagement, or boolean construction helpers---SHOULD be explicitly
 identified so they are not confused with accidental collisions.
+For a crush fit, limit the accepted overlap to the crush depth at the
+ribs (see "Locating purchased parts in printed pockets" in section 12).
 
 For important interfaces, report minimum clearance rather than merely
 reporting "no intersection."
@@ -297,6 +299,31 @@ For FDM printing, consider as applicable:
 -   Captive nuts
 -   Elephant-foot effects
 -   Accessible post-processing
+
+### Locating purchased parts in printed pockets
+
+A pocket for a purchased part (servo, motor, board, sensor) needs
+clearance so the part fits, but clearance in a load direction is play.
+For each direction, state what removes the play:
+
+-   A clamp, strap, or screw holds only in the direction it pushes. It
+    does not remove play in the other directions. Friction from a clamp is
+    not a reliable hold if the working load is similar to the friction.
+-   Find the direction of the main working load (for example, the link
+    force on a servo case), and make sure a positive feature holds that
+    direction.
+-   Consider **crush ribs** on the pocket walls in that direction. They
+    are small triangular ribs, about 1-1.5 mm wide at the base, that
+    reach about 0.1-0.2 mm past the part face. They take up the part and
+    print tolerance without a tight-fitting pocket. Keep the normal
+    clearance between the ribs. Taper the top of each rib as a lead-in,
+    and keep the ribs clear of slots, notches, and cable exits.
+-   Model the ribs, and treat the part-to-rib overlap as an intended
+    overlap. Accept it only within the crush depth of the part face, and
+    measure the width between the rib tips from the B-rep. Any other
+    overlap between the part and the pocket is still a collision.
+-   Prefer the part's own mounting features (ear holes, flanges) when a
+    tool can reach them. Check the driver path before you decide.
 
 For machined or fabricated parts, use tolerances and features
 appropriate to the process.
