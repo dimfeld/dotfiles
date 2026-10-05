@@ -9,7 +9,7 @@
 
 - A lot of my projects use the `jj` source control system. To commit, use `jj commit -m "..."`. There is no need to add files with `jj`; they are tracked automatically.
 
-- Every time you finish a user request, or one or more items on your TODO list that involved changing files, make a commit. Use `jj` if it is enabled in the repository.
+- Every time you finish a user request, or one or more items on your TODO list that involved changing tracked files, make a commit. Use `jj` if it is enabled in the repository. 
 
 - Don't add comments about generated with Claude or Co-Authored-By Claude when writing commit messages
 
