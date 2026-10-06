@@ -12,7 +12,8 @@ Read these before you start:
 - `references/mechanical-cad-agent-rules.md`: the full engineering rules (envelopes, fasteners, tool access, motion, verification report, definition of done). Read it in full for every new design and for every large change.
 - `references/build123d-notes.md`: build123d API traps, coordinate conventions, and environment problems found in real work.
 - `references/viewers.md`: how to show models in build123d Studio, OCP CAD Viewer, and the build123d MCP server.
-- `templates/`: `view.py` (Studio and OCP viewer script), `part-card.md` (the per-part record), `measurements.py` (real-part dimensions with source and confirmed status), and `check_helpers.py` (overlap, clearance, hole finding, and report helpers).
+- `references/milling-rules.md`: when to mill a part instead of printing it, materials (6061, POM-C), the machine-frame convention, and the machining checks. Read it when the user has a CNC mill or router, or a part is milled.
+- `templates/`: `view.py` (Studio and OCP viewer script), `part-card.md` (the per-part record), `measurements.py` (real-part dimensions with source and confirmed status), `check_helpers.py` (overlap, clearance, hole finding, and report helpers), and `milling.py` (`MilledPart` data, materials, and the design-for-machining checks).
 
 ## Workflow
 
@@ -20,7 +21,7 @@ Read these before you start:
 2. **Do the numbers before the geometry.** Calculate the kinematics, lever ratios, travel, and fastener adjustment range in plain Python first. A brief can contain targets that conflict (for example, a 2:1 lever and 40-70° of servo travel cannot both be met with a standard horn radius). Find the conflict, choose, and record the reason.
 3. **Record every real-part dimension in `measurements.py`** (copy `templates/measurements.py`). Each entry has a value, a `confirmed` flag, its source (tool, document, or person, with the date), its accuracy, and a note on what it controls. Use `confirmed=True` only for a measurement of the actual part or a published standard. Briefs, typical datasheets, and estimates stay provisional. Running the file lists what still needs measuring, and `check.py` lists the provisional values in its report.
 4. **Put the design dimensions in one module** (`params.py`), which takes its real-part values from `measurements.py`. Calculate derived values (pivot positions, joint limits) from the requirements, not by hand. Print settings and design choices (clearances, wall thickness) belong in `params.py`, not in `measurements.py`.
-5. **Model each printed part in its own module**, with a `make()` function, and give it a part card (see "Part cards"). Model it in print orientation, with the bed at z = 0. A `place()` function moves it into the assembly frame. You can model parts that do not move in the assembly frame if that frame is already their print orientation.
+5. **Model each printed or milled part in its own module**, with a `make()` function, and give it a part card (see "Part cards"). Model a printed part in print orientation, with the bed at z = 0, and a milled part in the machine frame of its first setup, with the stock bottom at z = 0 (see `references/milling-rules.md`). A `place()` function moves it into the assembly frame. You can model parts that do not move in the assembly frame if that frame is already their print or machine orientation.
 6. **Model purchased parts as proxies** that keep every feature that affects fit: bodies, heads, nuts, spacers, bearings, horns, tubes, and servo cases with their ears. Leave a 0.05 mm gap where a proxy rests on a face, so that any solid overlap is a real collision.
 7. **Write an assembly function** that places every body at a given joint value and tags each one with a motion group, a printed flag, and a colour.
 8. **Write `check.py`** that measures the generated B-rep, not the input parameters, and exits non-zero on failure. See "Required checks".
@@ -51,6 +52,7 @@ Keep the purchased parts in `hardware.py`, and generate `hardware.md` from it (t
 
 - **List every item:** the quantity, the full size (for example, "M3 x 16 socket head cap screw, ISO 4762"), where it goes, the card that describes the joint, and notes on fitting (for example, how far to tighten it).
 - **Track stock for every item:** give each item in `hardware.py` an explicit `stock` value from a three-state `Stock` enum: `IN_STOCK` (the full required quantity is available), `ORDERED` (ordered, not yet received), or `NEEDED` (not available and not ordered). Show it as a "Stock" column in `hardware.md`. Start new items as `NEEDED` unless the user confirms stock or an order. Preserve existing values when you update the list; if the size or required quantity changes, set the item to `NEEDED` and tell the user, because the stock or order may not match. Change the values in Python, then generate the Markdown again.
+- **List the milled pieces** in `MILL_PARTS` (`templates/milling.py`): material, stock, setups, smallest end mill, and instructions. Generate a milled-parts table with the hole and tap list.
 - **List the printed pieces too:** keep each piece's export name, quantity, suggested filament, and special print instructions in the Python module that makes it. Include orientation, support needs, and any fitting steps that apply. A module that makes several pieces must supply one entry for each piece. Generate a printed-parts table in `hardware.md` from this data, with links to the source modules. Use the same entries for the export list, so the table and exported pieces stay in agreement. Do not list features joined to another part as separate prints.
 - **Calculate the screw lengths** from the same stack widths the model uses. Required length = grip + nut height + at least 2 threads past the nut, which a nylon-insert nut needs. Then choose the next stock length, and record the grip, the requirement, and the thread past the nut in a table.
 - **Build the assembly's screw proxies from these lengths and nut heights**, so the swept check covers the hardware you will buy. A longer screw or a thicker lock nut can cause a new collision.
@@ -61,6 +63,7 @@ Keep the purchased parts in `hardware.py`, and generate `hardware.md` from it (t
 ## Required checks
 
 - Each printed part is a valid single solid with its lowest face on the bed.
+- Each milled part passes `check_milled()`: within the stock and the machine travel, every face reachable from a setup, and no inside radius smaller than the end mill.
 - Critical dimensions are measured from faces and holes: hole diameters, hole spacings, axis positions, wall thickness around holes, channel widths.
 - Functional outputs are measured from the placed geometry (for example, roller-to-anvil gap at the open and closed positions).
 - Kinematics:

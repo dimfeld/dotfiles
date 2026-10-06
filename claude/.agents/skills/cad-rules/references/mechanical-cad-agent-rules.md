@@ -283,6 +283,8 @@ Nominal CAD dimensions are not automatically manufacturable dimensions.
 
 The agent MUST account for the intended manufacturing process.
 
+For milled parts (CNC router or mill), read `milling-rules.md`: inside radii, tool reach from each setup, stock and machine travel, tapped holes, and when a part gains from milling.
+
 For FDM printing, consider as applicable:
 
 -   Printer capability
