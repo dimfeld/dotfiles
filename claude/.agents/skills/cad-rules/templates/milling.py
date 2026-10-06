@@ -64,6 +64,11 @@ class MilledPart:
     setups: tuple = (UP,)  # tool directions, first setup first
     outline_from_stock: bool = False  # True when the outline is the purchased stock edge
     qty: int = 1
+    # True when the part fits against something with a real tolerance (a
+    # purchased part, a printed pocket): build.py then writes a fit-test STL to
+    # print in PLA before machining. Not for plates whose fits are only drilled
+    # holes or design clearances.
+    fit_test: bool = False
 
     @property
     def density(self):

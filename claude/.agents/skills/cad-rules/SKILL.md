@@ -12,7 +12,7 @@ Read these before you start:
 - `references/mechanical-cad-agent-rules.md`: the full engineering rules (envelopes, fasteners, tool access, motion, verification report, definition of done). Read it in full for every new design and for every large change.
 - `references/build123d-notes.md`: build123d API traps, coordinate conventions, and environment problems found in real work.
 - `references/viewers.md`: how to show models in build123d Studio, OCP CAD Viewer, and the build123d MCP server.
-- `references/milling-rules.md`: when to mill a part instead of printing it, materials (6061, POM-C), the machine-frame convention, and the machining checks. Read it when the user has a CNC mill or router, or a part is milled.
+- `references/milling-rules.md`: when to mill a part instead of printing it, materials (6061, POM-C), the machine-frame convention, the machining checks, and PLA fit tests before machining. Read it when the user has a CNC mill or router, or a part is milled.
 - `templates/`: `view.py` (Studio and OCP viewer script), `part-card.md` (the per-part record), `measurements.py` (real-part dimensions with source and confirmed status), `check_helpers.py` (overlap, clearance, hole finding, and report helpers), and `milling.py` (`MilledPart` data, materials, and the design-for-machining checks).
 
 ## Workflow
@@ -87,6 +87,13 @@ Keep the purchased parts in `hardware.py`, and generate `hardware.md` from it (t
 - **"One solid" passed while the joint was 6 mm².** A servo tray joined to a body by a short web and a rib touched the tray only at a corner. A section-area check caught it. The rib carried no load. Find the load path first, then put the material on it.
 - **Straps under a base lift the part** unless the base has a groove for them.
 - **Make horizontal holes in printed parts teardrops**, so they print without supports.
+
+- **Look at the real part before you design an interface to it.** A brewer cradle was designed from guesses: a round flange, with the outlet hanging below it. Photos showed six hollow wedge spokes with a flat bottom and the outlet flush. The pads, locators, key, and removal lift all changed. Before you design a seat, a socket, or a clamp for a purchased part, ask for photos of the contact faces and the measurements that define them.
+- **Match the supports to the part's symmetry.** Three pads at 120° cannot all land on six spokes unless the rotation is fixed. Pads under a spoked or ribbed part must follow its pattern.
+- **Locate a part by its own repeated features.** Blocks in the gaps between the spokes located the brewer, stopped it turning, and gave a repeatable switch position (one of six rotations). This needed no extra part, and it was better than posts that tried to catch a small lever.
+- **Define a measurement with a sketch.** "Switch axis height" was read three ways before the user explained that the lever never points down. When you ask for a measurement, give the datum, the direction, and a small sketch, and ask how the part moves.
+- **When a path check fails, find the feature that causes it.** A removal path failed after a change. The cause was a guessed 10 mm outlet drop, not the new locators. Raising the lift would have hidden a wrong guess.
+- **Load cells: keep applied moments in the beam plane.** For a parallel-beam cell, put a lever or a knob that the user turns so that its twist acts in the beam's bending plane, not as torsion about the beam's length. Torsion is the cell's weakest and least compensated direction.
 
 ## Viewing
 

@@ -39,6 +39,12 @@ Record the density of each material, and give milled bodies their own density in
 - **An insert in a printed pocket:** give the insert rounded vertical corners (about 1 mm) so it seats in printed inside corners, and a clearance of about 0.15 mm per side. Keep its working face flush with the printed surface next to it, and check the step.
 - When a part changes from printed to milled, remove the print-only features (teardrop bores, heat-set insert holes, bosses for inserts) and the print checks for it.
 
+## Fit tests in PLA before machining
+
+- Mark a milled part `fit_test=True` when it fits against something with a real tolerance: a purchased part (a brewer base, a bearing), or a printed pocket. `build.py` then writes `build/fit-test/<part>.stl`. The machine frame is already a good print orientation (flat bottom on the bed, every feature from the top), so the STL prints as exported.
+- Do not fit-test large plates or parts whose only fits are drilled holes, tapped holes, or design clearances. A print of a 300 mm base, or a crop of it, tells you little and wastes time. The user said so directly.
+- In the instructions, say what to check with the print, and that a printed part is about 0.1-0.2 mm off with small holes.
+
 ## Required checks for each milled part
 
 `templates/milling.py` has `check_milled()`, which measures the B-rep:
