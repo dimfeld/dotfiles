@@ -9,7 +9,9 @@ VS Code "OCP CAD Viewer" extension:  .venv/bin/python view.py
 Template from the cad-rules skill. It expects:
   - build.PRINTED: {part name: make function}
   - build.POSES: {pose name: joint value}
-  - assembly.assemble(joint_value, ...) -> bodies with .name, .shape, .color
+  - assembly.assemble(joint_value, ...) -> bodies with .name, .shape, .color, .system
+  - assembly.to_compound(bodies) -> a Compound with one labelled child per system
+    (see "Group the assembly tree by system" in references/viewers.md)
 Change the module names in PROJECT_MODULES and the settings to suit the project.
 
 For a mechanism, add animation and turn it on by default (the viewer loads it
@@ -62,11 +64,7 @@ def joint_value():
 if SHOW == "assembly":
     value = joint_value()
     bodies = assembly.assemble(value)
-    show(
-        *[b.shape for b in bodies],
-        names=[b.name for b in bodies],
-        colors=[b.color for b in bodies],
-    )
+    show(assembly.to_compound(bodies))  # one folder per system in the viewer tree
     print(f"joint {value:.1f}")
 else:
     show(PRINTED[SHOW](), names=[SHOW])

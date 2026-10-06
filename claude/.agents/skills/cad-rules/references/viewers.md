@@ -22,6 +22,17 @@
   Also test two runs in one interpreter: `exec(open('view.py').read())` twice. This checks the module reload. With the sandbox off, `$TMPDIR` is a different folder, so run the stub test inside the sandbox.
 - **The template.** `templates/view.py` shows the pattern.
 
+## Group the assembly tree by system
+
+A flat list of 80 bodies in the viewer tree is hard to use. Group the bodies by what they are for, so the user can open, hide, or isolate one subsystem (for example: Frame, Cup scale, Brewer scale, Cradle and brewer, Valve and nozzle, Reservoir, Control panel). The user said this makes the viewer much more helpful.
+
+- **One table.** In `assembly.py`, keep an ordered `SYSTEMS` tuple and a `SYSTEM_OF` mapping from system to body names. Add prefix rules for bodies loaded from another project (`"valve: "`, `"panel: "`).
+- **Fail on a missing entry.** `assemble()` sets `body.system` for each body and raises an error that names any body with no system. Then no new part is left out of the tree.
+- **Nested compounds.** `to_compound(bodies, alpha=None)` makes one child `Compound` per system, in `SYSTEMS` order, each labelled with the system name. Set each shape's `label` to the body name and its `color` (with the alpha) on the shape. A neighbouring project's own parts can be a subfolder (for example, "Pinch valve" inside "Valve and nozzle"). Drop a name prefix that repeats the folder name.
+- **Show the compound:** `show(assembly.to_compound(bodies, alpha=...))`, not `show(*shapes, names=..., colors=...)`. Use the same `to_compound()` for the assembly STEP export, so the STEP file has the same groups.
+- **Motion groups are different.** A mechanism that animates needs its tree grouped by motion (each moving group on its rotation axis; see "Animation"). Use system folders for static assemblies, or put the motion groups inside the system folders.
+- **Test** the tree with the stub `show()`: print each child label and its child labels.
+
 ## Animation (Studio and OCP CAD Viewer)
 
 Documentation: https://bernhard-42.github.io/ocp_viewer_docs/animation/
