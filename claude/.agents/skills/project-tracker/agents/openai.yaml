@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Tracker"
+  short_description: "Update project status, blockers, and next actions"
+  default_prompt: "Use $project-tracker to review my projects and find the next action and a quick win."
