@@ -18,6 +18,8 @@ Use this workflow to update every branch stacked above the current jj commit aft
 - Resolve conflicts by understanding both sides of the change; do not mechanically choose one side.
 - After changing files for a branch, run focused validation and commit with `jj commit -m "..."` before continuing.
 - If a command reports an index lock error, retry the same command once before escalating.
+- If the merge base of a branch is still unclear even after using jj/git commits, look at the Github PR for the branch
+  to determine the correct base.
 - If branch order, intended stack shape, or conflict semantics are unclear, inspect history first; ask only when the correct resolution cannot be inferred.
 
 ## Discover The Stack

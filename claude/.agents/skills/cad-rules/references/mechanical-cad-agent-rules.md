@@ -315,17 +315,73 @@ For each direction, state what removes the play:
     force on a servo case), and make sure a positive feature holds that
     direction.
 -   Consider **crush ribs** on the pocket walls in that direction. They
-    are small triangular ribs, about 1-1.5 mm wide at the base, that
-    reach about 0.1-0.2 mm past the part face. They take up the part and
-    print tolerance without a tight-fitting pocket. Keep the normal
-    clearance between the ribs. Taper the top of each rib as a lead-in,
-    and keep the ribs clear of slots, notches, and cable exits.
+    are small ribs, about 1.5 mm wide at the base with a flat top at
+    least 0.6 mm wide, that reach about 0.1-0.2 mm past the part face.
+    They take up the part and print tolerance without a tight-fitting
+    pocket. Keep the normal clearance between the ribs. Taper the top of
+    each rib as a lead-in, and keep the ribs clear of slots, notches, and
+    cable exits. See "Small features and crush ribs" below: a sharp
+    triangular rib does not print.
 -   Model the ribs, and treat the part-to-rib overlap as an intended
     overlap. Accept it only within the crush depth of the part face, and
     measure the width between the rib tips from the B-rep. Any other
     overlap between the part and the pocket is still a collision.
 -   Prefer the part's own mounting features (ear holes, flanges) when a
     tool can reach them. Check the driver path before you decide.
+
+### Small features and crush ribs
+
+A feature that is correct in the B-rep can be missing from the print.
+The nozzle (usually 0.4 mm) and the layer height set the smallest
+feature that prints.
+
+-   **Design for a 0.2 mm layer height.** The printer can print smaller
+    layers, but everyone uses 0.2 mm unless told otherwise. If a part
+    needs a smaller layer height, say so explicitly: put the layer
+    height in the part's print instructions (`PRINT_PARTS`, so it is in
+    the printed-parts table in `hardware.md`), in the part card, and in
+    the summary to the user. Give the reason (which feature needs it).
+    Without that note, the part prints at 0.2 mm.
+
+-   **Do not use sharp-tipped features below about 1 mm.** A triangular
+    crush rib 1.0 mm wide and 0.375 mm high on a Ø5 peg did not print
+    at all. The pegs came out at the core diameter, about 4.5 mm, and
+    were loose. Give a rib a flat top at least one line width wide (0.6
+    mm), and a base of about 1.5 mm.
+-   **Put small radial features in the bed plane.** On a part that prints
+    lying down, the printer makes features that point sideways (in the
+    bed plane) from the layer outlines, which is its most accurate
+    direction. A feature that points up is only the last one or two
+    layers. A feature that points down sits on the bed flat or needs
+    support.
+-   **Put the ribs in opposite pairs.** Then calipers across the pair
+    read the rib diameter directly. With four ribs at 45° steps, the
+    design diameter is only on the diagonals, and calipers in the usual
+    directions read the core. The user cannot check the print against
+    the model.
+-   **Check what the user will measure.** In `check.py`, measure the
+    caliper width (the section width across the rib pair), not the
+    largest radius. The largest radius passed while the width that the
+    user measured was 0.75 mm smaller.
+-   **Keep the core close to the hole.** A core clearance of about 0.2 mm
+    radial keeps the peg centred and stops it rattling if the ribs crush
+    or print short.
+-   **Make a fit coupon for every friction fit,** and print it before the
+    real parts. It has three or more sizes, each marked by notches (not
+    text, which does not print at this size). Tell the user to measure
+    the coupon with calipers first, then to try the fit. If the print is
+    undersize, correct the design value by the error.
+-   **A peg printed lying down needs a bed flat** (a D-flat about 0.4 to
+    0.5 of the radius deep). Keep the ribs clear of the flat. Lying down
+    is the strong orientation: the layers run along the peg. A peg
+    printed vertical breaks at the layer line at its root.
+-   **A peg that prints at an angle:** measure the section in the layer
+    plane through the peg root (intersect the part with a thin slab
+    parallel to the bed). That plane is the weakest one.
+-   **A neck or stem on a curved surface:** start the wider part on the
+    collar, not on the curved face. A neck that started at the hole face
+    hung 0.81 mm over a spherical fist. Only an overlap check against the
+    real surface found it.
 
 For machined or fabricated parts, use tolerances and features
 appropriate to the process.

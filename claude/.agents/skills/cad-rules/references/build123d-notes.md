@@ -40,6 +40,13 @@ These are the API traps, conventions, and environment problems found while build
 - **To test for overlap:** check the bounding boxes first. Then use `a & b` and add the volume of each solid. Count an overlap only above about 1e-4 mm³, so that touching faces do not count.
 - **`a.distance_to(b)`** gives the minimum distance between two shapes. It returns 0 if they touch or overlap.
 - **To find a first contact,** intersect the moving part with a probe cylinder (the full tip diameter) and take `bounding_box().min.Z`.
+- **The winding of a `Polygon` can flip the direction of `extrude`.** A plate was lost because its profile was clockwise and it extruded the wrong way. After you extrude a profile, move the result by its bounding box (`Pos(target - bb.min) * solid`) instead of trusting the sign of `amount`.
+- **`sweep` puts the section where you draw it,** not at the path start. Build the section on a plane at `path.start_point()` with its normal along `path % 0`. A section at z = 0 for a path that started at z = 1.2 made a stick 98.8 mm tall, not 100.
+- **Measure a peg from the peg only.** The peg length taken from the whole-part bounding box included the collar and the stick. Intersect the part with a cylinder or slab around the peg first.
+- **A cylinder face that a flat cuts is still a cylinder face,** but it is not the full circle, and some `filter_by(GeomType.CYLINDER)` searches miss it. To measure a core radius, intersect the part with a thin probe box along one direction and take the far end of the result.
+- **A rotated probe adds its own thickness to the bounding box.** For a probe at 45°, `hypot(bb.max.X, bb.max.Y)` was 0.01 mm too large. Project the vertices onto the probe direction: `max((v.X + v.Y) / sqrt(2) for v in vertices)`.
+- **To measure a caliper width,** intersect the part with a thin slab at the measurement height, rotate it so the measured direction is X, and take `bb.max.X - bb.min.X`. Use the same method in `check.py` that the user will use with calipers.
+- **PNG previews with matplotlib in the sandbox:** set `MPLCONFIGDIR=$TMPDIR/mpl`, because the default config folder is not writable. `plot_trisurf` takes one `color`, not `facecolors`. Shade the faces yourself from the face normals.
 
 ## Teardrop bore
 

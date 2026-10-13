@@ -90,10 +90,11 @@ closing issues.
 
 ## Notes
 
-- If a pull request already exists, update the PR instead of creating a new one
+- This skill is always for creating a new PR. Don't update an existing PR unless the user asks for that. If you are
+  unsure, ask the user.
 - Use the identified branch name from step 1 as `<branch-name>` throughout
 - The branch may contain multiple commits - review the full history with `jj log` before creating the PR
-- The base branch is main by default and in the above examples, but use a different branch if there are instructions below that indicate a different base branch.
+- If this new branch is sitting on top of another branch, that should be the base branch by default, unless the user says otherwise.
 
 $ARGUMENTS
 
