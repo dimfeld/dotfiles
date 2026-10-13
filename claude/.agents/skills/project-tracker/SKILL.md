@@ -1,5 +1,5 @@
 ---
-name: project-tracker
+name: project-index
 description: Maintain the personal projects.md tracker, review project status, record progress or external blockers, and find next actions and quick wins. Use when the user asks about this portfolio or reports progress or an unblock event for a listed project. Do not use for unrelated project planning.
 ---
 
@@ -48,6 +48,8 @@ An arrival may remove one blocker while another remains. Unblocked does not nece
 For Waiting, record what must arrive or happen, what will confirm release, and an expected date or follow-up date only if known. Include a useful action that can proceed without the blocker when one exists. Do not infer delivery from an elapsed date. If all useful work is blocked, say so.
 
 ## Maintain the file
+
+Keep the `Next up` and `Quick wins` sections near the top of `projects.md` as direct, scannable lists. Put each ready task in the section itself; do not make the user scan project entries to find a task. The `Next up` list should show the main tasks that can proceed now. The `Quick wins` list should show useful 10–15-minute tasks, with a clear result and any prerequisites. Link each item to its project entry for detail. Do not list blocked tasks as ready, and do not invent quick wins to fill the list. Keep both lists consistent with the project entries and update them when progress, blockers, or priorities change.
 
 Keep Markdown sections for the main list. Keep project names and links stable. Use the fields already in the tracker: category, status, priority, evidence, blocker, information needed, source, last reviewed, next action, and quick wins. Add a brief progress checkpoint or wait detail when needed. Remove resolved information requests and obsolete actions; keep evidence needed to explain current state. Do not copy full task lists or grow a session log.
 
