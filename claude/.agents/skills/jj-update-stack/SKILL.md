@@ -55,15 +55,22 @@ For each branch or bookmark in stack order:
 
 2. Rebase the branch onto its updated parent. Use the narrowest operation that matches the stack shape:
 
+   Usually you will want -b to rebase the entire relevant tree to the new parent, including both ancestor and descendant revisions
+   that can be moved onto the new parent.
+
    ```bash
-   jj rebase -r <rev> -d <new-parent>
+   jj rebase -b <branch> -d <new-parent>
    ```
 
-   For an entire descendant chain that should move together:
+   For an revision and its descendants only, use -s instead. Make sure that you pick the correct revision before using
+   this; specifically make sure you are not omitting ancestor revisions that you need to rebase.
 
    ```bash
    jj rebase -s <stack-root> -d <new-parent>
    ```
+
+   Using `-r` with a single commit or the branch name is almost always wrong; only do that if you are sure you want just
+   the one head commit of the branch and nothing else inside it.
 
 3. Inspect the result:
 
