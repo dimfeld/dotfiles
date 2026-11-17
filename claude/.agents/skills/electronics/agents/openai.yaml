@@ -1,0 +1,4 @@
+interface:
+  display_name: "Electronics"
+  short_description: "Design circuits for CNC milling and home assembly"
+  default_prompt: "Use $electronics to design a circuit for my CNC PCB and home soldering setup."
