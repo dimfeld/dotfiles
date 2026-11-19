@@ -94,6 +94,8 @@ if (gitRootResult.success) {
   process.chdir(new TextDecoder().decode(gitRootResult.stdout).trim());
 }
 
+const serviceTier = model === 'sol' ? 'ultrafast' : 'fast';
+
 process.execve(
   codexPath,
   [
@@ -103,7 +105,7 @@ process.execve(
     '-c',
     `model_reasoning_effort=${effort}`,
     '-c',
-    'service_tier=fast',
+    `service_tier=${serviceTier}`,
     ...codexArgs,
   ],
   process.env,
