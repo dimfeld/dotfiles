@@ -38,13 +38,13 @@ The files that will be included in the PR are:
 
 !`jj diff -f stack_base -s | grep '^[MA]' | nl`
 
-Group this list into chunks (by functional area if possible) and use parallel subagents to analyse the diffs, reading the files and also using `jj diff -f latest(ancestors(trunk()) & ancestors(@)) <filename>` for each
-one to get the diff. Make sure that every file is assigned to a chunk; we don't want to miss any files.
+Use the `describe-branch` skill for guidance on formatting the PR.
 
 Make sure to go into detail about each file that has major changes related to the task and what changes are in those files.
 
 If the branch starts with a number, it may be a `tim` plan. Use `tim show <number>` to get the plan details, which
 may include relevant issue tracker URL, title, and so on.
+
 
 ## Step 3: Commit New Changes (if needed)
 
