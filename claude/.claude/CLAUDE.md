@@ -34,6 +34,19 @@
 - We have a jj revset `stack_base` which resolves to the commit that is the base of the current branch, whether stacked
   or on trunk. You can use this like `jj diff -f stack_base` or similar when you want to just get changes on the current branch.
 
+## Linear Issues
+
+When I ask you to create a Linear issue:
+
+- Set the issue state to "Todo", unless I ask for a different state. Do not leave it in "Backlog" or "Triage".
+- Always find and apply the correct metadata before you create the issue. Look up the available values in Linear first; do not guess.
+  - **Team**: Use the team that owns the related work.
+  - **Project**: Find the project that matches the work. Look at the existing projects and at similar recent issues. If no project clearly matches, pick the best match. Do not ask me.
+  - **Labels**: Apply the labels that match the type and area of the work.
+  - **Parent issue / milestone / cycle**: Apply these when the issue is clearly part of a larger issue, milestone, or the current cycle.
+  - **Priority**: Set it if I state it or if the context makes it clear.
+- After you create the issue, tell me which team, project, and other metadata you chose, so that I can change them if I do not agree.
+
 ## Removing Files
 
 My `rm` command is aliased to `rm -i`. This means that you need to use `rm -f` to remove files.
